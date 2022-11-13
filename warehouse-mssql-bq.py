@@ -1,9 +1,11 @@
 import pandas as pd
 import pyodbc
 from google.cloud import bigquery
+import os
 
+#Setting BQ project in environment
+os.environ.setdefault("GCLOUD_PROJECT", 'pacc-raw-data')
 
-#def mssql_query_pd(self,database_name):
 class mssql_bq:
     #SQL Server
     def connect_to_mssql(self):
