@@ -3,7 +3,6 @@ import os
 os.environ.setdefault("GCLOUD_PROJECT", 'pacc-raw-data')
 service_account_file_path=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
-project_id = 'pacc-raw-data'
 client = bigquery.Client.from_service_account_json(service_account_file_path)
 table_id='pacc-raw-data.test1.test_bq'
 

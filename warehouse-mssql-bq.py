@@ -5,6 +5,7 @@ import os
 
 #Setting BQ project in environment
 os.environ.setdefault("GCLOUD_PROJECT", 'pacc-raw-data')
+service_account_file_path=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
 class mssql_bq:
     #SQL Server
@@ -34,7 +35,7 @@ class mssql_bq:
     def connect_to_bq(self):
         print('step 3')
         project_id = 'pacc-raw-data'
-        self.client = bigquery.Client()
+        self.client = bigquery.Client.from_service_account_json(service_account_file_path)
 
 
     def bq_delete_warehouse_dedup(self,dataset_name):
