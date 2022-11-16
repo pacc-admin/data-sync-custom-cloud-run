@@ -45,4 +45,5 @@ ITEM_ID_MAPPING	string,
 EFFECTIVE_DATE	timestamp,
 EXPIRE_DATE	timestamp,
 ITEM_ID_EXCLUDE	string,
+DATA_SOURCE string
 )

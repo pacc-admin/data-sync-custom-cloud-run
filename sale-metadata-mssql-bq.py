@@ -21,7 +21,9 @@ class mssql_bq:
 
     def mssql_query_pd(self,database_name,table_name):
         print('step 4')
-        query = 'select * from '+database_name+'.dbo.'+table_name
+        query = "select  HashBytes('MD5', +'"+database_name+"'"+'+cast(PR_KEY as varchar)) as unique_key, *, '+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
+
+        print(query)
         df = pd.DataFrame()    
         df = pd.read_sql(query, self.conn)
         self.dataframe = df
@@ -63,30 +65,26 @@ class mssql_bq:
 database = ['IPOSS5WINE','IPOSSBGN']
 
 if __name__ == '__main__':
-
+    table_name='dm_dinner_table'
+    s = mssql_bq()
+    s.connect_to_bq()
+    s.bq_delete(table_name) 
     for database_name in database:
-        table_name='dm_dinner_table'
         print(table_name)
         print(database_name)
-
-        s = mssql_bq()
-        s.connect_to_bq()
-        s.bq_delete(table_name)        
         
         s.connect_to_mssql()
         s.mssql_query_pd(database_name,table_name)  
         s.bq_insert()
 
 if __name__ == '__main__':
-
+    table_name='dm_item'
+    s = mssql_bq()
+    s.connect_to_bq()
+    s.bq_delete(table_name) 
     for database_name in database:
-        table_name='dm_item'
         print(table_name)
         print(database_name)
-        
-        s = mssql_bq()
-        s.connect_to_bq()
-        s.bq_delete(table_name)        
         
         s.connect_to_mssql()
         s.mssql_query_pd(database_name,table_name)  
