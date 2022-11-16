@@ -3,6 +3,11 @@ import pyodbc
 from google.cloud import bigquery
 import os
 
+#Setting Sql server credential in environment
+server=os.environ.get("MSSQL_SALE_IP_ADDRESS")
+username=os.environ.get("MSSQL_SALE_IP_USERNAME")
+password=os.environ.get("MSSQL_SALE_IP_PASSWORD")
+
 #Setting BQ project in environment
 os.environ.setdefault("GCLOUD_PROJECT", 'pacc-raw-data')
 service_account_file_path=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
@@ -11,9 +16,6 @@ class mssql_bq:
     #SQL Server
     def connect_to_mssql(self):
         print('step 1')
-        server = '180.93.172.68'
-        username = 'namba' 
-        password = 'S%f2L5^4W2w8'
         conn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';PORT=1433;UID='+username+';PWD='+ password+';TrustServerCertificate=yes;')
         self.conn = conn
         
