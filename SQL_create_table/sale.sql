@@ -1,5 +1,7 @@
 create table pacc-raw-data.IPOS_SALE.sale
 (
+UNIQUE_KEY bytes,
+UPDATED_DATE timestamp, 
 PR_KEY	float64,
 TRAN_ID	string,
 TRAN_NO	string,

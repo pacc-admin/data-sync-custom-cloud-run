@@ -58,35 +58,41 @@ class mssql_bq:
             )
         )
 
-database = ['IPOSS5WINE','IPOSSBGN']
+database = ['IPOSSBGN','IPOSS5WINE']
 
-if __name__ == '__main__':
-    for database_name in database:
-        print(database_name)
-        dataset_name = 'sale'
-        print(dataset_name)
-        
-        query_string = '''SELECT
-                    a.*,
-                    b.workstation_name
-                 
-                from '''+database_name+'''.dbo.sale a
-                left join '''+database_name+'''.dbo.dm_workstation b
-                    on a.workstation_id = b.workstation_id
-                    where dateadd(day, datediff(day, 0, tran_date), 0) = dateadd(day,-1,dateadd(day, datediff(day, 0, getdate()), 0))
-                '''
-
-        s = mssql_bq()
-        s.connect_to_mssql()
-        s.mssql_query_pd(query_string)
-        if s.mssql_query_pd(query_string)=='end':
-            print('stop')
-        else:
-            s.connect_to_bq()
-            s.bq_insert(dataset_name)
-
+#if __name__ == '__main__':
+#    s = mssql_bq()
+#    s.connect_to_mssql()
+#    s.connect_to_bq() 
+#    for database_name in database:
+#        print(database_name)
+#        dataset_name = 'sale'
+#        print(dataset_name)
+#        
+#        query_string = '''SELECT
+#                    HashBytes('MD5', workstation.workstation_name+cast(sale.pr_key as varchar)) as unique_key,
+#                    getdate() as updated_date,
+#                    sale.*,
+#                    workstation.workstation_name
+#                 
+#                from '''+database_name+'''.dbo.sale sale
+#                left join '''+database_name+'''.dbo.dm_workstation workstation
+#                    on sale.workstation_id = workstation.workstation_id
+#                where year(sale.tran_date) > 2019
+#                --where dateadd(day, datediff(day, 0, sale.tran_date), 0) = dateadd(day,-1,dateadd(day, datediff(day, 0, getdate()), 0))
+#                '''
+#
+#        s.mssql_query_pd(query_string)
+#        if s.mssql_query_pd(query_string)=='end':
+#            print('stop')
+#        else:
+#            s.bq_insert(dataset_name)
+#
 #Sale_detail
 if __name__ == '__main__':
+    s = mssql_bq()
+    s.connect_to_mssql()
+    s.connect_to_bq() 
     for database_name in database:
         print(database_name)
         dataset_name = 'sale_detail'
@@ -106,6 +112,8 @@ if __name__ == '__main__':
                     )
                     
                     select
+                        HashBytes('MD5', sale.workstation_name+cast(sale_detail.pr_key as varchar)) as unique_key,
+                        getdate() as updated_date,
                         sale_detail.*,
                     	sale.tran_date,
                     	sale.workstation_name
@@ -115,11 +123,9 @@ if __name__ == '__main__':
                     inner join sale
                     on sale_detail.fr_key = sale.pr_key
                 '''
-        s = mssql_bq()
-        s.connect_to_mssql()
+
         s.mssql_query_pd(query_string)
         if s.mssql_query_pd(query_string)=='end':
             print('stop')
         else:
-            s.connect_to_bq()
             s.bq_insert(dataset_name)

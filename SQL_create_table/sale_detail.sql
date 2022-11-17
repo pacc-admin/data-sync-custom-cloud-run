@@ -1,4 +1,6 @@
 create table `pacc-raw-data.IPOS_SALE.sale_detail` (
+UNIQUE_KEY bytes,
+UPDATED_DATE	timestamp, 
 PR_KEY	float64,
 FR_KEY	float64,
 LIST_ORDER	int64,
@@ -47,7 +49,7 @@ PR_KEY_ORDER	float64,
 DISTRIBUTE_DISCOUNT_EXTRA2	float64,
 PARENT_ITEM_ID	string,
 ITEM_ID_MAPPING	string,
-TRAN_DATE	datetime,
+TRAN_DATE	timestamp,
 WORKSTATION_NAME string
 )
 
