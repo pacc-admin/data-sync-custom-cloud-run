@@ -19,9 +19,9 @@ class mssql_bq:
         conn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';PORT=1433;UID='+username+';PWD='+ password+';TrustServerCertificate=yes;')
         self.conn = conn
 
-    def mssql_query_pd(self,database_name,table_name):
+    def mssql_query_pd(self,database_name,query_string):
         print('step 4')
-        query = "select  HashBytes('MD5', +'"+database_name+"'"+'+cast(PR_KEY as varchar)) as unique_key, *, '+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
+        query = query_string
 
         print(query)
         df = pd.DataFrame()    
@@ -72,9 +72,10 @@ if __name__ == '__main__':
     for database_name in database:
         print(table_name)
         print(database_name)
+        query_string = "select  HashBytes('MD5', +'"+database_name+"'"+'+cast(PR_KEY as varchar)) as unique_key, *, '+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
         
         s.connect_to_mssql()
-        s.mssql_query_pd(database_name,table_name)  
+        s.mssql_query_pd(database_name,query_string)  
         s.bq_insert()
 
 if __name__ == '__main__':
@@ -85,7 +86,8 @@ if __name__ == '__main__':
     for database_name in database:
         print(table_name)
         print(database_name)
+        query_string = "select  *, "+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
         
         s.connect_to_mssql()
-        s.mssql_query_pd(database_name,table_name)  
+        s.mssql_query_pd(database_name,query_string)  
         s.bq_insert()

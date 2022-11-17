@@ -1,5 +1,6 @@
 create table `pacc-raw-data.IPOS_SALE.dm_dinner_table` (
-UNIQUE_ID string,
+UNIQUE_KEY bytes,
+DATA_SOURCE string,
 PR_KEY	float64,
 DINNER_TABLE_ID	string,
 AREA_ID	string,
@@ -9,6 +10,5 @@ ENABLE	int64,
 ACTIVE	int64,
 USER_ID	string,
 WORKSTATION_ID	int64,
-WHOS	string,
-DATA_SOURCE string
+WHOS	string
 )
