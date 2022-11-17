@@ -60,34 +60,34 @@ class mssql_bq:
 
 database = ['IPOSSBGN','IPOSS5WINE']
 
-#if __name__ == '__main__':
-#    s = mssql_bq()
-#    s.connect_to_mssql()
-#    s.connect_to_bq() 
-#    for database_name in database:
-#        print(database_name)
-#        dataset_name = 'sale'
-#        print(dataset_name)
-#        
-#        query_string = '''SELECT
-#                    HashBytes('MD5', workstation.workstation_name+cast(sale.pr_key as varchar)) as unique_key,
-#                    getdate() as updated_date,
-#                    sale.*,
-#                    workstation.workstation_name
-#                 
-#                from '''+database_name+'''.dbo.sale sale
-#                left join '''+database_name+'''.dbo.dm_workstation workstation
-#                    on sale.workstation_id = workstation.workstation_id
-#                where year(sale.tran_date) > 2019
-#                --where dateadd(day, datediff(day, 0, sale.tran_date), 0) = dateadd(day,-1,dateadd(day, datediff(day, 0, getdate()), 0))
-#                '''
-#
-#        s.mssql_query_pd(query_string)
-#        if s.mssql_query_pd(query_string)=='end':
-#            print('stop')
-#        else:
-#            s.bq_insert(dataset_name)
-#
+if __name__ == '__main__':
+    s = mssql_bq()
+    s.connect_to_mssql()
+    s.connect_to_bq() 
+    for database_name in database:
+        print(database_name)
+        dataset_name = 'sale'
+        print(dataset_name)
+        
+        query_string = '''SELECT
+                    HashBytes('MD5', workstation.workstation_name+cast(sale.pr_key as varchar)) as unique_key,
+                    getdate() as updated_date,
+                    sale.*,
+                    workstation.workstation_name
+                 
+                from '''+database_name+'''.dbo.sale sale
+                left join '''+database_name+'''.dbo.dm_workstation workstation
+                    on sale.workstation_id = workstation.workstation_id
+                where year(sale.tran_date) > 2019
+                --where dateadd(day, datediff(day, 0, sale.tran_date), 0) = dateadd(day,-1,dateadd(day, datediff(day, 0, getdate()), 0))
+                '''
+
+        s.mssql_query_pd(query_string)
+        if s.mssql_query_pd(query_string)=='end':
+            print('stop')
+        else:
+            s.bq_insert(dataset_name)
+
 #Sale_detail
 if __name__ == '__main__':
     s = mssql_bq()
