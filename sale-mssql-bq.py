@@ -78,8 +78,7 @@ if __name__ == '__main__':
                 from '''+database_name+'''.dbo.sale sale
                 left join '''+database_name+'''.dbo.dm_workstation workstation
                     on sale.workstation_id = workstation.workstation_id
-                where year(sale.tran_date) > 2019
-                --where dateadd(day, datediff(day, 0, sale.tran_date), 0) = dateadd(day,-1,dateadd(day, datediff(day, 0, getdate()), 0))
+                where dateadd(day, datediff(day, 0, sale.tran_date), 0) = dateadd(day,-1,dateadd(day, datediff(day, 0, getdate()), 0))
                 '''
 
         s.mssql_query_pd(query_string)
@@ -108,7 +107,7 @@ if __name__ == '__main__':
                         from '''+database_name+'''.dbo.sale sale
                         left join '''+database_name+'''.dbo.dm_workstation store
                             on sale.workstation_id = store.workstation_id
-                        where dateadd(day, datediff(day, 0, tran_date), 0) = dateadd(day,-1,dateadd(day, datediff(day, 0, getdate()), 0))
+                        where dateadd(day, datediff(day, 0, sale.tran_date), 0) = dateadd(day,-1,dateadd(day, datediff(day, 0, getdate()), 0))
                     )
                     
                     select
