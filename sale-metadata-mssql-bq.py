@@ -77,7 +77,7 @@ database = ['IPOSS5WINE','IPOSSBGN']
 #        s.connect_to_mssql()
 #        s.mssql_query_pd(database_name,query_string)  
 #        s.bq_insert()
-
+#
 if __name__ == '__main__':
     table_name='dm_item'
     s = mssql_bq()
