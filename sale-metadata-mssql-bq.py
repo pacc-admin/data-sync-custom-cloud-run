@@ -64,20 +64,20 @@ class mssql_bq:
 
 database = ['IPOSS5WINE','IPOSSBGN']
 
-#if __name__ == '__main__':
-#    table_name='dm_dinner_table'
-#    s = mssql_bq()
-#    s.connect_to_bq()
-#    s.bq_delete(table_name) 
-#    for database_name in database:
-#        print(table_name)
-#        print(database_name)
-#        query_string = "select  HashBytes('MD5', +'"+database_name+"'"+'+cast(PR_KEY as varchar)) as unique_key, *, '+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
-#        
-#        s.connect_to_mssql()
-#        s.mssql_query_pd(database_name,query_string)  
-#        s.bq_insert()
-#
+if __name__ == '__main__':
+    table_name='dm_extra_2'
+    s = mssql_bq()
+    s.connect_to_bq()
+    s.bq_delete(table_name) 
+    for database_name in database:
+        print(table_name)
+        print(database_name)
+        query_string = "select *, "+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
+        
+        s.connect_to_mssql()
+        s.mssql_query_pd(database_name,query_string)  
+        s.bq_insert()
+
 if __name__ == '__main__':
     table_name='dm_item'
     s = mssql_bq()
@@ -86,7 +86,37 @@ if __name__ == '__main__':
     for database_name in database:
         print(table_name)
         print(database_name)
-        query_string = "select  *, "+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
+        query_string = '''
+                        with item_grouped as (
+                            select
+                                 item_type_id,
+                                 item_type_name,
+                            	 row_number() over (partition by item_type_id order by item_type_name desc) as rn
+                            
+                            from '''+database_name+'''.dbo.dm_item_type
+                        ),
+                        
+                        item_cat as (
+                            select distinct
+                                 item_class_id,
+                                 item_class_name
+                            
+                            from '''+database_name+'''.dbo.dm_item_class
+                        )
+
+                        select  
+                            item.*,
+                            item_cat.item_class_name as item_category,
+                            item_grouped.item_type_name as item_group,
+                            '''+"'"+database_name+"'"+''' as data_source
+                        
+                        from '''+database_name+'.dbo.'+table_name+''' item
+                        left join item_cat
+                            on item.item_class_id = item_cat.item_class_id
+                        left join item_grouped
+                            on item.item_type_id = item_grouped.item_type_id
+                            and rn = 1
+                        '''
         
         s.connect_to_mssql()
         s.mssql_query_pd(database_name,query_string)  
