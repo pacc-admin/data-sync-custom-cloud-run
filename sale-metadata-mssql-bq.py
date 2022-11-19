@@ -94,6 +94,7 @@ if __name__ == '__main__':
                             	 row_number() over (partition by item_type_id order by item_type_name desc) as rn
                             
                             from '''+database_name+'''.dbo.dm_item_type
+                            where active = 1
                         ),
                         
                         item_cat as (
