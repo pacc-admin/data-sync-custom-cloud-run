@@ -1,41 +1,48 @@
 import dbconnector
 import requests
 import pandas as pd
-
 class base_bq:
-    def base_vn_connect(self,component):
-        print('step 1')
-        p = {
-            "access_token": "7383-HCMUFGYR35XWJDCKFCJ93VNFN89F4PR5H2ALD63V9CCJZXQ948PRBE6BDNJUX29H-YDN58WMY5JWFGPW2EKEXJLJ5PHUH9HKKJDNAX3VCQDGZP4WT55NVR964J6ZAA5WQ"
-        }
-        
-        url="https://payroll.base.vn/extapi/v1/"+component+"/list"
-        self.r = requests.get(url, params=p).json()
-        
-    def data_process(self,column_name):
+    def data_process(self,column_name,raw_output):
         print('step 2')
-        dataset = pd.DataFrame(self.r)
+        dataset = pd.DataFrame(raw_output)
         flatten = pd.json_normalize(dataset[column_name+"s"])
-        return flatten
+        try:
+            dataset_final=dbconnector.pd_update_latest(dataset=flatten,last_update='last_update')
+        except:
+            dataset_final=flatten
+        return dataset_final
 
     def payroll_bq_insert(self,schema,table_id,dataframe):
         client=dbconnector.connect_to_bq()
         print('step 3')
         dbconnector.bq_insert(client,schema,table_id,dataframe)
+    
+    def while_loop_page_insert(self,page,column_name,table_id):
+        pageno=-1
+        r=dbconnector.base_vn_connect(app='payroll',component=column_name)
+        total_page=dbconnector.total_page(r)
 
+        while pageno < total_page:
+            pageno=pageno+1
+            r=dbconnector.base_vn_connect(app='payroll',component=column_name,page=pageno)
+            dataframe= self.data_process(column_name,raw_output=r)
+            
+            if dataframe.to_dict('records')==[]:
+                print('end')
+            else:
+                print('continue')
+                self.payroll_bq_insert(schema,table_id,dataframe)
+                print('end')
 
-lists = ['cycle','payroll','record']
-
+#lists = ['cycle','payroll','record']
+lists = ['cycle']
 
 if __name__ == '__main__':
     for variable in lists:
+        #date_update_unix=dbconnector.get_two_day_before()
+        page=0
         schema='BASEVN_PAYROLL'
-        s=base_bq()
         print(variable)
-        s.base_vn_connect(variable)
-        dataframe= s.data_process(variable)
-        if dataframe.to_dict('records')==[]:
-            print('end')
-        else:
-            print('continue')
-            s.payroll_bq_insert(schema,variable,dataframe)
+
+        s=base_bq()        
+        s.while_loop_page_insert(page=page,column_name=variable,table_id=variable)
