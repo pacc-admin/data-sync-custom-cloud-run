@@ -19,7 +19,7 @@ def mssql_bq_insert(query_string,schema,table_id):
 database = ['IPOSS5WINE','IPOSSBGN']
 schema='IPOS_SALE'
 
-table_names=['dm_membership','dm_membership_type','dm_extra_2']
+table_names=['dm_membership_type','dm_extra_2']
 for table_name in table_names:
     print('delete current table')
     dbconnector.bq_delete(client,schema,table_name)

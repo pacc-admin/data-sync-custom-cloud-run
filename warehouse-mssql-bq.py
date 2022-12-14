@@ -13,7 +13,7 @@ class mssql_bq:
         print('step 1')
         server = '180.93.172.68'
         username = 'namba' 
-        password = 'S%f2L5^4W2w8'
+        password = '7pdjS45X17y@'
         conn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';PORT=1433;UID='+username+';PWD='+ password+';TrustServerCertificate=yes;')
         self.conn = conn
         

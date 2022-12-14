@@ -1,5 +1,7 @@
 
 from google.cloud import bigquery
+import pandas_gbq
+from google.oauth2 import service_account
 import os
 
 #Setting BQ credential in environment
@@ -32,3 +34,8 @@ def bq_insert(client,schema,table_id,dataframe):
             table.num_rows, len(table.schema), table_id
         )
     )
+
+def bq_pandas(query_string):
+    credentials = service_account.Credentials.from_service_account_file(service_account_file_path)
+    querry_bq=pandas_gbq.read_gbq(query_string, project_id="pacc-raw-data", credentials=credentials)
+    return querry_bq
