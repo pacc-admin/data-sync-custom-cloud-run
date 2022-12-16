@@ -18,9 +18,9 @@ def bq_delete(client,schema,table_id):
     results = query_job.result()
     print(results)
 
-def bq_insert(client,schema,table_id,dataframe):
+def bq_insert(client,schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
     table_id = 'pacc-raw-data.'+schema+'.'+table_id
-    job_config = bigquery.LoadJobConfig()
+    job_config = job_config
     job_config._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
 
     job = client.load_table_from_dataframe(

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 def get_two_day_before():
     today = datetime.today()
-    two_day_before = today - timedelta(days=2)
+    two_day_before = today - timedelta(days=20)
     two_day_before_unix = int(time.mktime(two_day_before.timetuple()))
     return two_day_before_unix
 
