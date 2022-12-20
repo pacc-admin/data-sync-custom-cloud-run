@@ -1,28 +1,67 @@
+from big_query import connect_to_bq,bq_insert,bq_pandas
+from google.cloud import bigquery
+import os.path
 import yaml
 import time
 from datetime import datetime, timedelta
 import requests
+import pandas as pd
 import re
+import inflect
+
+
+p = inflect.engine()
 
 def etract_variable_yml(dictionary):
-    a_yaml_file = open("credentials/base_vn_token.yml")
+    a_yaml_file = open("credentials/base_vn_token.yml") 
     parsed_yaml_file = yaml.load(a_yaml_file, Loader=yaml.FullLoader)
     token=parsed_yaml_file[dictionary]
     return token
 
 def base_vn_connect(app,component1,component2='list',updated_from=0,page=0):
-    samp= re.compile('[a-zA-z]+')
-    component1=samp.findall(component1)[0]
-    component2=samp.findall(component2)[0]
-    access_token = etract_variable_yml(app)
+    #parameter delcare
+    access_token=etract_variable_yml(app)
     page_dict={'page':page}
     updated_from_dict={'updated_from':updated_from}
+
+    #combine into dictionary
     p={**access_token,**updated_from_dict,**page_dict}
     print(p)
+
+    #url specify and get data from api
     url="https://"+app+".base.vn/extapi/v1/"+component1+"/"+component2
     print(url)
     raw_output = requests.get(url, params=p).json()
     return raw_output
+
+def pd_process(dataset,column_to_flat,query_string_incre):
+    #flatten dataset currently nested in array column
+    cp=p.plural(column_to_flat)
+    dataset = pd.DataFrame(dataset)
+    flatten = pd.json_normalize(dataset[cp])
+    
+    #Get last update date of table from BQ
+    bq_table_date=bq_pandas(query_string_incre)['last_update'].astype(str).to_list()[0]
+    if bq_table_date=='None':
+        last_updated_date=0
+    else:
+        last_updated_date=bq_table_date
+
+    #rename schema with '.' to '_' and turn them to string type
+    try:
+        final_dataset = dataset[dataset['last_update'].astype('float') > last_updated_date]
+    except:
+        final_dataset=flatten
+
+    a=final_dataset.filter(like='.')
+    if a.to_dict('records')==[]:
+        final_dataset=flatten
+    else:
+        final_dataset=flatten[flatten.columns.drop(list(flatten.filter(like='.')))].join(flatten.filter(like='.').astype(str))
+        final_dataset.columns = flatten.columns.str.replace(".", "_")
+
+    return final_dataset
+                       
 
 def total_page(raw_output):
     try:
@@ -32,9 +71,31 @@ def total_page(raw_output):
         total_page=total_items/items_per_page
     except:
         total_page=0 
+
     if total_page < 1:
-      total_page=0
+       total_page=0
     else:
-      total_page=int(round(total_page,0))
+       total_page=int(round(total_page,0))
     print("Total page:",total_page)
     return total_page
+
+
+def while_loop_page_insert(app,schema,column_name,query_string_incre,component2='list',job_config= bigquery.LoadJobConfig()):
+    #specify variable
+    client=connect_to_bq()
+    pageno=-1
+    r=base_vn_connect(app=app,component1=column_name,component2=component2)
+    total_page_display=total_page(r)
+
+    #loop pageno until it reach total page firgure
+    while pageno < total_page_display:
+        pageno=pageno+1
+        r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2)
+        data_to_insert= pd_process(dataset=r,column_to_flat=column_name,query_string_incre=query_string_incre)
+        
+        if data_to_insert.to_dict('records')==[]:
+            print('end')
+        else:
+            print('continue')
+            bq_insert(client,schema,table_id=column_name,dataframe=data_to_insert,job_config=job_config)
+            print('end')
