@@ -64,7 +64,10 @@ def pd_process(dataset,column_to_flat,query_string_incre,stop_words=[]):
         final_dataset
     else:
         #final_dataset=flatten[flatten.columns.drop(column_to_string)].join(flatten.filter(like='.').astype(str))
-        final_dataset.columns = flatten.columns.str.replace(".", "_")        
+        final_dataset.columns = flatten.columns.str.replace(".", "_")    
+
+    #add loaded date field
+    final_dataset['loaded_date'] = pd.to_datetime('today')
 
     return final_dataset
                        
