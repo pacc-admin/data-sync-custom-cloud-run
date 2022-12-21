@@ -30,11 +30,10 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0):
 
     #url specify and get data from api
     url="https://"+app+".base.vn/extapi/v1/"+component1+"/"+component2
-    print(url)
     raw_output = requests.get(url, params=p).json()
     return raw_output
 
-def pd_process(dataset,column_to_flat,query_string_incre):
+def pd_process(dataset,column_to_flat,query_string_incre,stop_words=[]):
     #flatten dataset currently nested in array column
     cp=p.plural(column_to_flat)
     dataset = pd.DataFrame(dataset)
@@ -47,18 +46,25 @@ def pd_process(dataset,column_to_flat,query_string_incre):
     else:
         last_updated_date=bq_table_date
 
-    #rename schema with '.' to '_' and turn them to string type
+    #filter by last update date in BQ
     try:
         final_dataset = dataset[dataset['last_update'].astype('float') > last_updated_date]
     except:
         final_dataset=flatten
 
+    #remove specified word from a list of column, for later data type change
+    column_to_string = list(flatten.columns)
+    for word in stop_words:
+        column_to_string.remove(word)
+    flatten[column_to_string]=flatten[column_to_string].astype(str)
+
+    #rename schema with '.' to '_' 
     a=final_dataset.filter(like='.')
     if a.to_dict('records')==[]:
         final_dataset=flatten
     else:
-        final_dataset=flatten[flatten.columns.drop(list(flatten.filter(like='.')))].join(flatten.filter(like='.').astype(str))
-        final_dataset.columns = flatten.columns.str.replace(".", "_")
+        #final_dataset=flatten[flatten.columns.drop(column_to_string)].join(flatten.filter(like='.').astype(str))
+        final_dataset.columns = flatten.columns.str.replace(".", "_")        
 
     return final_dataset
                        
@@ -80,7 +86,7 @@ def total_page(raw_output):
     return total_page
 
 
-def while_loop_page_insert(app,schema,column_name,query_string_incre,component2='list',job_config= bigquery.LoadJobConfig()):
+def while_loop_page_insert(app,schema,column_name,query_string_incre,component2='list',job_config= bigquery.LoadJobConfig(),stop_words=[]):
     #specify variable
     client=connect_to_bq()
     pageno=-1
@@ -91,7 +97,7 @@ def while_loop_page_insert(app,schema,column_name,query_string_incre,component2=
     while pageno < total_page_display:
         pageno=pageno+1
         r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2)
-        data_to_insert= pd_process(dataset=r,column_to_flat=column_name,query_string_incre=query_string_incre)
+        data_to_insert= pd_process(dataset=r,column_to_flat=column_name,query_string_incre=query_string_incre,stop_words=stop_words)
         
         if data_to_insert.to_dict('records')==[]:
             print('end')
