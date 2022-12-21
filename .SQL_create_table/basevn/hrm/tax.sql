@@ -13,5 +13,8 @@ create or replace table `pacc-raw-data.BASEVN_HRM.tax` (
     color string,
     percent string,
     eba string,
-    config_percent string
+    config_percent string,
+    loaded_date timestamp
 )
+
+partition by date(loaded_date)
