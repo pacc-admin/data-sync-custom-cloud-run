@@ -8,6 +8,7 @@ import requests
 import pandas as pd
 import re
 import inflect
+import math
 
 
 p = inflect.engine()
@@ -26,7 +27,6 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0):
 
     #combine into dictionary
     p={**access_token,**updated_from_dict,**page_dict}
-    print(p)
 
     #url specify and get data from api
     url="https://"+app+".base.vn/extapi/v1/"+component1+"/"+component2
@@ -40,28 +40,28 @@ def pd_process(dataset,column_to_flat,query_string_incre,stop_words=[]):
     flatten = pd.json_normalize(dataset[cp])
     
     #Get last update date of table from BQ
-    bq_table_date=bq_pandas(query_string_incre)['last_update'].astype(str).to_list()[0]
-    if bq_table_date=='None':
+    bq_table_date=bq_pandas(query_string_incre)['last_update'].astype(float).to_list()[0]
+    if math.isnan(bq_table_date)==True:
         last_updated_date=0
     else:
         last_updated_date=bq_table_date
 
     #filter by last update date in BQ
     try:
-        final_dataset = dataset[dataset['last_update'].astype('float') > last_updated_date]
+        final_dataset = flatten[flatten['last_update'].astype('float') > last_updated_date]
     except:
         final_dataset=flatten
 
     #remove specified word from a list of column, for later data type change
-    column_to_string = list(flatten.columns)
+    column_to_string = list(final_dataset.columns)
     for word in stop_words:
         column_to_string.remove(word)
-    flatten[column_to_string]=flatten[column_to_string].astype(str)
+    final_dataset[column_to_string]=final_dataset[column_to_string].astype(str)
 
     #rename schema with '.' to '_' 
     a=final_dataset.filter(like='.')
     if a.to_dict('records')==[]:
-        final_dataset=flatten
+        final_dataset
     else:
         #final_dataset=flatten[flatten.columns.drop(column_to_string)].join(flatten.filter(like='.').astype(str))
         final_dataset.columns = flatten.columns.str.replace(".", "_")        
