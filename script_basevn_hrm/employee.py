@@ -9,6 +9,7 @@ schema='BASEVN_HRM'
 job_config_list = bigquery.LoadJobConfig(
     schema = [ 
                bigquery.SchemaField("profile_marital",bigquery.enums.SqlTypeNames.STRING),
+               bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
             ]
 
 )
