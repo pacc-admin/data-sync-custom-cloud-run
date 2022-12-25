@@ -1,5 +1,7 @@
-import dbconnector
-import os
+from google.cloud import bigquery
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
+import big_query,mssql
 
 #Setting Sql server credential in environment
 server=os.environ.get("MSSQL_SALE_IP_ADDRESS")
@@ -7,24 +9,24 @@ username=os.environ.get("MSSQL_SALE_IP_USERNAME")
 password=os.environ.get("MSSQL_SALE_IP_PASSWORD")
 
 #Function prep
-def mssql_bq_insert(query_string,schema,table_id):
+def mssql_bq_insert(query_string,schema,table_id,job_config= bigquery.LoadJobConfig()):
     #MSSQL
     print('step 1')
-    dataframe = dbconnector.mssql_query_pd(server,username,password,query_string)
+    dataframe = mssql.mssql_query_pd(server,username,password,query_string)
     if dataframe.to_dict('records')==[]:
         print('end')
     else:
         print('continue')
         #BQ
         print('step 2')
-        client=dbconnector.connect_to_bq()
+        client=big_query.connect_to_bq()
         print('step 3')
-        dbconnector.bq_insert(client,schema,table_id,dataframe)
+        big_query.bq_insert(client,schema,table_id,dataframe,job_config)
 
 #Execution
 database = ['IPOSSBGN','IPOSS5WINE']
 schema='IPOS_SALE'
-df=dbconnector.bq_pandas(query_string='select max(cast(tran_date as date)) as tran_date from `pacc-raw-data.IPOS_SALE.sale`')
+df=big_query.bq_pandas(query_string='select max(cast(tran_date as date)) as tran_date from `pacc-raw-data.IPOS_SALE.sale`')
 recent_loaded_date=df['tran_date'].astype(str).to_list()[0]
 
 ##Sale
@@ -44,6 +46,15 @@ for database_name in database:
 
 ##Sale_detail
 for database_name in database:
+    job_config_list = bigquery.LoadJobConfig(
+        schema = [ 
+                   bigquery.SchemaField("updated_date",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                   bigquery.SchemaField("SALE_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                   bigquery.SchemaField("END_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                   bigquery.SchemaField("tran_date",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                ]
+    
+    )
     table_name = 'sale_detail'
     query_string = '''
                 with sale as (
@@ -70,4 +81,4 @@ for database_name in database:
                 inner join sale
                 on sale_detail.fr_key = sale.pr_key
             '''
-    mssql_bq_insert(query_string,schema,table_name)
+    mssql_bq_insert(query_string,schema,table_name,job_config=job_config_list)

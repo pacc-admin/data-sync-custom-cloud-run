@@ -1,4 +1,6 @@
-import dbconnector
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
+import big_query,mssql
 import os
 
 #Setting Sql server credential in environment
@@ -6,14 +8,14 @@ server=os.environ.get("MSSQL_SALE_IP_ADDRESS")
 username=os.environ.get("MSSQL_SALE_IP_USERNAME")
 password=os.environ.get("MSSQL_SALE_IP_PASSWORD")
 
-client=dbconnector.connect_to_bq()
+client=big_query.connect_to_bq()
 #Function prep
 def mssql_bq_insert(query_string,schema,table_id):
     #MSSQL
     print('step 1')
-    dataframe = dbconnector.mssql_query_pd(server,username,password,query_string)
+    dataframe = mssql.mssql_query_pd(server,username,password,query_string)
     print('step 2')
-    dbconnector.bq_insert(client,schema,table_id,dataframe)
+    big_query.bq_insert(client,schema,table_id,dataframe)
 
 #Execution
 database = ['IPOSS5WINE','IPOSSBGN']
@@ -22,7 +24,7 @@ schema='IPOS_SALE'
 table_names=['dm_membership_type','dm_extra_2']
 for table_name in table_names:
     print('delete current table')
-    dbconnector.bq_delete(client,schema,table_name)
+    big_query.bq_delete(client,schema,table_name)
     for database_name in database:
         query_string = "select *, "+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
         mssql_bq_insert(query_string,schema,table_name)
@@ -30,7 +32,7 @@ for table_name in table_names:
 
 table_name='dm_item'
 print('delete current table')
-dbconnector.bq_delete(client,schema,table_name)
+big_query.bq_delete(client,schema,table_name)
 for database_name in database:
     query_string = '''
                     with item_grouped as (
