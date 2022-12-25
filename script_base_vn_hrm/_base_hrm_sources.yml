@@ -1,0 +1,64 @@
+#https://documenter.getpostman.com/view/12068719/2s8YRmKD8b#a5877596-5757-4676-a3eb-54bb5f55b8d1
+employee:
+  component1: employee
+  component2: list
+
+area:
+  component1: area
+  component2: list
+
+office:
+  component1: office
+  component2: list
+
+tax:
+  component1: tax
+  component2: list
+
+team:
+  component1: team
+  component2: list
+
+position:
+  component1: position
+  component2: list
+
+insurance:
+  component1: insurance
+  component2: list
+
+timesheet:
+  component1: timesheet
+  component2: list
+
+contract:
+  component1: contract
+  component2: list
+
+employee_types:
+  component1: employee
+  component2: types
+
+position_types:
+  component1: position
+  component2: types
+
+contract_types:
+  component1: contract
+  component2: types
+
+education_types:
+  component1: educations
+  component2: employee
+
+employee_relations:
+  component1: relations
+  component2: employee
+
+employee_legals:
+  component1: legals
+  component2: employee
+
+employee_works:
+  component1: works
+  component2: employee
