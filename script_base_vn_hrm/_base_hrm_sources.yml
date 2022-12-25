@@ -62,3 +62,27 @@ employee_legals:
 employee_works:
   component1: works
   component2: employee
+
+merit_records:
+  component1: records
+  component2: merit
+
+merit_types:
+  component1: types
+  component2: merit
+
+merit_rules:
+  component1: rules
+  component2: merit
+
+merit_templates:
+  component1: templates
+  component2: merit
+
+merit_awards:
+  component1: awards
+  component2: merit
+
+merit_certs:
+  component1: certs
+  component2: merit

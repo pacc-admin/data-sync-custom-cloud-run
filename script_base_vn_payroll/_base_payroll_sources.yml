@@ -1,0 +1,12 @@
+#https://documenter.getpostman.com/view/12068719/2s8YRmGrgf
+cycle:
+  component1: cycle
+  component2: list
+
+payroll:
+  component1: payroll
+  component2: list
+
+record:
+  component1: record
+  component2: list
