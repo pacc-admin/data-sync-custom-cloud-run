@@ -1,4 +1,4 @@
-create or replace table `pacc-raw-data.BASEVN_HRM.legals`  (
+create or replace table `pacc-raw-data.BASEVN_HRM.employee_legals`  (
     id string,
     employee_id string,
     tax_no string,

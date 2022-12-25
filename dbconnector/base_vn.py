@@ -68,18 +68,14 @@ def pd_process(
     except:
         #remove column with id matches the inserted rows from basevn
         row_to_exclude="('"+"','".join(flatten['id'].to_list())+"')"
-        condition='id not in'+row_to_exclude
+        condition='id in '+row_to_exclude
         bq_delete(client,schema,table_id,condition=condition)
 
         final_dataset=flatten
 
     #rename schema with '.' to '_' 
     a=final_dataset.filter(like='.')
-    if a.to_dict('records')==[]:
-        final_dataset
-    else:
-        #final_dataset=flatten[flatten.columns.drop(column_to_string)].join(flatten.filter(like='.').astype(str))
-        final_dataset.columns = flatten.columns.str.replace(".", "_")    
+    final_dataset.columns = final_dataset.columns.str.replace(".", "_", regex=True) 
 
     #remove specified word from a list of column, for later data type change
     column_to_string = list(final_dataset.columns)
