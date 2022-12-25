@@ -59,6 +59,9 @@ create or replace table `pacc-raw-data.BASEVN_HRM.employee` (
     profile_p3 string,
     profile_p4 string,
     profile_p5 string,
-    profile_note string
+    profile_note string,
+    loaded_date timestamp
 
 )
+
+partition by date(loaded_date)
