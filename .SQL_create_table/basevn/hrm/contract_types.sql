@@ -1,16 +1,17 @@
-create or replace table `pacc-raw-data.BASEVN_HRM.position_types` (
+create or replace table `pacc-raw-data.BASEVN_HRM.contract_types` (
     id string,
-    user_id string,
     name string,
     content string,
-    objs string,
-    promotion_reqs string,
+    metatype string,
+    followers string,
+    form string,
     since string,
-    last_update string,
-    color string,
-    type string,
-    icon string,
-    fill string,
+    creator_id string,
+    files string,
+    is_probation string,
+    tax_id string,
+    insurance_id string,
+    config_probation string,
     loaded_date timestamp
 )
 

@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
 
 import base_vn
 
-variable='contract'
+variable='position'
 component2='types'
 schema='BASEVN_HRM'
 job_config_list = bigquery.LoadJobConfig(
