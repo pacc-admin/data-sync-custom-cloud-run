@@ -12,8 +12,8 @@ def connect_to_bq():
     client = bigquery.Client.from_service_account_json(service_account_file_path)
     return client
 
-def bq_delete(client,schema,table_id):
-    query = 'Delete from `pacc-raw-data.'+schema+'.'+table_id+'` where true'
+def bq_delete(client,schema,table_id,condition='true'):
+    query = 'Delete from `pacc-raw-data.'+schema+'.'+table_id+'` where '+condition
     query_job = client.query(query)
     results = query_job.result()
     print(results)

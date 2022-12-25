@@ -1,4 +1,4 @@
-from big_query import connect_to_bq,bq_insert,bq_pandas
+from big_query import connect_to_bq,bq_insert,bq_delete,bq_pandas
 from google.cloud import bigquery
 import os.path
 import yaml
@@ -33,30 +33,45 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0):
     raw_output = requests.get(url, params=p).json()
     return raw_output
 
-def pd_process(dataset,column_to_flat,query_string_incre,stop_words=[]):
+def pd_process(
+        dataset,
+        column_to_flat,
+        query_string_incre,
+        client,
+        schema,
+        table_id,
+        stop_words=[],
+        url_component2='list'
+    ):
     #flatten dataset currently nested in array column
-    cp=p.plural(column_to_flat)
+    if url_component2=='list':
+        cp=p.plural(column_to_flat)
+    else:
+        cp=url_component2
     dataset = pd.DataFrame(dataset)
     flatten = pd.json_normalize(dataset[cp])
     
     #Get last update date of table from BQ
-    bq_table_date=bq_pandas(query_string_incre)['last_update'].astype(float).to_list()[0]
-    if math.isnan(bq_table_date)==True:
+    try:
+        bq_table_date=bq_pandas(query_string_incre)['last_update'].astype(float).to_list()[0]
+        if math.isnan(bq_table_date)==True:
+            last_updated_date=0
+        else:
+            last_updated_date=bq_table_date
+    except:
         last_updated_date=0
-    else:
-        last_updated_date=bq_table_date
+
 
     #filter by last update date in BQ
     try:
         final_dataset = flatten[flatten['last_update'].astype('float') > last_updated_date]
     except:
-        final_dataset=flatten
+        #remove column with id matches the inserted rows from basevn
+        row_to_exclude="('"+"','".join(flatten['id'].to_list())+"')"
+        condition='id not in'+row_to_exclude
+        bq_delete(client,schema,table_id,condition=condition)
 
-    #remove specified word from a list of column, for later data type change
-    column_to_string = list(final_dataset.columns)
-    for word in stop_words:
-        column_to_string.remove(word)
-    final_dataset[column_to_string]=final_dataset[column_to_string].astype(str)
+        final_dataset=flatten
 
     #rename schema with '.' to '_' 
     a=final_dataset.filter(like='.')
@@ -65,6 +80,15 @@ def pd_process(dataset,column_to_flat,query_string_incre,stop_words=[]):
     else:
         #final_dataset=flatten[flatten.columns.drop(column_to_string)].join(flatten.filter(like='.').astype(str))
         final_dataset.columns = flatten.columns.str.replace(".", "_")    
+
+    #remove specified word from a list of column, for later data type change
+    column_to_string = list(final_dataset.columns)
+    if stop_words==[]:
+        final_dataset[column_to_string]=final_dataset[column_to_string].astype(str)
+    else:
+        for word in stop_words:
+            column_to_string.remove(word)
+        final_dataset[column_to_string]=final_dataset[column_to_string].astype(str)
 
     #add loaded date field
     final_dataset['loaded_date'] = pd.to_datetime('today')
@@ -96,15 +120,43 @@ def while_loop_page_insert(app,schema,column_name,query_string_incre,component2=
     r=base_vn_connect(app=app,component1=column_name,component2=component2)
     total_page_display=total_page(r)
 
+    #regulate table name from components
+    if component2=='list':
+        table_id=column_name
+    else:
+        table_id=column_name+'_'+component2
+
     #loop pageno until it reach total page firgure
     while pageno < total_page_display:
         pageno=pageno+1
         r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2)
-        data_to_insert= pd_process(dataset=r,column_to_flat=column_name,query_string_incre=query_string_incre,stop_words=stop_words)
-        
+        data_to_insert= pd_process(
+                                dataset=r,
+                                column_to_flat=column_name,
+                                query_string_incre=query_string_incre,
+                                stop_words=stop_words,
+                                url_component2=component2,
+                                client=client,
+                                schema=schema,
+                                table_id=table_id,
+                        )
+
+        #stop if inserted objects is empty
         if data_to_insert.to_dict('records')==[]:
             print('end')
         else:
             print('continue')
-            bq_insert(client,schema,table_id=column_name,dataframe=data_to_insert,job_config=job_config)
+
+            #remove column with id matches the inserted rows from basevn
+            row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
+            condition='id not in'+row_to_exclude
+            bq_delete(client,schema,table_id,condition=condition)
+
+            bq_insert(
+                client,
+                schema,
+                table_id=table_id,
+                dataframe=data_to_insert,
+                job_config=job_config
+            )
             print('end')
