@@ -61,5 +61,14 @@ for database_name in database:
             left join '''+database_name+'''.dbo.dm_workstation workstation
                 on sale.workstation_id = workstation.workstation_id
             where '''+condition
+
+    job_config_list = bigquery.LoadJobConfig(
+        schema = [ 
+                   bigquery.SchemaField("updated_date",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                   bigquery.SchemaField("TRAN_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                   bigquery.SchemaField("DATE_LAST",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                ]
     
-    mssql_bq_insert(query_string,schema,table_name)
+    )
+
+    mssql_bq_insert(query_string,schema,table_name,job_config=job_config_list)
