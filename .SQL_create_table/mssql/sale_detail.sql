@@ -1,4 +1,4 @@
-create table `pacc-raw-data.dbo.sale_detail` (
+create table `pacc-raw-data.IPOS_SALE.sale_detail` (
 UNIQUE_KEY bytes,
 UPDATED_DATE timestamp, 
 PR_KEY	float64,
@@ -50,7 +50,8 @@ DISTRIBUTE_DISCOUNT_EXTRA2	float64,
 PARENT_ITEM_ID	string,
 ITEM_ID_MAPPING	string,
 TRAN_DATE timestamp,
-WORKSTATION_NAME string
+WORKSTATION_NAME string,
+DATA_SOURCE STRING
 )
 
 partition by date(tran_date)
