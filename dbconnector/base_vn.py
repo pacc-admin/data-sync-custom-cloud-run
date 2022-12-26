@@ -1,4 +1,4 @@
-from big_query import connect_to_bq,bq_insert,bq_delete,bq_pandas
+from big_query import bq_insert,bq_delete,bq_pandas
 from google.cloud import bigquery
 import os.path
 import yaml
@@ -37,7 +37,6 @@ def pd_process(
         dataset,
         column_to_flat,
         query_string_incre,
-        client,
         schema,
         table_id,
         stop_words=[],
@@ -69,7 +68,7 @@ def pd_process(
         #remove column with id matches the inserted rows from basevn
         row_to_exclude="('"+"','".join(flatten['id'].to_list())+"')"
         condition='id in '+row_to_exclude
-        bq_delete(client,schema,table_id,condition=condition)
+        bq_delete(schema,table_id,condition=condition)
 
         final_dataset=flatten
 
@@ -111,7 +110,6 @@ def total_page(raw_output):
 
 def while_loop_page_insert(app,schema,column_name,query_string_incre,component2='list',job_config= bigquery.LoadJobConfig(),stop_words=[]):
     #specify variable
-    client=connect_to_bq()
     pageno=-1
     r=base_vn_connect(app=app,component1=column_name,component2=component2)
     total_page_display=total_page(r)
@@ -132,7 +130,6 @@ def while_loop_page_insert(app,schema,column_name,query_string_incre,component2=
                                 query_string_incre=query_string_incre,
                                 stop_words=stop_words,
                                 url_component2=component2,
-                                client=client,
                                 schema=schema,
                                 table_id=table_id,
                         )
@@ -146,10 +143,9 @@ def while_loop_page_insert(app,schema,column_name,query_string_incre,component2=
             #remove column with id matches the inserted rows from basevn
             row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
             condition='id not in'+row_to_exclude
-            bq_delete(client,schema,table_id,condition=condition)
+            bq_delete(schema,table_id,condition=condition)
 
             bq_insert(
-                client,
                 schema,
                 table_id=table_id,
                 dataframe=data_to_insert,

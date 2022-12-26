@@ -1,11 +1,14 @@
 
 import sys, os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
-import mssql
+import mssql,big_query
 
 database = ['IPOSS5WINE','IPOSSBGN']
 schema='IPOS_SALE'
 table_name='dm_membership_type'
+
+print('delete current table')
+big_query.bq_delete(schema,table_id=table_name)
 
 for database_name in database:
     query_string = "select *, "+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name

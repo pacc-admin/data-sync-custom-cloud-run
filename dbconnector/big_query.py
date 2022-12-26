@@ -12,13 +12,15 @@ def connect_to_bq():
     client = bigquery.Client.from_service_account_json(service_account_file_path)
     return client
 
-def bq_delete(client,schema,table_id,condition='true'):
+def bq_delete(schema,table_id,condition='true'):
+    client=connect_to_bq()
     query = 'Delete from `pacc-raw-data.'+schema+'.'+table_id+'` where '+condition
     query_job = client.query(query)
     results = query_job.result()
     print(results)
 
-def bq_insert(client,schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
+def bq_insert(schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
+    client=connect_to_bq()
     table_id = 'pacc-raw-data.'+schema+'.'+table_id
     job_config = job_config
     job_config._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
