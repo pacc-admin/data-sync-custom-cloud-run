@@ -24,7 +24,4 @@ def full_refresh_sale(query_string,schema,table_id):
     print('step 1')
     dataframe = mssql_query_pd(server,username,password,query_string)
     print('step 2')
-    print('delete current table')
-    bq_delete(client,schema,table_id)
-    print('step 3')
     bq_insert(client,schema,table_id,dataframe)
