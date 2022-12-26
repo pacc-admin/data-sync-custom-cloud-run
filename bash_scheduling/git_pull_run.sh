@@ -1,2 +1,2 @@
-cd pacc-data-syn-custom
+cd data-syn-custom
 git pull origin main
