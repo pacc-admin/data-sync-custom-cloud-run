@@ -21,9 +21,7 @@ def mssql_bq_insert(query_string,schema,table_id,job_config= bigquery.LoadJobCon
         print('continue')
         #BQ
         print('step 2')
-        client=big_query.connect_to_bq()
-        print('step 3')
-        big_query.bq_insert(client,schema,table_id,dataframe,job_config)
+        big_query.bq_insert(schema,table_id,dataframe,job_config)
 
 #Execution
 database = ['IPOSSBGN','IPOSS5WINE']
