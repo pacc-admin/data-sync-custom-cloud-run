@@ -65,11 +65,6 @@ def pd_process(
     try:
         final_dataset = flatten[flatten['last_update'].astype('float') > last_updated_date]
     except:
-        #remove column with id matches the inserted rows from basevn
-        row_to_exclude="('"+"','".join(flatten['id'].to_list())+"')"
-        condition='id in '+row_to_exclude
-        bq_delete(schema,table_id,condition=condition)
-
         final_dataset=flatten
 
     #rename schema with '.' to '_' 
@@ -141,8 +136,9 @@ def while_loop_page_insert(app,schema,column_name,query_string_incre,component2=
             print('continue')
 
             #remove column with id matches the inserted rows from basevn
+            print(data_to_insert['id'])
             row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
-            condition='id not in'+row_to_exclude
+            condition='id in'+row_to_exclude
             bq_delete(schema,table_id,condition=condition)
 
             bq_insert(
