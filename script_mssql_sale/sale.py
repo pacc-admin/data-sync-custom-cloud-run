@@ -1,52 +1,14 @@
 from google.cloud import bigquery
 import sys, os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
-import big_query,mssql
-from datetime import date
-from datetime import timedelta
+import mssql
 
-#Setting Sql server credential in environment
-server=os.environ.get("MSSQL_SALE_IP_ADDRESS")
-username=os.environ.get("MSSQL_SALE_IP_USERNAME")
-password=os.environ.get("MSSQL_SALE_IP_PASSWORD")
-
-#Function prep
-def mssql_bq_insert(query_string,schema,table_id,job_config= bigquery.LoadJobConfig()):
-    #MSSQL
-    print('step 1')
-    dataframe = mssql.mssql_query_pd(server,username,password,query_string)
-    if dataframe.to_dict('records')==[]:
-        print('end')
-    else:
-        print('continue')
-        #BQ
-        print('step 2')
-        big_query.bq_insert(schema,table_id,dataframe,job_config)
-
-#Execution
 database = ['IPOSSBGN','IPOSS5WINE']
 schema='IPOS_SALE'
+date_schema='tran_date'
 
-#finding latest date from BQ table
-df=big_query.bq_pandas(query_string='select max(cast(tran_date as date)) as tran_date from `pacc-raw-data.IPOS_SALE.sale`')
-recent_loaded_date=df['tran_date'].astype(str).to_list()[0]
-
-##Sale
 for database_name in database:
-    theory_loaded_date=date.today() - timedelta(days = 1)
     table_name = 'sale'
-    #finding max pr key from BQ table
-    df2=big_query.bq_pandas(
-        query_string= "select cast(pr_key as int64) as pr_key from `pacc-raw-data."+schema+".sale` where data_source='"+database_name+"'and date(tran_date) = '"+recent_loaded_date+"'")
-
-    pr_key_latest="('"+"','".join(df2['pr_key'].astype(str).to_list())+"')"
-
-    #dynamic condition by latest tran date
-    if str(theory_loaded_date)==recent_loaded_date:
-        condition="cast(sale.tran_date as date) = '"+recent_loaded_date+"' and cast(cast(pr_key as int) as varchar) not in "+pr_key_latest     
-    else:
-        condition="cast(sale.tran_date as date) > '"+recent_loaded_date+"'"
-
     query_string = '''SELECT
                 HashBytes('MD5', workstation.workstation_name+cast(sale.pr_key as varchar)) as unique_key,
                 getdate() as updated_date,
@@ -58,7 +20,7 @@ for database_name in database:
             from '''+database_name+'''.dbo.sale sale
             left join '''+database_name+'''.dbo.dm_workstation workstation
                 on sale.workstation_id = workstation.workstation_id
-            where '''+condition
+            '''
 
     job_config_list = bigquery.LoadJobConfig(
         schema = [ 
@@ -66,7 +28,13 @@ for database_name in database:
                    bigquery.SchemaField("TRAN_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
                    bigquery.SchemaField("DATE_LAST",bigquery.enums.SqlTypeNames.TIMESTAMP),
                 ]
-    
     )
 
-    mssql_bq_insert(query_string,schema,table_name,job_config=job_config_list)
+    mssql.incremental_load_sale(
+                          query_string=query_string,
+                          mssql_database_name=database_name,
+                          schema=schema,
+                          table_id=table_name,
+                          date_schema=date_schema,
+                          job_config=job_config_list
+                        )
