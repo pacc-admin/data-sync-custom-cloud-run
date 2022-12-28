@@ -41,3 +41,21 @@ def bq_pandas(query_string):
     credentials = service_account.Credentials.from_service_account_file(service_account_file_path)
     querry_bq=pandas_gbq.read_gbq(query_string, project_id="pacc-raw-data", credentials=credentials)
     return querry_bq
+
+#BQ insert
+def bq_insert(rows_to_insert,table_id):
+    client=connect_to_bq()
+    if rows_to_insert == []:
+      print('stop')
+    else:
+      errors = client.insert_rows_json(table_id, rows_to_insert)   # Make an API request
+      if errors == []:
+          print("New rows have been added.")
+      else:
+          print("Encountered errors while inserting rows: {}".format(errors))
+
+def bq_latest_date(date_schema,schema,table_id):
+    #finding latest date from BQ table
+    df=bq_pandas(query_string='select max(cast('+date_schema+' as date)) as tran_date from `pacc-raw-data.'+schema+'.'+table_id+'`')
+    recent_loaded_date=df[date_schema].astype(str).to_list()[0]
+    return recent_loaded_date
