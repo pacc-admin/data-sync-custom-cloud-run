@@ -43,7 +43,7 @@ def bq_pandas(query_string):
     return querry_bq
 
 #BQ insert
-def bq_insert(rows_to_insert,table_id):
+def bq_insert_streaming(rows_to_insert,table_id):
     client=connect_to_bq()
     if rows_to_insert == []:
       print('stop')
