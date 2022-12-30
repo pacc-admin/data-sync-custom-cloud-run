@@ -43,7 +43,7 @@ def bq_pandas(query_string):
     return querry_bq
 
 #BQ insert
-def bq_insert_streaming(rows_to_insert,table_id,user_id):
+def bq_insert_streaming(rows_to_insert,table_id,object):
     client=connect_to_bq()
     if rows_to_insert == []:
       print('stop')
@@ -53,8 +53,8 @@ def bq_insert_streaming(rows_to_insert,table_id,user_id):
           print("New rows have been added.")
       else:
           print("Encountered errors while inserting rows: {}".format(errors))
-          f = open('errors.txt', 'a')
-          f.write(f"{user_id}\n")
+          f = open('script_ipos_crm/errors.txt', 'a')
+          f.write(f"{object}\n")
           f.write(f"{errors}\n")
           f.close()
           print("data written")
