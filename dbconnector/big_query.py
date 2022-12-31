@@ -19,6 +19,12 @@ def bq_delete(schema,table_id,condition='true'):
     results = query_job.result()
     print(results)
 
+def bq_query(query_string):
+    client=connect_to_bq()
+    query_job = client.query(query=query_string)
+    results = query_job.result()
+    print(results)
+
 def bq_insert(schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
     client=connect_to_bq()
     table_id = 'pacc-raw-data.'+schema+'.'+table_id
