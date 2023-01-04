@@ -1,0 +1,4 @@
+pandas_gbq==0.18.1
+google.cloud==0.34.0
+inflect==6.0.2
+pyodbc==4.0.35
