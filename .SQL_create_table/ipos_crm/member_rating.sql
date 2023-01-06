@@ -1,0 +1,27 @@
+create or replace table `pacc-raw-data.IPOS_CRM_BGN.member_rating` (
+    id string,
+    pos_id int64,
+    pos_parent string,
+    order_code string,
+    member_id int64,
+    tran_id string,
+    created_at string,
+    score int64,
+    reason_bad_food int64,
+    reason_expensive_price int64,
+    reason_bad_service int64,
+    reason_bad_shipper int64,
+    reason_other int64,
+    reason_note string,
+    published int64,
+    source_fb_id int64,
+    take_care_via string,
+    take_care_by_id int64,
+    take_care_by_name string,
+    take_care_message string,
+    update_at string,
+    expired_at string,
+    membership_id string,
+    loaded_date timestamp
+)
+partition by (date(loaded_date))
