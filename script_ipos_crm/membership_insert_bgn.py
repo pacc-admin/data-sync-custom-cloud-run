@@ -25,4 +25,11 @@ for user_id in user_id_list:
     field_to_update='date_created'
     ipos_crm_flow.crm_insert(brand,user_id,table,field_to_update)
 
+    print('start with member_id:'+user_id)
+    table = 'member_rating'
+
+    field_to_update='created_at'
+    print('insert table '+table)
+    ipos_crm_flow.crm_insert_with_page(brand,user_id,table,field_to_update,o1='rates',o2='score')
+
 big_query.bq_query(query_string='drop table `pacc-raw-data.dbo._tmp_membership_check`')

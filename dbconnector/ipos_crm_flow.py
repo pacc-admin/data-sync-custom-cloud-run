@@ -1,4 +1,4 @@
-from big_query import bq_insert_streaming,bq_query,bq_pandas
+from big_query import bq_insert_streaming,bq_query,bq_pandas,bq_insert
 import requests
 import pandas as pd
 import time
@@ -76,7 +76,10 @@ def crm_insert(brand,user_id,table,field_to_update,o1='',o2=''):
 
     #specify updating dimension
     user_filter='and membership_id='+"'"+user_id+"'"
-    updated_field=pd.to_datetime(membership_data(brand,condition=user_filter)[field_to_update]).to_list()[0]
+    try:
+        updated_field=pd.to_datetime(membership_data(brand,condition=user_filter)[field_to_update]).to_list()[0]
+    except:
+        updated_field=pd.to_datetime('1970-01-01')
 
     #convert to pandas dataframe
     if r!=0:
@@ -106,7 +109,10 @@ def crm_insert(brand,user_id,table,field_to_update,o1='',o2=''):
             print(rows_to_insert)
 
             #insert to BQ
-            bq_insert_streaming(rows_to_insert=rows_to_insert,table_id=table_id,object='membership_id='+user_id+', brand='+brand)
+            try:
+                bq_insert_streaming(rows_to_insert=rows_to_insert,table_id=table_id,object='membership_id='+user_id+', brand='+brand)
+            except:
+                bq_insert(schema,table_id,dataframe)
             
         except:
             print('stop\n')
