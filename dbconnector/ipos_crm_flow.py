@@ -112,6 +112,7 @@ def crm_insert(brand,user_id,table,field_to_update,o1='',o2=''):
             try:
                 bq_insert_streaming(rows_to_insert=rows_to_insert,table_id=table_id,object='membership_id='+user_id+', brand='+brand)
             except:
+                table_id=table
                 bq_insert(schema,table_id,dataframe)
             
         except:
