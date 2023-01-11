@@ -4,7 +4,11 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.pool` (
     token string,
     name string,
     content string,
-    owners string,
+    owners ARRAY<
+      STRUCT<
+        username string,
+        gavatar string      
+      >>,
     followers string,
     path string,
     stats string,
