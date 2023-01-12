@@ -4,14 +4,13 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
 
 import base_vn
 
-variable='opening'
+variable='pool'
 component2='list'
 schema='BASEVN_EHIRING'
-stop_words=['offices','locations']
+stop_words=['owners','managed']
 job_config_list = bigquery.LoadJobConfig(
         schema=[
-            bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
-            
+            bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)            
         ]
 )
 

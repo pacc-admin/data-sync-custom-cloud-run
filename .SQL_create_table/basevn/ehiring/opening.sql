@@ -13,7 +13,7 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.opening` (
    company_name string,
    office_name string,
    offices array<string>,
-   locations array<string>,
+   locations array<int64>,
    deadline string,
    stime string,
    etime string,
