@@ -10,16 +10,6 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.interview` (
    token string,
    last_ping int64,
    candidate_id string,
-   candidate_export array<
-     struct<
-       id string,
-       name string,
-       type string,
-       phone string,
-       email string,
-       title string,
-       link string
-     >>,
    candidate_name string,
    candidate_phone string,
    candidate_email string,
@@ -37,6 +27,13 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.interview` (
    acl string,
    location string,
    starred string,
+   candidate_export_id	string,			
+   candidate_export_name	string,			
+   candidate_export_type	string,			
+   candidate_export_phone	string,			
+   candidate_export_email	string,			
+   candidate_export_title	string,			
+   candidate_export_link	string,
    loaded_date timestamp
 )
 
