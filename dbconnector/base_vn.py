@@ -19,26 +19,38 @@ def etract_variable_yml(dictionary):
     token=parsed_yaml_file[dictionary]
     return token
 
-def base_vn_connect(app,component1,component2='list',updated_from=0,page=0):
+def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1=''):
     #parameter delcare
     access_token=etract_variable_yml(app)
     page_dict={'page':page}
     updated_from_dict={'updated_from':updated_from}
+    h = {"Content-type": "application/x-www-form-urlencoded"}
 
     #combine into dictionary
-    p={**access_token,**updated_from_dict,**page_dict}
-
-    #url specify and get data from api
-    url="https://"+app+".base.vn/extapi/v1/"+component1+"/"+component2
-    raw_output = requests.get(url, params=p).json()
+    if para1=='':
+        p={**access_token,**updated_from_dict,**page_dict}    
+    else:
+        p={**access_token,**updated_from_dict,**page_dict,**{para1:value1}}
+    
+    try:
+        url="https://"+app+".base.vn/extapi/v1/"+component1+"/"+component2
+        tester=requests.get(url, params=p).json()
+        if tester['data']=='':
+            raw_output = tester
+        else:
+            url="https://"+app+".base.vn/publicapi/v2/"+component1+"/"+component2
+            raw_output = requests.post(url, headers=h, data=p).json()            
+    except:
+        url="https://"+app+".base.vn/publicapi/v2/"+component1+"/"+component2
+        raw_output = requests.post(url, headers=h, data=p).json()
+    print(raw_output)
     return raw_output
 
+import ast
 def pd_process(
-        dataset,
+        raw_output,
         column_to_flat,
         query_string_incre,
-        schema,
-        table_id,
         stop_words=[],
         url_component2='list'
     ):
@@ -47,7 +59,7 @@ def pd_process(
         cp=p.plural(column_to_flat)
     else:
         cp=url_component2
-    dataset = pd.DataFrame(dataset)
+    dataset = pd.DataFrame(raw_output)
     flatten = pd.json_normalize(dataset[cp])
     
     #Get last update date of table from BQ
@@ -79,6 +91,7 @@ def pd_process(
         for word in stop_words:
             column_to_string.remove(word)
         final_dataset[column_to_string]=final_dataset[column_to_string].astype(str)
+        final_dataset.apply(pd.Series)
 
     #add loaded date field
     final_dataset['loaded_date'] = pd.to_datetime('today')
@@ -103,10 +116,19 @@ def total_page(raw_output):
     return total_page
 
 
-def while_loop_page_insert(app,schema,column_name,query_string_incre,component2='list',job_config= bigquery.LoadJobConfig(),stop_words=[]):
+def while_loop_page_insert(app,
+                           schema,
+                           column_name,
+                           query_string_incre,
+                           component2='list',
+                           para1='',
+                           value1='',
+                           job_config= bigquery.LoadJobConfig(),
+                           stop_words=[]
+                        ):
     #specify variable
     pageno=-1
-    r=base_vn_connect(app=app,component1=column_name,component2=component2)
+    r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1)
     total_page_display=total_page(r)
 
     #regulate table name from components
@@ -118,33 +140,34 @@ def while_loop_page_insert(app,schema,column_name,query_string_incre,component2=
     #loop pageno until it reach total page firgure
     while pageno < total_page_display:
         pageno=pageno+1
-        r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2)
-        data_to_insert= pd_process(
-                                dataset=r,
-                                column_to_flat=column_name,
-                                query_string_incre=query_string_incre,
-                                stop_words=stop_words,
-                                url_component2=component2,
-                                schema=schema,
-                                table_id=table_id,
-                        )
-
-        #stop if inserted objects is empty
-        if data_to_insert.to_dict('records')==[]:
-            print('end')
-        else:
-            print('continue')
-
-            #remove column with id matches the inserted rows from basevn
-            print(data_to_insert['id'])
-            row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
-            condition='id in'+row_to_exclude
-            bq_delete(schema,table_id,condition=condition)
-
-            bq_insert(
-                schema,
-                table_id=table_id,
-                dataframe=data_to_insert,
-                job_config=job_config
-            )
+        r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2,para1=para1,value1=value1)
+        try:    
+            data_to_insert= pd_process(
+                                    raw_output=r,
+                                    column_to_flat=column_name,
+                                    query_string_incre=query_string_incre,
+                                    stop_words=stop_words,
+                                    url_component2=component2
+                            )
+    
+            #stop if inserted objects is empty
+            if data_to_insert.to_dict('records')==[]:
+                print('end')
+            else:
+                print('continue')
+    
+                #remove column with id matches the inserted rows from basevn
+                print(data_to_insert['id'])
+                row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
+                condition='id in'+row_to_exclude
+                bq_delete(schema,table_id,condition=condition)
+    
+                bq_insert(
+                    schema,
+                    table_id=table_id,
+                    dataframe=data_to_insert,
+                    job_config=job_config
+                )
+                print('end')
+        except:
             print('end')
