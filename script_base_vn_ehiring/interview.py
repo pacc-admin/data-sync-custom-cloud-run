@@ -7,7 +7,6 @@ import base_vn
 variable='interview'
 component2='list'
 schema='BASEVN_EHIRING'
-#stop_words=['est_duration','candidate_export','followers','interacted','hr_set_cf']
 stop_words=['date','est_duration','last_ping','followers','interacted','hr_set_cf']
 job_config_list = bigquery.LoadJobConfig(
         schema=[

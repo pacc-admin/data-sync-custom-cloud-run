@@ -5,13 +5,13 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.contact` (
    token string,
    first_name string,
    last_name string,
-   score array<string>,
+   score string,
    sources string,
    source_id string,
-   campaigns array<string>,
-   tags array<string>,
+   campaigns string,
+   tags string,
    phone string,
-   changelogs array<string>,
+   changelogs string,
    abs_link string,
    ns_id string,
    image string,
@@ -24,18 +24,9 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.contact` (
    gender string,
    stats string,
    content string,
-   fields ARRAY<
-     STRUCT<
-       id string,
-       value string,
-       display string,
-       type string,
-       name string,
-       placeholder string
-     >>, 
-   form array<string>,
-   candidates ARRAY<
-     STRUCT<
+   fields string, 
+   form string,
+   candidates ARRAY< STRUCT<
        id string,
        name string,
        type string,
@@ -46,11 +37,10 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.contact` (
        creator string,
        candidate_id string,
        candidate_link string,
-       scores array<string>,
-       since string
+       scores array<int64>,
+       since int64
      >>,
-   candidate ARRAY<
-     STRUCT<
+   candidate ARRAY< STRUCT<
        id string,
        name string,
        type string,
@@ -61,11 +51,10 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.contact` (
        creator string,
        candidate_id string,
        candidate_link string,
-       scores array<string>,
-       since string
+       scores array<int64>,
+       since int64
      >>,
-   files ARRAY<
-     STRUCT<
+   files ARRAY< STRUCT<
        id string,
        name string,
        url string
