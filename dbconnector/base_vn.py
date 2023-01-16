@@ -1,8 +1,6 @@
 from big_query import bq_insert,bq_delete,bq_pandas
 from google.cloud import bigquery
-import os.path
 import yaml
-import time
 from datetime import datetime, timedelta
 import requests
 import pandas as pd
@@ -19,31 +17,41 @@ def etract_variable_yml(dictionary):
     token=parsed_yaml_file[dictionary]
     return token
 
-def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1=''):
+def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1='',para2='',value2=''):
     #parameter delcare
     access_token=etract_variable_yml(app)
     page_dict={'page':page}
     updated_from_dict={'updated_from':updated_from}
     h = {"Content-type": "application/x-www-form-urlencoded"}
+    print(para2)
 
     #combine into dictionary
-    if para1=='':
-        p={**access_token,**updated_from_dict,**page_dict}    
-    else:
+    if para1=='' and para2=='':
+        p={**access_token,**updated_from_dict,**page_dict}
+    elif para1!='' and para2=='':
         p={**access_token,**updated_from_dict,**page_dict,**{para1:value1}}
+    elif para2!='' and para1=='':
+        p={**access_token,**updated_from_dict,**page_dict,**{para2:value2}}
+    else:
+        p={**access_token,**updated_from_dict,**page_dict,**{para1:value1},**{para2:value2}}
     
-    try:
-        url="https://"+app+".base.vn/extapi/v1/"+component1+"/"+component2
-        tester=requests.get(url, params=p).json()
-        if tester['data']=='':
-            raw_output = tester
-        else:
+    print(p)
+    if component2 !='':
+        try:
+            url="https://"+app+".base.vn/extapi/v1/"+component1+"/"+component2
+            tester=requests.get(url, params=p).json()
+            if tester['data']=='':
+                raw_output = tester
+            else:
+                url="https://"+app+".base.vn/publicapi/v2/"+component1+"/"+component2
+                raw_output = requests.post(url, headers=h, data=p).json()            
+        except:
             url="https://"+app+".base.vn/publicapi/v2/"+component1+"/"+component2
-            raw_output = requests.post(url, headers=h, data=p).json()            
-    except:
-        url="https://"+app+".base.vn/publicapi/v2/"+component1+"/"+component2
+            raw_output = requests.post(url, headers=h, data=p).json()
+    else:
+        url="https://"+app+".base.vn/extapi/v1/"+component1
+        print(url)
         raw_output = requests.post(url, headers=h, data=p).json()
-    print(raw_output)
     return raw_output
 
 import ast
