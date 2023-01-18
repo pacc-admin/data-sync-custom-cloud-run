@@ -91,7 +91,7 @@ job_config_list = bigquery.LoadJobConfig(
           ]
 )
 
-#big_query.bq_insert(schema,table_id,dataframe=final_dataset,job_config=job_config_list)
+big_query.bq_insert(schema,table_id,dataframe=final_dataset,job_config=job_config_list)
 
 #job_config_list = bigquery.LoadJobConfig(
 #        schema=[
