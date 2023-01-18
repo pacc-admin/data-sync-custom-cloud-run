@@ -2,8 +2,8 @@ create or replace table `pacc-raw-data.BASEVN_CHECKIN.checkin_logs` (
   id string,              
   user_id string,         
   employee_id string,     
-  date string,            
-  month_index string,     
+  date int64,            
+  month_index int64,     
   timesheet_id string,
   computed_is_late float64,
   computed_day_point float64,
@@ -36,17 +36,28 @@ create or replace table `pacc-raw-data.BASEVN_CHECKIN.checkin_logs` (
       type_id string,
       metatype string,
       assigned_shift_id int64
-  >>,      
-  logs string,         
+  >>,               
   hid string,             
   token string,           
   type string,            
-  stats_comments int64,           
+  stats_comments int64,
+  logs_checkout float64,
+  logs_client_id string,
+  logs_content string,
+  logs_files string,
+  logs_img string,
+  logs_ip string,
+  logs_lat string,
+  logs_lng string,
+  logs_metatype string,
+  logs_note string,
+  logs_office_id string,
+  logs_photo string,
+  logs_time int64,           
   loaded_date timestamp
 )
 
 partition by date(loaded_date)
-
 
   logs array < struct <
     ip  STRING,
@@ -63,3 +74,29 @@ partition by date(loaded_date)
     content string,
     photo string
   >>,      
+
+  computed_shift_info array < struct <
+      shift_point float64,
+      is_late int64,
+      late int64,
+      min_early int64,
+      deduction int64,
+      not_checkout int64,
+      shift_index int64,
+      type_id string,
+      metatype string,
+      assigned_shift_id int64
+  >>,   
+
+  finalized_shift_info array < struct <
+      shift_point float64,
+      is_late int64,
+      late int64,
+      min_early int64,
+      deduction int64,
+      not_checkout int64,
+      shift_index int64,
+      type_id string,
+      metatype string,
+      assigned_shift_id int64
+  >>, 

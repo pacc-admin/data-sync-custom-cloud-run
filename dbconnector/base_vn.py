@@ -1,12 +1,11 @@
 from big_query import bq_insert,bq_delete,bq_pandas
+from pd_process import pd_last_update
 from google.cloud import bigquery
 import yaml
 from datetime import datetime, timedelta
 import requests
 import pandas as pd
-import re
 import inflect
-import math
 
 
 p = inflect.engine()
@@ -54,7 +53,6 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1
         raw_output = requests.post(url, headers=h, data=p).json()
     return raw_output
 
-import ast
 def pd_process(
         raw_output,
         column_to_flat,
@@ -69,37 +67,16 @@ def pd_process(
         cp=url_component2
     dataset = pd.DataFrame(raw_output)
     flatten = pd.json_normalize(dataset[cp])
-    
-    #Get last update date of table from BQ
-    try:
-        bq_table_date=bq_pandas(query_string_incre)['last_update'].astype(float).to_list()[0]
-        if math.isnan(bq_table_date)==True:
-            last_updated_date=0
-        else:
-            last_updated_date=bq_table_date
-    except:
-        last_updated_date=0
-
 
     #filter by last update date in BQ
-    try:
-        final_dataset = flatten[flatten['last_update'].astype('float') > last_updated_date]
-    except:
-        final_dataset=flatten
+    final_dataset=pd_last_update(df=flatten,query_string_incre=query_string_incre)
 
     #rename schema with '.' to '_' 
     a=final_dataset.filter(like='.')
     final_dataset.columns = final_dataset.columns.str.replace(".", "_", regex=True) 
 
     #remove specified word from a list of column, for later data type change
-    column_to_string = list(final_dataset.columns)
-    if stop_words==[]:
-        final_dataset[column_to_string]=final_dataset[column_to_string].astype(str)
-    else:
-        for word in stop_words:
-            column_to_string.remove(word)
-        final_dataset[column_to_string]=final_dataset[column_to_string].astype(str)
-        final_dataset.apply(pd.Series)
+    pd_process.pd_type_change(df=final_dataset,columns=stop_words)
 
     #add loaded date field
     final_dataset['loaded_date'] = pd.to_datetime('today')

@@ -2,26 +2,33 @@ from datetime import datetime
 import time
 import pandas as pd
 import sys, os
-import json
+import numpy as np
 from google.cloud import bigquery
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
 
-import base_vn,big_query
+import base_vn,big_query,pd_process
 
-
+#varible declaration
 app='checkin'
+schema='BASEVN_CHECKIN'
+table_id='checkin_logs'
 today_unix = int(time.mktime(datetime.today().timetuple()))
+
+query_string='select max(logs_time) as logs_time from `pacc-raw-data.'+schema+'.'+table_id+'`'
+latest_date_bq=big_query.bq_pandas(query_string)['logs_time'].astype(int).to_list()[0] + 1
+print(latest_date_bq)
+#Get checklog api result
 raw_output=base_vn.base_vn_connect(app,
                                    component1='getlogs',
                                    component2='',
                                    para1='start_date',
-                                   value1='1669852800',
+                                   value1=latest_date_bq,
                                    para2='end_date',
                                    value2=today_unix,                                   
                                 
                                 )
 
-
+#process logs
 logs=[sub['logs'] for sub in raw_output['logs']]
 
 total=[]
@@ -31,29 +38,60 @@ for i in range(len(logs)):
 
 df=pd.DataFrame(total)
 
-def flatten_json_schema(df,column):
-  flatten=pd.json_normalize(df[column])
-  flatten.columns = column+'_' + flatten.columns
-  return flatten
-
+#nomalize dictionary columns
 lists=['finalized','computed','stats']
-
 for item in lists:
-  #print(item)
-  print(flatten_json_schema(df,item).dtypes)
-  df=df.join(flatten_json_schema(df,item)).drop(columns=item,axis=1)
+  df=df.join(pd_process.pd_nested_schema(df,item)).drop(columns=item,axis=1)
 
+#flatten multi dict columns
+df=df.join(pd_process.pd_nested_schema(df,'logs',mode='flatten')).drop(columns='logs',axis=1)
+
+#add loaded date
 df['loaded_date'] = pd.to_datetime('today')
-df['logs']=df['logs'].astype(str)
-print(df.dtypes)
 
+#convert type
+##string
+non_converted_column_str=[
+    'date',
+    'month_index',
+    'timesheet_id',
+    'computed_is_late',
+    'computed_day_point',
+    'computed_sum_minute_late',
+    'computed_sum_late',
+    'finalized_is_late',
+    'finalized_day_point',
+    'finalized_sum_minute_late',
+    'finalized_sum_late',
+    'stats_comments',
+    'logs_checkout',
+    'logs_time',
+    'loaded_date'
+]
+df=pd_process.pd_type_change(df,columns=non_converted_column_str)
+
+##int64
+converted_columns_int=[
+    'date',
+    'month_index',
+    'logs_time'
+]
+df=pd_process.pd_type_change(df,columns=converted_columns_int,converted_type=int,type='include')
+
+
+#incremental update
+final_dataset=pd_process.pd_last_update(df,query_string,column_updated='logs_time')
+print(final_dataset)
+
+#BQ batchload
 job_config_list = bigquery.LoadJobConfig(
         schema=[
             bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP),
-            bigquery.SchemaField("finalized_day_point",bigquery.enums.SqlTypeNames.FLOAT64),
-            bigquery.SchemaField("logs",bigquery.enums.SqlTypeNames.STRING)
-        ]
+            bigquery.SchemaField("finalized_day_point",bigquery.enums.SqlTypeNames.FLOAT64)
+          ]
 )
+
+#big_query.bq_insert(schema,table_id,dataframe=final_dataset,job_config=job_config_list)
 
 #job_config_list = bigquery.LoadJobConfig(
 #        schema=[
@@ -109,4 +147,3 @@ job_config_list = bigquery.LoadJobConfig(
 #          )
 #        ]
 #)
-big_query.bq_insert(schema='BASEVN_CHECKIN',table_id='checkin_logs',dataframe=df,job_config=job_config_list)
