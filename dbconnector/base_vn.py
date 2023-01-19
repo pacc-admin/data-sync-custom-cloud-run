@@ -33,24 +33,23 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1
         p={**access_token,**updated_from_dict,**page_dict,**{para2:value2}}
     else:
         p={**access_token,**updated_from_dict,**page_dict,**{para1:value1},**{para2:value2}}
-    
-    print(p)
+
     if component2 !='':
         try:
             url="https://"+app+".base.vn/extapi/v1/"+component1+"/"+component2
-            tester=requests.get(url, params=p).json()
-            if tester['data']=='':
+            tester=requests.get(url, params=p).json()     
+            if tester['data']!='':
                 raw_output = tester
             else:
                 url="https://"+app+".base.vn/publicapi/v2/"+component1+"/"+component2
-                raw_output = requests.post(url, headers=h, data=p).json()            
+                raw_output = requests.post(url, headers=h, data=p).json()
         except:
             url="https://"+app+".base.vn/publicapi/v2/"+component1+"/"+component2
             raw_output = requests.post(url, headers=h, data=p).json()
     else:
         url="https://"+app+".base.vn/extapi/v1/"+component1
-        print(url)
         raw_output = requests.post(url, headers=h, data=p).json()
+    
     return raw_output
 
 def pd_process(
