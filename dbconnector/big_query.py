@@ -41,6 +41,16 @@ def bq_insert(schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
         print('error')
         
     table =  client.get_table(table_id)
+
+    try:
+        job = client.load_table_from_dataframe(
+            dataframe, table_id, job_config=job_config
+        )
+        job.result()
+
+    except:
+        print('error')
+        
     print(
         "Loaded {} rows and {} columns to {}".format(
             table.num_rows, len(table.schema), table_id
