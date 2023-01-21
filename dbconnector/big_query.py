@@ -6,7 +6,7 @@ import os
 
 #Setting BQ credential in environment
 os.environ.setdefault("GCLOUD_PROJECT", 'pacc-raw-data')
-service_account_file_path=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+service_account_file_path=os.environ.get("PACC_SA_RAW")
 
 def connect_to_bq():
     client = bigquery.Client.from_service_account_json(service_account_file_path)
@@ -30,13 +30,17 @@ def bq_insert(schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
     table_id = 'pacc-raw-data.'+schema+'.'+table_id
     job_config = job_config
     job_config._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
-
-    job = client.load_table_from_dataframe(
-        dataframe, table_id, job_config=job_config
-    )
-    job.result()
-    
     table =  client.get_table(table_id)
+
+    try:
+        job = client.load_table_from_dataframe(
+            dataframe, table_id, job_config=job_config
+        )
+        job.result()
+
+    except:
+        print('error')
+        
     print(
         "Loaded {} rows and {} columns to {}".format(
             table.num_rows, len(table.schema), table_id
