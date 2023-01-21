@@ -18,7 +18,7 @@ create or replace table `pacc-raw-data.BASEVN_CHECKIN.checkin_logs` (
   hid string,             
   token string,           
   type string,            
-  stats_comments int64,
+  stats_comments string,
   logs_checkout float64,
   logs_client_id string,
   logs_content string,
