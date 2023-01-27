@@ -50,10 +50,11 @@ def get_base_checkin_api(query_string,app='checkin'):
     print('latest timestamp on checkin logs is: '+str(latest_date_bq))
 
     #parameter delcare
+    component1='getlogs'
+    app='checkin'
     start_date=latest_date_bq
     access_token=etract_variable_yml(app)
     today_unix = int(time.mktime(datetime.today().timetuple()))
-    component1='getlogs',
     date_1=start_date,
     date_2=today_unix,  
     
