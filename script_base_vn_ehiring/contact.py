@@ -26,7 +26,7 @@ for pool_id in pool_ids:
     print(pool_id)
     query_string='''
                     select max(last_update) as last_update 
-                    from `pacc-raw-data.'''+schema+'.'+variable+'_'+component2+'`'+'''
+                    from `pacc-raw-data.'''+schema+'.'+variable+'`'+'''
                     where ns_id='''+"'"+pool_id+"'"
     
     a=base_vn.while_loop_page_insert(app='hiring',

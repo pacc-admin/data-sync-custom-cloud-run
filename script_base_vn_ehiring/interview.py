@@ -14,7 +14,7 @@ job_config_list = bigquery.LoadJobConfig(
         ]
 )
 
-query_string='select max(last_update) as last_update from `pacc-raw-data.'+schema+'.'+variable+'_'+component2+'`'
+query_string='select max(last_update) as last_update from `pacc-raw-data.'+schema+'.'+variable+'`'
 
 a=base_vn.while_loop_page_insert(app='hiring',
                                  schema=schema,
