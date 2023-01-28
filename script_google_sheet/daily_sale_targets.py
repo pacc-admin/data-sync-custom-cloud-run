@@ -12,6 +12,5 @@ table_id='daily_sale_targets'
 with gg_sheet_import('target_daily') as s:
     big_query.bq_delete(schema,table_id)
     dataframe=s.sheet_to_pd()
-    print(dataframe.head(10))
     big_query.bq_insert(schema,table_id,dataframe)
 
