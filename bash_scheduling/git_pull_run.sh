@@ -1,2 +1,2 @@
-cd data-syn-custom
+cd data-sync-custom
 git pull origin main
