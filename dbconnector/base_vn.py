@@ -95,7 +95,7 @@ def while_loop_page_insert(app,
         table_id=column_name+'_'+component2
 
     if total_page_display<=1:
-        dataset=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2='list')
+        dataset=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2=component2)
 
     else:
         dataset=pd.DataFrame()
