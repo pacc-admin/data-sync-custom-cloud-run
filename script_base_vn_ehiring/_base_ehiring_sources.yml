@@ -1,0 +1,20 @@
+#https://documenter.getpostman.com/view/7548878/S1M2R5ps?version=latest
+candidate:
+  component1: candidate
+  component2: list
+
+contact:
+  component1: contact
+  component2: list
+
+interview:
+  component1: interview
+  component2: list
+
+opening:
+  component1: opening
+  component2: list
+
+pool:
+  component1: pool
+  component2: list
