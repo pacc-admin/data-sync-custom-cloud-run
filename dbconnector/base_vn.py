@@ -107,32 +107,28 @@ def while_loop_page_insert(app,
             r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2,para1=para1,value1=value1)
             dataset_raw=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2='list')
             dataset=pd.concat([dataset,dataset_raw])
-    
-    try:    
-        data_to_insert= pd_process(
-                                    dataset,
-                                    query_string_incre,
-                                    stop_words=stop_words
-                                )
+       
+    data_to_insert= pd_process(
+                                dataset,
+                                query_string_incre,
+                                stop_words=stop_words
+                            )
+    #stop if inserted objects is empty
+    if data_to_insert.to_dict('records')==[]:
+        print('end')
+        
+    else:
+        print('continue')
+        #remove column with id matches the inserted rows from basevn
+        print(data_to_insert['id'])
+        row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
+        condition='id in'+row_to_exclude
+        bq_delete(schema,table_id,condition=condition)
 
-        #stop if inserted objects is empty
-        if data_to_insert.to_dict('records')==[]:
-            print('end')
-        else:
-            print('continue')
-
-            #remove column with id matches the inserted rows from basevn
-            print(data_to_insert['id'])
-            row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
-            condition='id in'+row_to_exclude
-            bq_delete(schema,table_id,condition=condition)
-
-            bq_insert(
-                schema,
-                table_id=table_id,
-                dataframe=data_to_insert,
-                job_config=job_config
-            )
-            print('end')
-    except:
+        bq_insert(
+            schema,
+            table_id=table_id,
+            dataframe=data_to_insert,
+            job_config=job_config
+        )
         print('end')

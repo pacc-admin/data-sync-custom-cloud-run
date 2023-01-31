@@ -31,14 +31,11 @@ def bq_insert(schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
     job_config = job_config
     job_config._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
 
-    try:
-        job = client.load_table_from_dataframe(
-            dataframe, table_id, job_config=job_config
-        )
-        job.result()
+    job = client.load_table_from_dataframe(
+        dataframe, table_id, job_config=job_config
+    )
+    job.result()
 
-    except:
-        print('error')
     
     table =  client.get_table(table_id)
     print(
