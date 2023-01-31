@@ -13,5 +13,6 @@ create or replace table `pacc-raw-data.BASEVN_PAYROLL.payroll` (
       status string,
       since string,
       last_update string,
-      system_id string
+      system_id string,
+      loaded_date timestamp
 )
