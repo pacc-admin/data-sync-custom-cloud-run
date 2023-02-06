@@ -120,7 +120,6 @@ def while_loop_page_insert(app,
     else:
         print('continue')
         #remove column with id matches the inserted rows from basevn
-        print(data_to_insert['id'])
         row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
         condition='id in'+row_to_exclude
         bq_delete(schema,table_id,condition=condition)
