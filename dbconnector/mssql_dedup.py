@@ -40,8 +40,7 @@ class mssql_bq_dedup:
     def mssql_query_pd(self):
         print('step 2')
         query = '''SELECT
-                        cast('''+self.branch_schema+''' as varchar)+cast(cast('''+self.unique_id+''' as int) as varchar) as unique_id, 
-                        convert(varchar(10),cast(tran_date as date),126) as tran_date
+                        cast('''+self.branch_schema+''' as varchar)+cast(cast('''+self.unique_id+''' as int) as varchar) as unique_id
                     FROM ''' +self.mssql_database+'''.dbo.'''+self.mssql_table+'''
                     WHERE MONTH(tran_date) >= MONTH(GETDATE()) - 1
                         AND YEAR(tran_date) = YEAR(GETDATE())
