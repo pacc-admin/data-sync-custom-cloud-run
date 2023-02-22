@@ -38,7 +38,7 @@ class base_vn_checkin_flow:
           self.df=self.df.join(pd_process.pd_nested_schema(self.df,item)).drop(columns=item,axis=1)
         
         #flatten multi dict columns
-        self.df=self.df.join(pd_process.pd_nested_schema(self.df,'logs',mode='flatten')).drop(columns='logs',axis=1)
+        self.df=self.df.join(pd_process.pd_nested_schema(self.df,'logs',mode='flatten',drop_columns=0)).drop(columns='logs',axis=1)
         
         #add loaded date
         self.df['loaded_date'] = pd.to_datetime('today')

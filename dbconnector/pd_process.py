@@ -17,12 +17,19 @@ def pd_update_latest(dataset,last_update):
     return df
         
                       
-def pd_nested_schema(df,column,mode='normalized'):
+def pd_nested_schema(df,column,mode='normalized',drop_columns=''):
     if mode=='normalized':
       processed_df=pd.json_normalize(df[column])
     else:
       processed_df=df.explode(column)[column].apply(pd.Series)
+    
+    if drop_columns!='':
+        processed_df=processed_df.drop(columns=drop_columns,axis=1)
+    else:
+        processed_df=processed_df
+    
     processed_df.columns = column+'_' + processed_df.columns
+    print(processed_df.columns)
     return processed_df
 
 
