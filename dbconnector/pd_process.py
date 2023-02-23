@@ -24,7 +24,10 @@ def pd_nested_schema(df,column,mode='normalized',drop_columns=''):
       processed_df=df.explode(column)[column].apply(pd.Series)
     
     if drop_columns!='':
-        processed_df=processed_df.drop(columns=drop_columns,axis=1)
+        try:
+            processed_df=processed_df.drop(columns=drop_columns,axis=1)
+        except:
+            processed_df=processed_df
     else:
         processed_df=processed_df
     
