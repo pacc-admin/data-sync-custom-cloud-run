@@ -1,4 +1,4 @@
-create table `pacc-raw-data.CURRENT_TARGET.daily_sale_targets` (
+create table `pacc-raw-data.GOOGLE_SHEETS.daily_sale_targets` (
   
   sale_index	STRING,
   growth_rate	STRING,
