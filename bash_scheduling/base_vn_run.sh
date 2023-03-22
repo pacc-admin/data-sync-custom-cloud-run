@@ -4,13 +4,6 @@ date +"%d-%m-%y-%T"
 for py_file in $(find script_base_vn* -name '*.py')
 do
     echo '*******' 'Start' $py_file '*******'
-    RESULT=$(python3 $py_file)
-    echo $RESULT
-    if [[ $RESULT =~ "Success" ]] 
-    then
-        echo "Error"|| error=true
-    else
-        echo "Success"
-    fi
+    python3 $py_file || error=true
     echo '*******' 'End' $py_file '*******'
 done
