@@ -3,3 +3,5 @@ google.cloud==0.34.0
 inflect==6.0.2
 pyodbc==4.0.35
 gspread==5.7.2
+yaml8=0.1.2
+google-cloud==0.34.0
