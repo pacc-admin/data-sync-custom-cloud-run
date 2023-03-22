@@ -8,10 +8,9 @@ do
     echo $RESULT
     if [[ $RESULT =~ "Success" ]] 
     then
-        echo "Error"
-        exit 1
+        echo "Error"|| error=true
     else
-        exit 0
+        echo "Success"
     fi
     echo '*******' 'End' $py_file '*******'
 done
