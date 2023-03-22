@@ -10,8 +10,6 @@ do
     then
         echo "Error"
         exit 1
-    else
-        exit 0
     fi
     echo '*******' 'End' $py_file '*******'
 done
