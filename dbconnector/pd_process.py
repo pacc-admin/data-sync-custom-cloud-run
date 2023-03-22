@@ -70,7 +70,7 @@ def pd_type_change(df,columns=[],converted_type=str,type='exclude'):
         column_to_convert=columns
 
     if converted_type==int:
-        df[column_to_convert]=df[column_to_convert].astype(np.float).astype("Int32")
+        df[column_to_convert]=df[column_to_convert].astype(np.float64).astype("Int32")
     else:
         df[column_to_convert]=df[column_to_convert].astype(converted_type)
 

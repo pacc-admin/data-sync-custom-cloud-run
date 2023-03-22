@@ -84,7 +84,7 @@ def while_loop_page_insert(app,
                            items_per_page='items_per_page'
                         ):
     #specify variable
-    pageno=0
+    pageno=-1
     r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1)
     total_page_display=total_page(r,total_items,items_per_page)
 
@@ -113,6 +113,7 @@ def while_loop_page_insert(app,
                                 query_string_incre,
                                 stop_words=stop_words
                             )
+    data_to_insert.to_csv('out.csv')
     #stop if inserted objects is empty
     if data_to_insert.to_dict('records')==[]:
         print('end')
