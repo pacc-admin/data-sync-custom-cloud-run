@@ -73,8 +73,8 @@ class base_vn_checkin_flow:
 
     def incremental_update(self,query_string):
         self.final_dataset=pd_process.pd_last_update(self.df,query_string,column_updated='logs_time')
-        print(self.final_dataset.dtypes)
-        print(self.final_dataset)
+        #print(self.final_dataset.dtypes)
+        #print(self.final_dataset)
     
     def bq_batch_load(self,schema,table_id):
         job_config_list = bigquery.LoadJobConfig(
@@ -107,4 +107,6 @@ class base_vn_checkin_flow:
                     
                   ]
         )
-        big_query.bq_insert(schema,table_id,dataframe=self.final_dataset,job_config=job_config_list)
+        result=big_query.bq_insert(schema,table_id,dataframe=self.final_dataset,job_config=job_config_list)
+        print(result)
+        return result

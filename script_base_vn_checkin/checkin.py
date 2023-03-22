@@ -12,4 +12,7 @@ with base_vn_checkin.base_vn_checkin_flow() as s:
     s.tranform_logs_to_df(query_string)
     s.df_process()
     s.incremental_update(query_string)
-    s.bq_batch_load(schema,table_id)
+    a=s.bq_batch_load(schema,table_id)
+
+print(a)
+os.environ['RESULT'] = a

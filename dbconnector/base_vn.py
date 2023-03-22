@@ -3,8 +3,8 @@ from pd_process import pd_last_update,pd_type_change
 from google.cloud import bigquery
 import pandas as pd
 import inflect
-import sys
 from base_vn_api import base_vn_connect_hiring,base_vn_connect_hrm_payroll
+import os
 
 def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1=''):
     if app=='hiring':
@@ -112,9 +112,9 @@ def while_loop_page_insert(app,
                                 query_string_incre,
                                 stop_words=stop_words
                             )
-    data_to_insert.to_csv('out.csv')
     #stop if inserted objects is empty
     if data_to_insert.to_dict('records')==[]:
+        result='No Insert'
         print('end')
         
     else:
@@ -131,8 +131,7 @@ def while_loop_page_insert(app,
                     job_config=job_config
                 )
         print('end')
-
-    if result=='Failed, Review please, error is below:':
-        sys.exit(0)  # exits the script with an exit code of 0 (success)
-    else:
-        sys.exit(1)  # exits the script with an exit code of 1 (error)
+    
+    return result
+    
+        
