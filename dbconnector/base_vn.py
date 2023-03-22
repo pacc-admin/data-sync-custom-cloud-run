@@ -3,6 +3,7 @@ from pd_process import pd_last_update,pd_type_change
 from google.cloud import bigquery
 import pandas as pd
 import inflect
+import sys
 from base_vn_api import base_vn_connect_hiring,base_vn_connect_hrm_payroll
 
 def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1=''):
@@ -46,8 +47,6 @@ def pd_process(
 
     #add loaded date field
     final_dataset['loaded_date'] = pd.to_datetime('today')
-    print(final_dataset)
-
     return final_dataset
                        
 
@@ -125,11 +124,15 @@ def while_loop_page_insert(app,
         condition='id in'+row_to_exclude
         bq_delete(schema,table_id,condition=condition)
 
-        bq_insert(
-            schema,
-            table_id=table_id,
-            dataframe=data_to_insert,
-            job_config=job_config
-        )
+        result=bq_insert(
+                    schema,
+                    table_id=table_id,
+                    dataframe=data_to_insert,
+                    job_config=job_config
+                )
         print('end')
-        adasdsadasdasdasd
+
+    if result=='Failed, Review please, error is below:':
+        sys.exit(0)  # exits the script with an exit code of 0 (success)
+    else:
+        sys.exit(1)  # exits the script with an exit code of 1 (error)

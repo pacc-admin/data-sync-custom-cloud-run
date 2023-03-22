@@ -31,19 +31,31 @@ def bq_insert(schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
     job_config = job_config
     job_config._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
 
-    job = client.load_table_from_dataframe(
-        dataframe, table_id, job_config=job_config
-    )
-    job.result()
-
-    
-    table =  client.get_table(table_id)
-    print(
-        "Loaded {} rows and {} columns to {}".format(
-            table.num_rows, len(table.schema), table_id
+    try:
+        job = client.load_table_from_dataframe(
+            dataframe, table_id, job_config=job_config
         )
-    )
+        
+        job.result()
 
+        result='Success, data are loaded'
+        #table =  client.get_table(table_id)
+        #print(
+        #    "Loaded {} rows and {} columns to {}".format(
+        #        table.num_rows, len(table.schema), table_id
+        #    )
+        #)
+
+    except:
+        result='Failed, Review please, error is below:'
+        print(
+            job = client.load_table_from_dataframe(
+                dataframe, table_id, job_config=job_config
+            )
+        )
+    
+    return result
+    
 def bq_pandas(query_string):
     credentials = service_account.Credentials.from_service_account_file(service_account_file_path)
     querry_bq=pandas_gbq.read_gbq(query_string, project_id="pacc-raw-data", credentials=credentials)
