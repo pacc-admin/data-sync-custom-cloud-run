@@ -6,7 +6,7 @@ do
     echo '*******' 'Start' $py_file '*******'
     RESULT=$(python3 $py_file)
     echo $RESULT
-    if [[ $RESULT =~ "Success" ]] 
+    if [[ $RESULT =~ "Fail" ]] 
     then
         echo "Error"
         exit 1
