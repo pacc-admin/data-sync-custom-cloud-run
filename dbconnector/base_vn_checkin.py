@@ -108,5 +108,4 @@ class base_vn_checkin_flow:
                   ]
         )
         result=big_query.bq_insert(schema,table_id,dataframe=self.final_dataset,job_config=job_config_list)
-        print(result)
         return result
