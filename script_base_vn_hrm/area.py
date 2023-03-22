@@ -20,3 +20,5 @@ a=base_vn.while_loop_page_insert(app='hrm',
                                  job_config=job_config_list,
                                  query_string_incre=query_string
                                  )
+
+os.environ['RESULT'] = a
