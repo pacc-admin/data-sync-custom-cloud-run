@@ -1,19 +1,18 @@
 name: pr_to_master
 
 on:
-  pull_request:
-    branches:
-      - main
+   schedule:
+     - cron: "0 6 * * *"
 
 env:
-  # Environment variables for running Dbt on Google BigQuery
-  DBT_GOOGLE_PROJECT_DEV: pacc-analytics
+  # Environment variables for running Python on Google BigQuery
+  PYTHON_GOOGLE_PROJECT_DEV: pacc-analytics
   PACC_SA_RAW: service_account.json
-  DBT_BIGQUERY_DATASET_DEV: github_action
+  PYTHON_BIGQUERY_DATASET_DEV: github_action
 
 jobs:
-  pr_to_master:
-    name: pr_to_master
+  daily_run:
+    name: daily_run
     runs-on: ubuntu-latest
 
     steps:
@@ -53,5 +52,4 @@ jobs:
       - name: Run Base VN Packages
         run: |
           ./bash_scheduling/base_vn_run.sh
-
 
