@@ -17,6 +17,7 @@ for database_name in database:
 
              
             from '''+database_name+'''.dbo.'''+table_name+'''
+            limit 10
             '''
 
     job_config_list = bigquery.LoadJobConfig(
