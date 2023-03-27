@@ -57,7 +57,7 @@ def incremental_load_sale(query_string,
     if str(today)==recent_loaded_date:
         condition="cast("+table_id+"."+date_schema+" as date) = '"+recent_loaded_date+"' and cast(cast(pr_key as int) as varchar) not in "+pr_key_latest 
     else:
-        condition="cast("+table_id+"."+date_schema+" as date) <= '"+recent_loaded_date+"'"
+        condition="cast("+table_id+"."+date_schema+" as date) > '"+recent_loaded_date+"'"
         print("yes")
 
     query_string_insert=query_string+'where '+condition+query_string2

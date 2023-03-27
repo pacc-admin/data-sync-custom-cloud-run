@@ -85,7 +85,7 @@ def bq_latest_date(date_schema,schema,table_id):
     df=bq_pandas(query_string='select max(cast('+date_schema+' as date)) as '+date_schema+' from `pacc-raw-data.'+schema+'.'+table_id+'`')
     print(df)
     if pd.isnull(np.datetime64('NaT'))==True:
-        recent_loaded_date='2021-01-01'
+        recent_loaded_date='1970-01-01'
     else:
         recent_loaded_date=df[date_schema].astype(str).to_list()[0]
     return recent_loaded_date
