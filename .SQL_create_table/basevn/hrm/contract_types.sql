@@ -9,9 +9,9 @@ create or replace table `pacc-raw-data.BASEVN_HRM.contract_types` (
     creator_id string,
     files string,
     is_probation int64,
-    tax_id int64,
-    insurance_id int64,
-    config_probation float64,
+    tax_id string,
+    insurance_id string,
+    config_probation string,
     loaded_date timestamp
 )
 

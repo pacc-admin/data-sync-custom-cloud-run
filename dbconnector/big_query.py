@@ -48,11 +48,11 @@ def bq_insert(schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
 
     except:
         result='Failed, Please rerun and check'
-        #print(
-        #    job = client.load_table_from_dataframe(
-        #        dataframe, table_id, job_config=job_config
-        #    )
-        #)
+        print(
+            str(job = client.load_table_from_dataframe(
+                dataframe, table_id, job_config=job_config
+            ))
+        )
     return result
     
 def bq_pandas(query_string):

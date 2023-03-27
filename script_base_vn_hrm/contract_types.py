@@ -7,7 +7,7 @@ import base_vn
 variable='contract'
 component2='types'
 schema='BASEVN_HRM'
-stop_words=['is_probation','tax_id','insurance_id','config_probation']
+stop_words=['is_probation']
 job_config_list = bigquery.LoadJobConfig(
         schema=[
             bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
