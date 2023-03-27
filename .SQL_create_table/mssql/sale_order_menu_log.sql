@@ -1,0 +1,30 @@
+create or replace table `pacc-raw-data.IPOS_SALE.order_menu_log` (
+    UNIQUE_KEY bytes,
+    PR_KEY	float64,
+    USER_NAME	string,
+    ORDER_DATE	datetime,
+    ORDER_HOUR	int64,
+    ORDER_MINUTE	int64,
+    ITEM_ID	string,
+    DESCRIPTION	string,
+    QUANTITY	float64,
+    REMOVE	int64,
+    ORDER_INDEX	int64,
+    WORKSTATION_ID	int64,
+    POSITION	string,
+    UNIT_ID	string,
+    SERVICE_DATE	datetime,
+    SERVICE_HOUR	int64,
+    SERVICE_MINUTE	int64,
+    TIME_COOKING	float64,
+    TIME_PENDING	float64,
+    IS_DONE	int64,
+    PRINT_NAME_MENU	string,
+    PR_KEY_SALE_DETAIL	float64,
+    REASON_ID	string,
+    SALE_SIGN	float64,
+    LOADED_DATE timestamp,
+    DATA_SOURCE string
+)
+
+partition by date(loaded_date)

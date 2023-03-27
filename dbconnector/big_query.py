@@ -1,6 +1,8 @@
 
 from google.cloud import bigquery
 import pandas_gbq
+import pandas as pd
+import numpy as np
 from google.oauth2 import service_account
 import os
 
@@ -80,6 +82,10 @@ def bq_insert_streaming(rows_to_insert,table_id,object):
 
 def bq_latest_date(date_schema,schema,table_id):
     #finding latest date from BQ table
-    df=bq_pandas(query_string='select max(cast('+date_schema+' as date)) as tran_date from `pacc-raw-data.'+schema+'.'+table_id+'`')
-    recent_loaded_date=df[date_schema].astype(str).to_list()[0]
+    df=bq_pandas(query_string='select max(cast('+date_schema+' as date)) as '+date_schema+' from `pacc-raw-data.'+schema+'.'+table_id+'`')
+    print(df)
+    if pd.isnull(np.datetime64('NaT'))==True:
+        recent_loaded_date='1970-01-01'
+    else:
+        recent_loaded_date=df[date_schema].astype(str).to_list()[0]
     return recent_loaded_date
