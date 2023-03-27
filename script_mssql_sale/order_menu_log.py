@@ -9,7 +9,7 @@ date_schema='ORDER_DATE'
 
 for database_name in database:
     table_name = 'order_menu_log'
-    query_string = '''SELECT
+    query_string = '''SELECT Top 10
                 HashBytes('MD5', '''+"'"+database_name+''''+cast(pr_key as varchar)) as UNIQUE_KEY,
                 *,
                 getdate() as LOADED_DATE,
