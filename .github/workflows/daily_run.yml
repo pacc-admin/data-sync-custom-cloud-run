@@ -1,4 +1,4 @@
-name: pr_to_master
+name: daily_run
 
 on:
    schedule:
