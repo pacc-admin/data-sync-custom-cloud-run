@@ -1,19 +1,12 @@
 import requests
 from datetime import datetime
 from big_query import bq_pandas
+from yml_extract import etract_variable_yml_dict
 import time
-import yaml
-
-def etract_variable_yml(dictionary):
-    a_yaml_file = open("credentials/base_vn_token.yml") 
-    parsed_yaml_file = yaml.load(a_yaml_file, Loader=yaml.FullLoader)
-    token=parsed_yaml_file[dictionary]
-    return token
-
 
 def base_vn_connect_hiring(component1,app='hiring',component2='list',updated_from=0,page=0,para1='',value1=''):
     #parameter delcare
-    access_token=etract_variable_yml(app)
+    access_token=etract_variable_yml_dict(app)
     page_dict={'page':page}
     updated_from_dict={'updated_from':updated_from}
     h = {"Content-type": "application/x-www-form-urlencoded"}
@@ -32,7 +25,7 @@ def base_vn_connect_hiring(component1,app='hiring',component2='list',updated_fro
 
 def base_vn_connect_hrm_payroll(component1,app,component2='list',updated_from=0,page=0):
     #parameter delcare
-    access_token=etract_variable_yml(app)
+    access_token=etract_variable_yml_dict(app)
     page_dict={'page':page}
     updated_from_dict={'updated_from':updated_from}
 
@@ -53,7 +46,7 @@ def get_base_checkin_api(query_string,app='checkin'):
     component1='getlogs'
     app='checkin'
     start_date=latest_date_bq
-    access_token=etract_variable_yml(app)
+    access_token=etract_variable_yml_dict(app)
     today_unix = int(time.mktime(datetime.today().timetuple()))
     date_1=start_date,
     date_2=today_unix,  
