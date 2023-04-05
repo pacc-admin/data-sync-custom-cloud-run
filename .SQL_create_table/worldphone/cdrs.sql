@@ -12,5 +12,7 @@ create or replace table `pacc-raw-data`.WORLDFONE.cdrs (
     accountcode string,
     did_number string,
     direction string,
-    carrier string
+    carrier string,
+    loaded_date timestamp
 )
+partition by (date(loaded_date))
