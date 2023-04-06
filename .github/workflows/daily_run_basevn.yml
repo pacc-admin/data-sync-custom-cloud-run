@@ -1,4 +1,4 @@
-name: daily_run
+name: daily_run_basevn
 
 on:
    schedule:
