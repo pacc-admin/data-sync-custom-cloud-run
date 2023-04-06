@@ -86,7 +86,7 @@ def while_loop_page_insert(app,
     pageno=-1
     r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1)
     total_page_display=total_page(r,total_items,items_per_page)
-
+    
     #regulate table name from components
     if component2=='list':
         table_id=column_name
@@ -112,26 +112,17 @@ def while_loop_page_insert(app,
                                 query_string_incre,
                                 stop_words=stop_words
                             )
-    #stop if inserted objects is empty
-    if data_to_insert.to_dict('records')==[]:
-        result='No Insert'
-        print('end')
-        
-    else:
-        print('continue')
-        #remove column with id matches the inserted rows from basevn
-        row_to_exclude="('"+"','".join(data_to_insert['id'].to_list())+"')"
-        condition='id in'+row_to_exclude
-        bq_delete(schema,table_id,condition=condition)
+    #condition to exclude
+    condition='id in '+"('"+"','".join(data_to_insert['id'].to_list())+"')"
 
-        result=bq_insert(
-                    schema,
-                    table_id=table_id,
-                    dataframe=data_to_insert,
-                    job_config=job_config
-                )
-        print('end')
+    #insert to BQ
+    result=bq_insert(
+                schema,
+                table_id=table_id,
+                dataframe=data_to_insert,
+                condition=condition,
+                job_config=job_config
+            )
     print(result)
-    return result
     
         

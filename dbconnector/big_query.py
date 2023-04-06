@@ -27,31 +27,32 @@ def bq_query(query_string):
     results = query_job.result()
     print(results)
 
-def bq_insert(schema,table_id,dataframe,job_config = bigquery.LoadJobConfig()):
+def bq_insert(schema,table_id,dataframe,condition='',job_config = bigquery.LoadJobConfig()):
     client=connect_to_bq()
-    table_id = 'pacc-raw-data.'+schema+'.'+table_id
+    table_id_full = 'pacc-raw-data.'+schema+'.'+table_id
     job_config = job_config
     job_config._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
 
-    try:
+    if dataframe.to_dict('records')==[]:
+        print('No Insert')
+    else:
+        print('continue')
         job = client.load_table_from_dataframe(
-            dataframe, table_id, job_config=job_config
+            dataframe, table_id_full, job_config=job_config
         )
-        
+        #remove column with id matches the inserted rows
+        if condition=='':
+            print('no columns is removed')
+        else:
+            bq_delete(schema,table_id,condition=condition)
         job.result()
-
-        result='Success, data are loaded'
-        #table =  client.get_table(table_id)
-        #print(
-        #    "Loaded {} rows and {} columns to {}".format(
-        #        table.num_rows, len(table.schema), table_id
-        #    )
-        #)
-
-    except:
-        result='Failed, Please rerun and check'
-        job.result()
-    return result
+        table=client.get_table(table_id_full)
+        print(str(
+                "{} rows and {} columns to {}".format(
+                table.num_rows, len(table.schema), table_id
+            )
+        ))
+    
     
 def bq_pandas(query_string):
     credentials = service_account.Credentials.from_service_account_file(service_account_file_path)
