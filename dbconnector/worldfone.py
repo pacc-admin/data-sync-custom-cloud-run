@@ -2,7 +2,7 @@ import requests
 import time
 import pandas as pd
 from datetime import datetime
-from big_query import bq_insert
+from big_query import bq_insert,bq_delete,bq_pandas
 from yml_extract import etract_variable_yml_string
 from time_function import last_unix_t_of_month
 
@@ -32,8 +32,11 @@ def worldfone_pd(start_date,end_date):
     
     return data_to_insert
 
-def worldfone_bq(start_date,end_date,schema,table_id):
-    data_to_insert=worldfone_pd(start_date,end_date)
+def worldfone_bq(schema,table_id):
+    query_string="select max(unix_seconds(timestamp(calldate || ' UTC+7'))) as calldate FROM "+'`pacc-raw-data.'+schema+'.'+table_id+'`'
+    start_date=bq_pandas(query_string)['calldate'].astype(int).to_list()[0] + 1
+    end_date = int(time.mktime(datetime.today().timetuple()))
+    data_to_insert=worldfone_pd(start_date,end_date=end_date)
 
     if data_to_insert.to_dict('records')==[]:
         result='No Insert'
@@ -41,6 +44,12 @@ def worldfone_bq(start_date,end_date,schema,table_id):
         
     else:
         print('continue')
+        #remove column with id matches the inserted rows from basevn
+        unique_key=data_to_insert['uniqueid']+data_to_insert['direction']
+        print(unique_key.to_list())
+        row_to_exclude="('"+"','".join(unique_key.to_list())+"')"
+        condition='concat(uniqueid,direction) in'+row_to_exclude
+        bq_delete(schema,table_id,condition=condition)
 
         result=bq_insert(
                     schema,
