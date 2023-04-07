@@ -14,5 +14,4 @@ with base_vn_checkin.base_vn_checkin_flow() as s:
     s.incremental_update(query_string)
     a=s.bq_batch_load(schema,table_id)
 
-print(a)
-os.environ['RESULT'] = a
+

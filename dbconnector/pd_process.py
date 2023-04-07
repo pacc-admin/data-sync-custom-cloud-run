@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from big_query import bq_pandas
 import math
 import numpy as np
+pd.options.mode.chained_assignment = None
 
 def get_two_day_before():
     today = datetime.today()
@@ -55,24 +56,23 @@ def pd_last_update(df,query_string_incre,column_updated='last_update'):
 
 def pd_type_change(df,columns=[],converted_type=str,type='exclude'):
     column_list = list(df.columns)
-    if columns==[]:
-        df[column_list]=df[column_list].astype(converted_type)
-    else:
-        for word in columns:
-            try:
-                column_list.remove(word)
-            except:
-                column_list
+    
+    for word in columns:
+        try:
+            column_list.remove(word)
+        except:
+            column_list
 
     if type=='exclude':
         column_to_convert=column_list
     else:
         column_to_convert=columns
 
-    if converted_type==int:
-        df[column_to_convert]=df[column_to_convert].astype(np.float64).astype("Int32")
-    else:
-        df[column_to_convert]=df[column_to_convert].astype(converted_type)
+    for column in column_to_convert:
+        if converted_type==int:
+            df[column]=df[column].astype(np.float64).astype("Int32")
+        else:
+            df[column]=df[column].astype(converted_type)
 
     df.apply(pd.Series)
 

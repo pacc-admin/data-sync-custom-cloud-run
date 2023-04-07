@@ -23,4 +23,3 @@ a=base_vn.while_loop_page_insert(app='hrm',
                                  stop_words=stop_words
                                  )
 
-os.environ['RESULT'] = a

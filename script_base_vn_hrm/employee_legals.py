@@ -22,4 +22,3 @@ a=base_vn.while_loop_page_insert(app='hrm',
                                  component2=component2
                                  )
 
-os.environ['RESULT'] = a

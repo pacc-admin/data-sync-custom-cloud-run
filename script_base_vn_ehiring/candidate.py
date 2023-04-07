@@ -17,7 +17,8 @@ component2='list'
 schema='BASEVN_EHIRING'
 job_config_list = bigquery.LoadJobConfig(
         schema=[
-            bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)            
+            bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP),
+            bigquery.SchemaField("evaluations",bigquery.enums.SqlTypeNames.STRING)             
         ]
 )
 

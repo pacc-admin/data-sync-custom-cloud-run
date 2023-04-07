@@ -12,7 +12,6 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1
     
     else:
         raw_output=base_vn_connect_hrm_payroll(component1,app,component2=component2,updated_from=updated_from,page=page)
-        
     return raw_output
 
 def pd_flatten(
@@ -26,6 +25,7 @@ def pd_flatten(
         cp=p.plural(column_to_flat)
     else:
         cp=url_component2
+
     dataset = pd.DataFrame(raw_output)
     flatten = pd.json_normalize(dataset[cp])
     return flatten
@@ -40,7 +40,7 @@ def pd_process(
     final_dataset=pd_last_update(df=dataset,query_string_incre=query_string_incre)
 
     #rename schema with '.' to '_' 
-    final_dataset.columns = final_dataset.columns.str.replace(".", "_", regex=True) 
+    final_dataset.columns = [col.replace('.', '_') for col in final_dataset.columns] 
 
     #remove specified word from a list of column, for later data type change
     pd_type_change(df=final_dataset,columns=stop_words)
@@ -85,44 +85,50 @@ def while_loop_page_insert(app,
     #specify variable
     pageno=-1
     r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1)
-    total_page_display=total_page(r,total_items,items_per_page)
+    if r['message'] !='':
+        print('URL error, stop')
+    else:
+        total_page_display=total_page(r,total_items,items_per_page)
+        
+        #regulate table name from components
+        if component2=='list':
+            table_id=column_name
+        else:
+            table_id=column_name+'_'+component2
+        
+        if total_page_display<=1:
+            dataset=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2=component2)
     
-    #regulate table name from components
-    if component2=='list':
-        table_id=column_name
-    else:
-        table_id=column_name+'_'+component2
-
-    if total_page_display<=1:
-        dataset=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2=component2)
-
-    else:
-        dataset=pd.DataFrame()
-
-        print('start loop')
-        while pageno < total_page_display:
-            pageno=pageno+1
-            print(pageno)
-            r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2,para1=para1,value1=value1)
-            dataset_raw=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2='list')
-            dataset=pd.concat([dataset,dataset_raw])
+        else:
+            dataset=pd.DataFrame()
+    
+            print('start loop')
+            while pageno < total_page_display:
+                pageno=pageno+1
+                print(pageno)
+                r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2,para1=para1,value1=value1)
+                dataset_raw=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2='list')
+                dataset=pd.concat([dataset,dataset_raw])
        
-    data_to_insert= pd_process(
-                                dataset,
-                                query_string_incre,
-                                stop_words=stop_words
-                            )
-    #condition to exclude
-    condition='id in '+"('"+"','".join(data_to_insert['id'].to_list())+"')"
-
-    #insert to BQ
-    result=bq_insert(
-                schema,
-                table_id=table_id,
-                dataframe=data_to_insert,
-                condition=condition,
-                job_config=job_config
-            )
-    print(result)
+        data_to_insert= pd_process(
+                                    dataset,
+                                    query_string_incre,
+                                    stop_words=stop_words
+                                )
+        #condition to exclude
+        try:
+            condition='id in '+"('"+"','".join(data_to_insert['id'].to_list())+"')"
+        except:
+            condition='true'
+    
+        #insert to BQ
+        result=bq_insert(
+                    schema,
+                    table_id=table_id,
+                    dataframe=data_to_insert,
+                    condition=condition,
+                    job_config=job_config
+                )
+        print(result)
     
         
