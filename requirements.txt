@@ -1,4 +1,4 @@
-pandas_gbq==0.19.1
+pandas-gbq==0.19.1
 pandas==2.0.0
 google.cloud==0.34.0
 google-cloud==0.34.0
