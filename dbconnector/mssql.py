@@ -61,20 +61,20 @@ def incremental_load_sale(query_string,
         )
     pr_key_latest="('"+"','".join(df2['pr_key'].astype(str).to_list())+"')"
 
-    #dynamic condition by latest tran date
+    #dynamic incre_condition by latest tran date
     if query_string2=='':
         table_filter_date=table_id
     else:
         table_filter_date=table_filter_date
     
     if str(today)==recent_loaded_date:
-        condition="cast("+table_filter_date+"."+date_schema+" as date) = '"+recent_loaded_date+"' and cast(cast(pr_key as int) as varchar) not in "+pr_key_latest 
+        incre_condition="cast("+table_filter_date+"."+date_schema+" as date) = '"+recent_loaded_date+"' and cast(cast(pr_key as int) as varchar) not in "+pr_key_latest 
     else:
-        condition="cast("+table_filter_date+"."+date_schema+" as date) > '"+recent_loaded_date+"'"
+        incre_condition="cast("+table_filter_date+"."+date_schema+" as date) > '"+recent_loaded_date+"'"
         print("yes")
 
-    print(condition)
-    query_string_insert=query_string+'where '+condition+query_string2
+    print(incre_condition)
+    query_string_insert=query_string+'where '+incre_condition+query_string2
     print(query_string_insert)
 
     dataframe = mssql_query_pd_sale(query_string_insert)

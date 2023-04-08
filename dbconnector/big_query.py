@@ -28,7 +28,7 @@ def bq_query(query_string):
     results = query_job.result()
     print(results)
 
-def bq_insert(schema,table_id,dataframe,condition='true',job_config = bigquery.LoadJobConfig()):
+def bq_insert(schema,table_id,dataframe,condition='',job_config=bigquery.LoadJobConfig()):
     client=connect_to_bq()
     table_id_full = 'pacc-raw-data.'+schema+'.'+table_id
     job_config = job_config
