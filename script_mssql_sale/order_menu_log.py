@@ -12,7 +12,7 @@ for database_name in database:
     query_string = '''SELECT
                 HashBytes('MD5', '''+"'"+database_name+''''+cast(pr_key as varchar)) as UNIQUE_KEY,
                 *,
-                getdate() as LOADED_DATE,
+                sysdatetimeoffset() as LOADED_DATE,
                 '''+"'"+database_name+'''' as DATA_SOURCE
 
              
