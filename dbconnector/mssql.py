@@ -84,5 +84,6 @@ def incremental_load_sale(query_string,
         print('continue')
         #BQ
         print('step 3')
+        print(job_config)
         bq_insert(schema,table_id,dataframe,job_config=job_config)
         print('end')
