@@ -1,7 +1,6 @@
 create table pacc-raw-data.IPOS_SALE.sale
 (
 UNIQUE_KEY bytes,
-UPDATED_DATE timestamp, 
 PR_KEY	float64,
 TRAN_ID	string,
 TRAN_NO	string,
@@ -62,6 +61,7 @@ SALE_SIGN	float64,
 PR_KEY_SALE_OLD	float64,
 PR_KEY_SALE_NEW	float64,
 WORKSTATION_NAME STRING,
-DATA_SOURCE STRING	
+DATA_SOURCE STRING,
+LOADED_DATE timestamp
 )
 partition by date(tran_date)

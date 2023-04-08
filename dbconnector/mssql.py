@@ -19,7 +19,7 @@ def mssql_query_pd(server,username,password,query_string):
        df[col] = pd.to_datetime(df[col], format='%d/%m/%y')
 
     df['LOADED_DATE'] = pd.to_datetime('today', format='%Y-%m-%d %H:%M:%S.%f')
-    print(df.head(10))
+    print(df.head(5))
     return dataframe
 
 def mssql_query_pd_sale(query_string):
@@ -71,11 +71,8 @@ def incremental_load_sale(query_string,
         incre_condition="cast("+table_filter_date+"."+date_schema+" as date) = '"+recent_loaded_date+"' and cast(cast(pr_key as int) as varchar) not in "+pr_key_latest 
     else:
         incre_condition="cast("+table_filter_date+"."+date_schema+" as date) > '"+recent_loaded_date+"'"
-        print("yes")
 
-    print(incre_condition)
     query_string_insert=query_string+'where '+incre_condition+query_string2
-    print(query_string_insert)
 
     dataframe = mssql_query_pd_sale(query_string_insert)
     if dataframe.to_dict('records')==[]:
