@@ -26,7 +26,7 @@ for database_name in database:
 
                 select
                     HashBytes('MD5', sale.workstation_name+cast(sale_detail.pr_key as varchar)) as unique_key,
-                    getdate() as updated_date,
+                    sysdatetimeoffset()() as updated_date,
                     sale_detail.*,
                 	sale.tran_date,
                 	sale.workstation_name,
