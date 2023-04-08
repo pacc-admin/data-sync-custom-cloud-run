@@ -40,7 +40,7 @@ for database_name in database:
 
     job_config_list = bigquery.LoadJobConfig(
         schema = [ 
-                   bigquery.SchemaField("LOADED_DATE",bigquery.enums.SqlTypeNames.DATETIME),
+                   bigquery.SchemaField("LOADED_DATE",bigquery.enums.SqlTypeNames.STRING),
                    bigquery.SchemaField("SALE_DATE",bigquery.enums.SqlTypeNames.DATETIME),
                    bigquery.SchemaField("END_DATE",bigquery.enums.SqlTypeNames.DATETIME),
                    bigquery.SchemaField("tran_date",bigquery.enums.SqlTypeNames.DATETIME),
