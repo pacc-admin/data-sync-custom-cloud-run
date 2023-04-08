@@ -22,5 +22,6 @@ create or replace table `pacc-raw-data.IPOS_SALE.dm_membership` (
     SEND_EMAIL_LOG int64,
     YEAR_EMAIL_DOB int64,
     MEMBERSHIP_IMAGE bytes,
-    CONVERTER_DATE datetime
+    CONVERTER_DATE datetime,
+    LOADED_DATE timestamp
 )

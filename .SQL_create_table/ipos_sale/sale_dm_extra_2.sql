@@ -1,4 +1,4 @@
-create or replace table `pacc-raw-data.IPOS_SALE.delivery_party` (
+create or replace table `pacc-raw-data.IPOS_SALE.dm_extra_2` (
       EXTRA_ID_2 string,
       EXTRA_NAME_2 string,
       ACTIVE int64,
@@ -6,5 +6,6 @@ create or replace table `pacc-raw-data.IPOS_SALE.delivery_party` (
       WORKSTATION_ID int64,
       PAYMENT_TYPE string,
       COMMISSION_RATE float64,
-      PAYMENT_METHOD_ID string
+      PAYMENT_METHOD_ID string,
+      LOADED_DATE timestamp
 )

@@ -23,8 +23,8 @@ create or replace table `pacc-raw-data.IPOS_SALE.order_menu_log` (
     PR_KEY_SALE_DETAIL	float64,
     REASON_ID	string,
     SALE_SIGN	float64,
-    LOADED_DATE timestamp,
-    DATA_SOURCE string
+    DATA_SOURCE string,
+    LOADED_DATE timestamp
 )
 
-partition by date(loaded_date)
+partition by date(LOADED_DATE)
