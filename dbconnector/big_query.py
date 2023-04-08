@@ -17,6 +17,7 @@ def connect_to_bq():
 def bq_delete(schema,table_id,condition='true'):
     client=connect_to_bq()
     query = 'Delete from `pacc-raw-data.'+schema+'.'+table_id+'` where '+condition
+    print(query)
     query_job = client.query(query)
     results = query_job.result()
     print(results)
