@@ -47,7 +47,7 @@ def incremental_load_sale(query_string,
                           date_schema,
                           query_string2='',
                           table_filter_date='sale', 
-                          job_config= bigquery.LoadJobConfig()
+                          job_config=bigquery.LoadJobConfig()
                         ):
     #MSSQL
     print('step 1')
@@ -84,6 +84,5 @@ def incremental_load_sale(query_string,
         print('continue')
         #BQ
         print('step 3')
-        print(job_config)
         bq_insert(schema,table_id,dataframe,job_config=job_config)
         print('end')
