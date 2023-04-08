@@ -12,7 +12,7 @@ create or replace table `pacc-raw-data.IPOS_SALE.sale_detail` (
     QUANTITY	float64,
     NUMBER	int64,
     AMOUNT	float64,
-    SALE_DATE timestamp,
+    SALE_DATE datetime,
     IS_EAT_WITH	int64,
     HOUR_START	int64,
     MINUTE_START	int64,
@@ -38,7 +38,7 @@ create or replace table `pacc-raw-data.IPOS_SALE.sale_detail` (
     PACKAGE_ID	string,
     FIX	int64,
     COST_PRICE	float64,
-    END_DATE timestamp,
+    END_DATE datetime,
     IS_PRint64_LABEL	int64,
     IS_KIT	int64,
     IS_SET	int64,
@@ -48,10 +48,10 @@ create or replace table `pacc-raw-data.IPOS_SALE.sale_detail` (
     DISTRIBUTE_DISCOUNT_EXTRA2	float64,
     PARENT_ITEM_ID	string,
     ITEM_ID_MAPPING	string,
-    TRAN_DATE timestamp,
+    TRAN_DATE datetime,
     WORKSTATION_NAME string,
     DATA_SOURCE STRING,
-    LOADED_DATE timestamp,
+    LOADED_DATE timestamp
 )
 
 partition by date(tran_date)
