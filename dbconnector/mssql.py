@@ -13,6 +13,7 @@ def mssql_query_pd(server,username,password,query_string):
     df = pd.DataFrame()    
     df = pd.read_sql(query, conn)
     dataframe = df
+    df['LOADED_DATE'] = pd.to_datetime('today')
     return dataframe
 
 def mssql_query_pd_sale(query_string):

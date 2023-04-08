@@ -11,7 +11,6 @@ for database_name in database:
     table_name = 'sale'
     query_string = '''SELECT
                 HashBytes('MD5', workstation.workstation_name+cast(sale.pr_key as varchar)) as unique_key,
-                cast(sysdatetimeoffset() as nvarchar(100)) as updated_date,
                 sale.*,
                 workstation.workstation_name,
                 '''+"'"+database_name+'''' as data_source
@@ -24,7 +23,7 @@ for database_name in database:
 
     job_config_list = bigquery.LoadJobConfig(
         schema = [ 
-                   bigquery.SchemaField("updated_date",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                   bigquery.SchemaField("LOADED_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
                    bigquery.SchemaField("TRAN_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
                    bigquery.SchemaField("DATE_LAST",bigquery.enums.SqlTypeNames.TIMESTAMP),
                 ]

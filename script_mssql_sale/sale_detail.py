@@ -26,7 +26,6 @@ for database_name in database:
 
                 select
                     HashBytes('MD5', sale.workstation_name+cast(sale_detail.pr_key as varchar)) as unique_key,
-                    cast(sysdatetimeoffset() as nvarchar(100)) as updated_date,
                     sale_detail.*,
                 	sale.tran_date,
                 	sale.workstation_name,
@@ -41,7 +40,7 @@ for database_name in database:
 
     job_config_list = bigquery.LoadJobConfig(
         schema = [ 
-                   bigquery.SchemaField("updated_date",bigquery.enums.SqlTypeNames.TIMESTAMP),
+                   bigquery.SchemaField("LOADED_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
                    bigquery.SchemaField("SALE_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
                    bigquery.SchemaField("END_DATE",bigquery.enums.SqlTypeNames.TIMESTAMP),
                    bigquery.SchemaField("tran_date",bigquery.enums.SqlTypeNames.TIMESTAMP),
