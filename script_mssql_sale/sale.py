@@ -11,7 +11,7 @@ for database_name in database:
     table_name = 'sale'
     query_string = '''SELECT
                 HashBytes('MD5', workstation.workstation_name+cast(sale.pr_key as varchar)) as unique_key,
-                getdate() as updated_date,
+                sysdatetimeoffset() as updated_date,
                 sale.*,
                 workstation.workstation_name,
                 '''+"'"+database_name+'''' as data_source
