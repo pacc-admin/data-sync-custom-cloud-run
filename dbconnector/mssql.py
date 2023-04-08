@@ -18,6 +18,7 @@ def mssql_query_pd(server,username,password,query_string):
     print(date_cols)
     for col in date_cols: 
        df[col] = pd.to_datetime(df[col], format='%d/%m/%y %H:%M:%S')
+       print(df[col])
 
     df['LOADED_DATE'] = pd.to_datetime('today')
     print(df.head(10))
