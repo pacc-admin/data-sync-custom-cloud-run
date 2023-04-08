@@ -15,10 +15,8 @@ def mssql_query_pd(server,username,password,query_string):
 
     #convert date column to datetime
     date_cols = [col for col in df.columns if 'date' in col.lower()]
-    print(date_cols)
     for col in date_cols: 
        df[col] = pd.to_datetime(df[col], format='%d/%m/%y')
-       print(df[col])
 
     df['LOADED_DATE'] = pd.to_datetime('today')
     print(df.head(10))
@@ -75,6 +73,7 @@ def incremental_load_sale(query_string,
         condition="cast("+table_filter_date+"."+date_schema+" as date) > '"+recent_loaded_date+"'"
         print("yes")
 
+    print(condition)
     query_string_insert=query_string+'where '+condition+query_string2
     print(query_string_insert)
 
