@@ -3,13 +3,16 @@ from pd_process import pd_last_update,pd_type_change
 from google.cloud import bigquery
 import pandas as pd
 import inflect
-from base_vn_api import base_vn_connect_hiring,base_vn_connect_hrm_payroll
+from base_vn_api import base_vn_connect_hiring,base_vn_connect_hrm_payroll,get_base_schedule_api
 import os
 
-def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1=''):
+def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1='',c12_plit='/'):
     if app=='hiring':
         raw_output=base_vn_connect_hiring(component1,component2=component2,updated_from=updated_from,page=page,para1=para1,value1=value1)
-    
+
+    elif app=='schedule':
+        raw_output=get_base_schedule_api(app,component1,c12_plit=c12_plit,page=page)
+            
     else:
         raw_output=base_vn_connect_hrm_payroll(component1,app,component2=component2,updated_from=updated_from,page=page)
     return raw_output
@@ -77,6 +80,7 @@ def while_loop_page_insert(app,
                            component2='list',
                            para1='',
                            value1='',
+                           c12_plit='/',
                            job_config= bigquery.LoadJobConfig(),
                            stop_words=[],
                            total_items='total_items',
@@ -84,7 +88,7 @@ def while_loop_page_insert(app,
                         ):
     #specify variable
     pageno=-1
-    r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1)
+    r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1,c12_plit=c12_plit)
     if r['message'] !='':
         print('URL error, stop')
     else:
@@ -106,7 +110,7 @@ def while_loop_page_insert(app,
             while pageno < total_page_display:
                 pageno=pageno+1
                 print(pageno)
-                r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2,para1=para1,value1=value1)
+                r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2,para1=para1,value1=value1,c12_plit=c12_plit)
                 dataset_raw=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2='list')
                 dataset=pd.concat([dataset,dataset_raw])
        

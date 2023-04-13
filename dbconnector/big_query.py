@@ -14,13 +14,15 @@ def connect_to_bq():
     client = bigquery.Client.from_service_account_json(service_account_file_path)
     return client
 
-def bq_delete(schema,table_id,condition='true'):
+def bq_delete(schema,table_id,condition=''):
     client=connect_to_bq()
-    query = 'Delete from `pacc-raw-data.'+schema+'.'+table_id+'` where '+condition
-    print(query)
-    query_job = client.query(query)
-    results = query_job.result()
-    print(results)
+    if condition=='':
+        print('no columns is removed')
+    else:
+        query = 'Delete from `pacc-raw-data.'+schema+'.'+table_id+'` where '+condition
+        query_job = client.query(query)
+        results = query_job.result()
+        print(results)
 
 def bq_query(query_string):
     client=connect_to_bq()
@@ -42,10 +44,7 @@ def bq_insert(schema,table_id,dataframe,condition='',job_config=bigquery.LoadJob
             dataframe, table_id_full, job_config=job_config
         )
         #remove column with id matches the inserted rows
-        if condition=='':
-            print('no columns is removed')
-        else:
-            bq_delete(schema,table_id,condition=condition)
+        bq_delete(schema,table_id,condition=condition)
         job.result()
         table=client.get_table(table_id_full)
         print(str(
