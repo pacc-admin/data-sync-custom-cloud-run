@@ -46,15 +46,14 @@ def worldfone_bq(schema,table_id):
         print('continue')
         #remove column with id matches the inserted rows from basevn
         unique_key=data_to_insert['uniqueid']+data_to_insert['direction']
-        print(unique_key.to_list())
         row_to_exclude="('"+"','".join(unique_key.to_list())+"')"
         condition='concat(uniqueid,direction) in'+row_to_exclude
-        bq_delete(schema,table_id,condition=condition)
 
         result=bq_insert(
                     schema,
                     table_id,
-                    dataframe=data_to_insert
+                    dataframe=data_to_insert,
+                    condition=condition
                 )
         print('end')
 
