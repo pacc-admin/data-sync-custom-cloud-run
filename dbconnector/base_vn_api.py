@@ -58,3 +58,20 @@ def get_base_checkin_api(query_string,app='checkin'):
     raw_output = requests.post(url, headers=h, data=p).json()
     
     return raw_output
+
+def get_base_schedule_api(app,component1,c12_plit='/',page=0):
+
+    #parameter delcare
+    component2='list'
+    page_dict={'page':page}
+    access_token=etract_variable_yml_dict(app)
+    today_unix = int(time.mktime(datetime.today().timetuple()))
+    date_1=1672506000
+    date_2=today_unix
+    
+    h = {"Content-type": "application/x-www-form-urlencoded"}
+    p={**access_token,**{'start_time':date_1},**{'end_time':date_2},**page_dict}
+    url="https://"+app+".base.vn/extapi/v1/"+component1+c12_plit+component2
+    raw_output = requests.post(url, headers=h, data=p).json()
+    
+    return raw_output
