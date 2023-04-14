@@ -2,6 +2,8 @@ import requests
 from datetime import datetime
 from big_query import bq_pandas
 from yml_extract import etract_variable_yml_dict
+from time_function import last_unix_t_of_month,first_unix_t_of_last_month
+
 import time
 
 def base_vn_connect_hiring(component1,app='hiring',component2='list',updated_from=0,page=0,para1='',value1=''):
@@ -65,9 +67,10 @@ def get_base_schedule_api(app,component1,c12_plit='/',page=0):
     component2='list'
     page_dict={'page':page}
     access_token=etract_variable_yml_dict(app)
+    
     today_unix = int(time.mktime(datetime.today().timetuple()))
-    date_1=1672506000
-    date_2=today_unix
+    date_1=first_unix_t_of_last_month(today_unix)
+    date_2=last_unix_t_of_month(today_unix)
     
     h = {"Content-type": "application/x-www-form-urlencoded"}
     p={**access_token,**{'start_time':date_1},**{'end_time':date_2},**page_dict}
