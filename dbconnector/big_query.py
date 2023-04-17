@@ -40,9 +40,14 @@ def bq_insert(schema,table_id,dataframe,condition='',job_config=bigquery.LoadJob
         print('No Insert')
     else:
         print('continue')
+        #deduplication
+        dataframe=dataframe.drop_duplicates()
+
+        #load
         job = client.load_table_from_dataframe(
             dataframe, table_id_full, job_config=job_config
         )
+        
         #remove column with id matches the inserted rows
         bq_delete(schema,table_id,condition=condition)
         job.result()
