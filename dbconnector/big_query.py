@@ -30,7 +30,7 @@ def bq_query(query_string):
     results = query_job.result()
     print(results)
 
-def bq_insert(schema,table_id,dataframe,condition='',job_config=bigquery.LoadJobConfig()):
+def bq_insert(schema,table_id,dataframe,condition='',unique_key='',job_config=bigquery.LoadJobConfig()):
     client=connect_to_bq()
     table_id_full = 'pacc-raw-data.'+schema+'.'+table_id
     job_config = job_config
@@ -40,14 +40,19 @@ def bq_insert(schema,table_id,dataframe,condition='',job_config=bigquery.LoadJob
         print('No Insert')
     else:
         print('continue')
+        
         #deduplication
-        dataframe=dataframe.drop_duplicates()
+        if unique_key=='':
+            print('No dedup')
+        else:
+            dataframe=dataframe.drop_duplicates(subset=unique_key)
+            print('Dedup completed')
 
         #load
         job = client.load_table_from_dataframe(
             dataframe, table_id_full, job_config=job_config
         )
-        
+
         #remove column with id matches the inserted rows
         bq_delete(schema,table_id,condition=condition)
         job.result()

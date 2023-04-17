@@ -131,7 +131,8 @@ def while_loop_page_insert(app,
                     table_id=table_id,
                     dataframe=data_to_insert,
                     condition=condition,
-                    job_config=job_config
+                    job_config=job_config,
+                    unique_key='id'
                 )
         print(result)
     
