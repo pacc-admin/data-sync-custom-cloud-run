@@ -1,4 +1,3 @@
-from threading import Thread
 import gspread
 import pandas as pd
 import pd_process
@@ -28,7 +27,7 @@ class gg_sheet_import():
         number_of_sheets = len(worksheet_list)
         return number_of_sheets
 
-    def sheet_to_pd(self):
+    def sheet_to_pd_index(self):
         sh=self.gg_sheet_connect()
         df=pd.DataFrame()
         number_of_sheets=self.list_all_sheets()
@@ -49,6 +48,26 @@ class gg_sheet_import():
         
         pd_process.pd_type_change(df)
 
+        #add loaded date field
+        df['loaded_date'] = pd.to_datetime('today')
+        print(df)
+    
+        return df
+
+    def sheet_to_pd_name(self,sheet_names):
+        sh=self.gg_sheet_connect()
+        df=pd.DataFrame()
+        for sheet_name in sheet_names:
+            worksheet = sh.worksheet(sheet_name)
+
+            list_of_lists = worksheet.get_all_values()
+            df_sheet_names=pd.DataFrame(list_of_lists)
+
+            #remove first row from DataFrame
+            df_sheet_names = df_sheet_names[1:]
+
+            df=pd.concat([df,df_sheet_names])
+        
         #add loaded date field
         df['loaded_date'] = pd.to_datetime('today')
         print(df)

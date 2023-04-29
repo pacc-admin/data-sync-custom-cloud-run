@@ -8,9 +8,9 @@ import big_query
 
 schema='GOOGLE_SHEETS'
 table_id='daily_sale_targets'
+sheet_names=['BGSH','BGLVS']
 
-with gg_sheet_import('target_daily') as s:
-    big_query.bq_delete(schema,table_id)
-    dataframe=s.sheet_to_pd_index()
-    big_query.bq_insert(schema,table_id,dataframe)
+with gg_sheet_import('Booking system') as s:
+    dataframe=s.sheet_to_pd_name(sheet_names)
+    print(dataframe)
 
