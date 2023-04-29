@@ -15,7 +15,7 @@ print(pool_ids)
 variable='contact'
 component2='list'
 schema='BASEVN_EHIRING'
-stop_words=['candidates','files']
+stop_words=['candidates']
 job_config_list = bigquery.LoadJobConfig(
         schema=[
             bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)            

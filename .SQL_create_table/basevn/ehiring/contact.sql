@@ -40,25 +40,8 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.contact` (
        scores array<int64>,
        since int64
      >>,
-   candidate ARRAY< STRUCT<
-       id string,
-       name string,
-       type string,
-       abslink string,
-       status_display string,
-       codename string,
-       owners array<string>,
-       creator string,
-       candidate_id string,
-       candidate_link string,
-       scores array<int64>,
-       since int64
-     >>,
-   files ARRAY< STRUCT<
-       id string,
-       name string,
-       url string
-     >>,
+   candidate string,
+   files string,
    since string,
    apply_time string,
    last_update string,
@@ -67,3 +50,24 @@ create or replace table `pacc-raw-data.BASEVN_EHIRING.contact` (
 )
 
 partition by date(loaded_date)
+
+--   files ARRAY< STRUCT<
+--       id string,
+--       name string,
+--       url string
+--     >>,
+
+--   candidate ARRAY< STRUCT<
+--       id string,
+--       name string,
+--       type string,
+--       abslink string,
+--       status_display string,
+--       codename string,
+--       owners array<string>,
+--       creator string,
+--       candidate_id string,
+--       candidate_link string,
+--       scores array<int64>,
+--       since int64
+--     >>,
