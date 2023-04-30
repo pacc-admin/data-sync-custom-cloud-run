@@ -1,0 +1,55 @@
+name: monthly_run_cleanup
+
+on:
+   schedule:
+     - cron: "0 19 20 * *"
+
+env:
+  # Environment variables for running Python on Google BigQuery
+  PYTHON_GOOGLE_PROJECT_DEV: pacc-analytics
+  PACC_SA_RAW: service_account.json
+  PYTHON_BIGQUERY_DATASET_DEV: github_action
+
+jobs:
+  daily_run:
+    name: daily_run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: "3.9.x"
+
+      # Python - Google BigQuery
+      - name: Authenticate gcloud
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.PACC_SA_RAW }}
+          project_id: ${{ env.PYTHON_GOOGLE_PROJECT_DEV }}
+      
+      - name: Create Google Service Account key file from secret
+        run: 'echo "$KEYFILE" > ${{ env.PACC_SA_RAW }}'
+        shell: bash
+        env:
+          KEYFILE: ${{ secrets.PACC_SA_RAW }}
+
+      ## Cache Pip wheel files
+      - name: Cache Pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      ## Install Python dependencies
+      - name: Install dependencies
+        run: |
+          pip3 install -r requirements.txt
+
+      ## Worldfone file run
+      - name: Run Worldfone Packages
+        run: |
+          ./bash_scheduling/script_monthly_clean_up.sh
+
