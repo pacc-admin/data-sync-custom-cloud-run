@@ -1,7 +1,9 @@
 import gspread
+import re
 import pandas as pd
 import pd_process
 import os
+import unidecode
 
 class gg_sheet_import():
     def __init__(self,file_name):
@@ -54,23 +56,44 @@ class gg_sheet_import():
     
         return df
 
-    def sheet_to_pd_name(self,sheet_names):
+    def sheet_to_pd_name(self,sheet_names,column_to_clean=''):
         sh=self.gg_sheet_connect()
         df=pd.DataFrame()
         for sheet_name in sheet_names:
+            print(sheet_name)
             worksheet = sh.worksheet(sheet_name)
-
+            
             list_of_lists = worksheet.get_all_values()
             df_sheet_names=pd.DataFrame(list_of_lists)
+
+            #set column names equal to values in row index position 0
+            df_sheet_names.columns = df_sheet_names.iloc[0]
+            cleaned_cols=[]
+            for col in df_sheet_names.columns:
+                space_cleaned=col.lower().replace(' ', '_')
+                remove_vn_key=unidecode.unidecode(space_cleaned)
+                cleaned_col=re.findall('[a-z0-9_]+',remove_vn_key)
+                cleaned_cols=cleaned_cols+[cleaned_col[0]]
+
+            df_sheet_names.columns=cleaned_cols
 
             #remove first row from DataFrame
             df_sheet_names = df_sheet_names[1:]
 
+            #drop null
+            if column_to_clean=='':
+                print('no drop')
+            else:
+                print('drop null')
+                df_sheet_names=df_sheet_names[df_sheet_names[column_to_clean]!=''] 
+                print(df_sheet_names)
+            
+            #concat all df sheets
             df=pd.concat([df,df_sheet_names])
         
         #add loaded date field
         df['loaded_date'] = pd.to_datetime('today')
-        print(df)
+        
     
         return df
 
