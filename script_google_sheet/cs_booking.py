@@ -5,12 +5,12 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
 from google_sheet import gg_sheet_import
 import big_query
 
-
 schema='GOOGLE_SHEETS'
-table_id='daily_sale_targets'
-sheet_names=['BGSH','BGLVS']
+table_id='cs_booking'
+sheet_names=['FW','BGNK','BGQT','BGLQD','BGSH','BGLVS','BGBC']
+column_to_clean='booking_date'
 
 with gg_sheet_import('Booking system') as s:
-    dataframe=s.sheet_to_pd_name(sheet_names)
-    print(dataframe)
-
+    #big_query.bq_delete(schema,table_id)
+    dataframe=s.sheet_to_pd_name(sheet_names,column_to_clean)
+    big_query.bq_insert(schema,table_id,dataframe)
