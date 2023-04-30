@@ -96,3 +96,29 @@ def bq_latest_date(date_schema,schema,table_id):
     else:
         recent_loaded_date=df[date_schema].astype(str).to_list()[0]
     return recent_loaded_date
+
+def append_tables(schema_to_append,schema_appended,table_id):
+    query_string='''
+        SELECT column_name FROM pacc-raw-data.'''+schema_to_append+'''.INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = '''+"'"+table_id+"'"
+
+    #Get columns name    
+    df=bq_pandas(query_string=query_string)
+    column_lists=df['column_name'].astype(str).to_list()
+    columns=",\n".join(column_lists)
+    
+    #Insert Query
+    query_string='''
+      insert into `pacc-raw-data.'''+schema_appended+'''.'''+table_id+'''` (
+        '''+columns+'''
+      )
+    
+    select
+        '''+columns+'''
+    from
+      `pacc-raw-data.'''+schema_to_append+'''.'''+table_id+'''`
+    '''
+    print(query_string)
+    
+    #BQ insert
+    bq_query(query_string)
