@@ -92,6 +92,8 @@ def worldfone_bq(schema,table_id):
                 )
         print('end')
 
+    print(start_date)
+    print(end_date)
     print(result)
     return result
 
