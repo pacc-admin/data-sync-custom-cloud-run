@@ -1,4 +1,5 @@
 from big_query import bq_insert_streaming,bq_query,bq_pandas,bq_insert
+from pd_process import pd_last_update
 import requests
 import pandas as pd
 import time
@@ -132,3 +133,28 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
     while pageno < total_page:
         pageno=pageno+1
         crm_insert(brand,user_id,table,field_to_update,o1,o2)
+
+def crm_campaigns_insert(brand):
+    #variable
+    access_token='ARPP3SFXSJ6R1BW5KNXEJXZV5YNENM60'
+    url='https://api.foodbook.vn/ipos/ws/xpartner/campaigns?access_token='+access_token+'&pos_parent='+brand
+    component='campaigns'
+    schema='IPOS_CRM_'+brand
+    table_id=component
+    column_updated='date_updated_unix'
+    query_string_incre='select max('+column_updated+') as '+column_updated+' from `pacc-raw-data.'+schema+'.'+component+'`'
+    
+    #get api
+    output=requests.get(url).json()
+    data=output['data']
+    df=pd.DataFrame(data[component])
+
+    #column add
+    df['date_updated_unix']=pd.to_datetime(df['date_updated']).map(pd.Timestamp.timestamp)
+    df['loaded_date'] = pd.to_datetime('today')
+
+    #last update data only
+    dataframe=pd_last_update(df,query_string_incre,column_updated)
+
+    #bq_insert
+    bq_insert(schema,table_id,dataframe)

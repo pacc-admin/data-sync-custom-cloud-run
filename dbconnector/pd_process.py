@@ -46,6 +46,8 @@ def pd_last_update(df,query_string_incre,column_updated='last_update'):
             last_updated_date=bq_table_date
     except:
         last_updated_date=0
+    
+    print('last update date is '+str(last_updated_date))
 
     try:
         latest_dataset = df[df[column_updated].astype('float') > last_updated_date]
