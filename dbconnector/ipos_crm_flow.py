@@ -1,6 +1,7 @@
 from big_query import bq_insert_streaming,bq_query,bq_pandas,bq_insert
 from mssql import mssql_query_pd
-from pd_process import pd_last_update
+from pd_process import pd_last_update,pd_type_change
+from google.cloud import bigquery
 import requests
 import pandas as pd
 import time
@@ -29,7 +30,7 @@ def crm_api(brand,user_id,table,page=0):
     
     return r
     
-def crm_transform(brand,user_id,schema,table,field_to_update,o1='',o2=''):
+def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=[],o1='',o2=''):
     r=crm_api(brand,user_id,table)
 
     #specify updating dimension
@@ -53,11 +54,12 @@ def crm_transform(brand,user_id,schema,table,field_to_update,o1='',o2=''):
             else:
                 dataframe=pandas_convert
             dataframe['membership_id']=user_id
-            print(dataframe) 
+            dataframe=pd_type_change(dataframe,columns=columns_to_convert,type='include')
+            print(dataframe['dm_pos_parent']) 
         
             #update only changes entries
             print('start update')
-            dataframe==pd_last_update(dataframe,query_string_incre,field_to_update)
+            dataframe=pd_last_update(dataframe,query_string_incre,field_to_update)
 
             dataframe['loaded_date'] = pd.to_datetime('today')
             if o2=='':
@@ -86,16 +88,18 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
         pageno=pageno+1
         crm_transform(brand,user_id,table,field_to_update,o1,o2)
 
-def crm_insert(brand,user_id,schema,table,field_to_update):
-    df = membership_data(brand)
+def crm_insert(brand,table,field_to_update,columns_to_convert=[]):
+    df = membership_data(brand, condition=' limit 1000')
     user_id_list=df['membership_id'].to_list()
+    schema='IPOS_CRM_'+brand
+    print(schema)
     
     print('insert table '+table)
     
     dataframe=pd.DataFrame()
     for user_id in user_id_list:
         print('start with member_id:'+user_id)
-        dataframe_user_id=crm_insert(brand,user_id,schema,table,field_to_update)
+        dataframe_user_id=crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=columns_to_convert)
         dataframe=pd.concat([dataframe,dataframe_user_id])
     
     print(dataframe)
@@ -104,7 +108,7 @@ def crm_insert(brand,user_id,schema,table,field_to_update):
                 bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
             ]
     )
-    big_query.bq_insert(schema,table,dataframe,job_config=job_config_list)
+    bq_insert(schema,table,dataframe,job_config=job_config_list)
 
 
 def crm_campaigns_insert(brand):
