@@ -9,6 +9,6 @@ schema='dbo'
 table='member_vouchers'
 field_to_update='update_at'
 
-df = ipos_crm_flow.membership_data(brand, condition=' limit 1')
+df = ipos_crm_flow.membership_data(brand)
 user_id_list=df['membership_id'].to_list()
 print(user_id_list)
