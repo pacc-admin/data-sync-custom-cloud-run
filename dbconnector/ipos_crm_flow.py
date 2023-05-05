@@ -8,7 +8,7 @@ import time
 
 def membership_data(brand,condition=''):
     database_name='IPOSS'+brand
-    query_string='select distinct membership_id from '+database_name+'.dbo.sale '+condition
+    query_string='select '+condition+' distinct membership_id from '+database_name+'.dbo.sale'
     membership_data=mssql_query_pd(query_string)
     print('Total members are '+str(len(membership_data.index)))
     return membership_data
@@ -89,7 +89,7 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
         crm_transform(brand,user_id,table,field_to_update,o1,o2)
 
 def crm_insert(brand,table,field_to_update,columns_to_convert=[]):
-    df = membership_data(brand, condition=' limit 1000')
+    df = membership_data(brand)
     user_id_list=df['membership_id'].to_list()
     schema='IPOS_CRM_'+brand
     print(schema)
