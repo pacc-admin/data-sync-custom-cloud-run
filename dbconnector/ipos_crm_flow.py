@@ -55,7 +55,7 @@ def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=
                 dataframe=pandas_convert
             dataframe['membership_id']=user_id
             dataframe=pd_type_change(dataframe,columns=columns_to_convert,type='include')
-            print(dataframe['dm_pos_parent']) 
+            print(dataframe) 
         
             #update only changes entries
             print('start update')
