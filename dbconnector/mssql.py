@@ -6,12 +6,19 @@ import os
 from datetime import date
 from datetime import timedelta
 
-def mssql_query_pd(server,username,password,query_string):
-    conn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';PORT=1433;UID='+username+';PWD='+ password+';TrustServerCertificate=yes;')
+def mssql_query_pd(query_string):
+    server=os.environ.get("MSSQL_SALE_IP_ADDRESS")
+    username=os.environ.get("MSSQL_SALE_IP_USERNAME")
+    password=os.environ.get("MSSQL_SALE_IP_PASSWORD")
+
+    conn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';PORT=1433;UID='+username+';PWD='+ password+';TrustServerCertificate=yes;Encrypt=yes')
     query = query_string
     df = pd.DataFrame()    
     df = pd.read_sql(query, conn)
-    dataframe = df
+    return df
+
+def mssql_query_pd_sale(query_string):
+    df = mssql_query_pd(query_string)
 
     #convert date column to datetime
     date_cols = [col for col in df.columns if 'date' in col.lower()]
@@ -20,22 +27,12 @@ def mssql_query_pd(server,username,password,query_string):
 
     df['LOADED_DATE'] = pd.to_datetime('today', format='%Y-%m-%d %H:%M:%S.%f')
     print(df.head(5))
-    return dataframe
 
-def mssql_query_pd_sale(query_string):
-    server=os.environ.get("MSSQL_SALE_IP_ADDRESS")
-    username=os.environ.get("MSSQL_SALE_IP_USERNAME")
-    password=os.environ.get("MSSQL_SALE_IP_PASSWORD")
-    dataframe = mssql_query_pd(server,username,password,query_string)
-    return dataframe
+    return df
 
 def full_refresh_sale(query_string,schema,table_id):
-    server=os.environ.get("MSSQL_SALE_IP_ADDRESS")
-    username=os.environ.get("MSSQL_SALE_IP_USERNAME")
-    password=os.environ.get("MSSQL_SALE_IP_PASSWORD")
-
     print('step 1')
-    dataframe = mssql_query_pd(server,username,password,query_string)
+    dataframe = mssql_query_pd_sale(query_string)
     print('step 2')
     bq_insert(schema,table_id,dataframe,condition='true')
 
