@@ -53,15 +53,24 @@ def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=
                 dataframe=pd.DataFrame.from_dict([object_convert])
             else:
                 dataframe=pandas_convert
-            dataframe['membership_id']=user_id
-            dataframe=pd_type_change(dataframe,columns=columns_to_convert,type='include')
-            print(dataframe) 
-        
-            #update only changes entries
-            print('start update')
-            dataframe=pd_last_update(dataframe,query_string_incre,field_to_update)
+            
+            if dataframe.empty:
+                print('empty dataframe')
+            
+            else:
+                #update only changes entries
+                print('start update')
+                dataframe=pd_last_update(dataframe,query_string_incre,field_to_update)
 
-            dataframe['loaded_date'] = pd.to_datetime('today')
+                #adding column
+                dataframe['membership_id']=user_id
+                dataframe['loaded_date'] = pd.to_datetime('today')
+
+                #change type
+                dataframe=pd_type_change(dataframe,columns=columns_to_convert,type='include')
+
+            print(dataframe) 
+
             if o2=='':
                 dataframe=dataframe
             else:
