@@ -8,5 +8,5 @@ schema='IPOS_CRM_'+brand
 table='member_vouchers'
 field_to_update='update_at'
 
-big_query.bq_delete(schema,table_id,condition='true')
+big_query.bq_delete(schema,table,condition='true')
 ipos_crm_flow.crm_insert(brand,table,field_to_update)
