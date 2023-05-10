@@ -7,8 +7,6 @@ database = ['IPOSS5WINE','IPOSSBGN']
 schema='IPOS_SALE'
 table_name='dm_extra_2'
 
-print('delete current table')
-
 for database_name in database:
     condition="data_source='"+database_name+"'"
     query_string = "select *, "+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
