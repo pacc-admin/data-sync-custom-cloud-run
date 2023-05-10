@@ -30,7 +30,7 @@ def mssql_query_pd_sale(query_string):
 
     return df
 
-def full_refresh_sale(query_string,schema,table_id,condition='true):
+def full_refresh_sale(query_string,schema,table_id,condition='true'):
     print('step 1')
     dataframe = mssql_query_pd_sale(query_string)
     print('step 2')
