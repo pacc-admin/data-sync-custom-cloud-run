@@ -8,8 +8,8 @@ schema='IPOS_SALE'
 table_name='dm_extra_2'
 
 print('delete current table')
-big_query.bq_delete(schema,table_id=table_name)
+condition="data_source='"+database_name+"'"
 
 for database_name in database:
     query_string = "select *, "+"'"+database_name+"'"+' as data_source from '+database_name+'.dbo.'+table_name
-    mssql.full_refresh_sale(query_string,schema,table_name)
+    mssql.full_refresh_sale(query_string,schema,table_name,condition=condition)
