@@ -43,4 +43,5 @@ for database_name in database:
                         on item.item_type_id = item_grouped.item_type_id
                         and rn = 1
                     '''
-    mssql.full_refresh_sale(query_string,schema,table_name)
+    condition="data_source='"+database_name+"'"
+    mssql.full_refresh_sale(query_string,schema,table_name,condition=condition)
