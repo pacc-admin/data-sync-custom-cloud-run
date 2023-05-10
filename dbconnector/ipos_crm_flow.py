@@ -97,7 +97,7 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
         pageno=pageno+1
         crm_transform(brand,user_id,table,field_to_update,o1,o2)
 
-def crm_insert(brand,table,field_to_update,columns_to_convert=[]):
+def crm_insert(brand,table,field_to_update,columns_to_convert=[],condition='true'):
     df = membership_data(brand)
     user_id_list=df['membership_id'].to_list()
     schema='IPOS_CRM_'+brand
@@ -117,7 +117,7 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[]):
                 bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
             ]
     )
-    bq_insert(schema,table,dataframe,job_config=job_config_list)
+    bq_insert(schema,table,dataframe,job_config=job_config_list,condition=condition)
 
 
 def crm_campaigns_insert(brand):
