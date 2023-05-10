@@ -7,9 +7,6 @@ database = ['IPOSS5WINE','IPOSSBGN']
 schema='IPOS_SALE'
 table_name='dm_item'
 
-print('delete current table')
-big_query.bq_delete(schema,table_id=table_name)
-
 for database_name in database:
     query_string = '''
                     with item_grouped as (
