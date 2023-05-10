@@ -30,11 +30,11 @@ def mssql_query_pd_sale(query_string):
 
     return df
 
-def full_refresh_sale(query_string,schema,table_id):
+def full_refresh_sale(query_string,schema,table_id,condition='true):
     print('step 1')
     dataframe = mssql_query_pd_sale(query_string)
     print('step 2')
-    bq_insert(schema,table_id,dataframe,condition='true')
+    bq_insert(schema,table_id,dataframe,condition=condition)
 
 
 def incremental_load_sale(query_string,
