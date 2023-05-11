@@ -82,6 +82,11 @@ def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=
     else:
         dataframe=pd.DataFrame()
     
+    try:
+        dataframe=dataframe.drop(['__index_level_0__'], axis='columns', inplace=True)
+    except:
+        dataframe=dataframe
+    
     print(dataframe)    
     return dataframe
 
