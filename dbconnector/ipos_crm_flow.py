@@ -94,9 +94,8 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
         crm_transform(brand,user_id,table,field_to_update,o1,o2)
 
 def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='voucher_code',condition='true'):
-    #df = membership_data(brand)
-    user_id_list=['841242648212','84971041335','84914152251','84934939770']
-    #user_id_list=df['membership_id'].to_list()
+    df = membership_data(brand)
+    user_id_list=df['membership_id'].to_list()
     schema='IPOS_CRM_'+brand
     print(schema)
     
