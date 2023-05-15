@@ -55,7 +55,7 @@ def pd_last_update(df,query_string_incre,column_updated='last_update'):
         try:
             latest_dataset = df[pd.to_datetime(df[column_updated]).map(pd.Timestamp.timestamp) > last_updated_date]
         except:
-            print('shit')
+            print('no latest updated')
             latest_dataset=df
     return latest_dataset
 

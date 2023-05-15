@@ -45,7 +45,6 @@ def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=
             if o1=='':
                 object_convert=a
             else:
-                print('sss')
                 object_convert=a[o1]
 
             pandas_convert=pd.DataFrame.from_dict(object_convert)
@@ -53,7 +52,7 @@ def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=
                 dataframe=pd.DataFrame.from_dict([object_convert])
             else:
                 dataframe=pandas_convert
-            
+
             if dataframe.empty:
                 print('empty dataframe')
             
@@ -69,8 +68,6 @@ def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=
                 #change type
                 dataframe=pd_type_change(dataframe,columns=columns_to_convert,type='include')
 
-            print(dataframe) 
-
             if o2=='':
                 dataframe=dataframe
             else:
@@ -81,12 +78,6 @@ def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=
 
     else:
         dataframe=pd.DataFrame()
-    
-    try:
-        dataframe=dataframe.drop(['__index_level_0__'], axis='columns', inplace=True)
-    except:
-        dataframe=dataframe
-    
     print(dataframe)    
     return dataframe
 
@@ -102,9 +93,10 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
         pageno=pageno+1
         crm_transform(brand,user_id,table,field_to_update,o1,o2)
 
-def crm_insert(brand,table,field_to_update,columns_to_convert=[],condition='true'):
-    df = membership_data(brand)
-    user_id_list=df['membership_id'].to_list()
+def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='voucher_code',condition='true'):
+    #df = membership_data(brand)
+    user_id_list=['841242648212','84971041335','84914152251','84934939770']
+    #user_id_list=df['membership_id'].to_list()
     schema='IPOS_CRM_'+brand
     print(schema)
     
@@ -116,6 +108,8 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],condition='true
         dataframe_user_id=crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=columns_to_convert)
         dataframe=pd.concat([dataframe,dataframe_user_id])
     
+    dataframe=dataframe[dataframe[unique_id].notnull()]
+
     print(dataframe)
     job_config_list = bigquery.LoadJobConfig(
             schema=[
