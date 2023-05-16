@@ -107,8 +107,11 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
         dataframe_user_id=crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=columns_to_convert)
         dataframe=pd.concat([dataframe,dataframe_user_id])
     
-    dataframe=dataframe[dataframe[unique_id].notnull()]
-
+    try:
+        dataframe=dataframe[dataframe[unique_id].notnull()]
+    except:
+        dataframe=dataframe
+        
     print(dataframe)
     job_config_list = bigquery.LoadJobConfig(
             schema=[
