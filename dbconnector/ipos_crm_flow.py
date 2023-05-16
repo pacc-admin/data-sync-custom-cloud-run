@@ -1,4 +1,4 @@
-from big_query import bq_insert_streaming,bq_query,bq_pandas,bq_insert
+from big_query import bq_insert_streaming,bq_query,bq_pandas,bq_insert,bq_delete
 from mssql import mssql_query_pd
 from pd_process import pd_last_update,pd_type_change
 from google.cloud import bigquery
@@ -101,6 +101,7 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
     
     print('insert table '+table)
     
+    bq_delete(schema,table,condition=condition)
     dataframe=pd.DataFrame()
     for user_id in user_id_list:
         print('start with member_id:'+user_id)
@@ -118,7 +119,7 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
                 bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
             ]
     )
-    bq_insert(schema,table,dataframe,job_config=job_config_list,condition=condition)
+    bq_insert(schema,table,dataframe,job_config=job_config_list)
 
 
 def crm_campaigns_insert(brand):
