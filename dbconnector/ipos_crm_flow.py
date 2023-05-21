@@ -93,7 +93,7 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
         pageno=pageno+1
         crm_transform(brand,user_id,table,field_to_update,o1,o2)
 
-def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='voucher_code',condition='true'):
+def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='voucher_code'):
     df = membership_data(brand)
     user_id_list=df['membership_id'].to_list()
     schema='IPOS_CRM_'+brand
@@ -101,7 +101,6 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
     
     print('insert table '+table)
     
-    bq_delete(schema,table,condition=condition)
     dataframe=pd.DataFrame()
     for user_id in user_id_list:
         print('start with member_id:'+user_id)
@@ -119,6 +118,17 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
                 bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
             ]
     )
+
+    #recreate the sql file
+    file_path='.SQL_create_table/basevn/hrm/'+table+'.sql'
+    fd = open(file_path, 'r')
+    sqlFile = fd.read()
+    print(sqlFile)
+
+    bq_query(query_string)
+    fd.close()
+
+    #insert data to BQ
     bq_insert(schema,table,dataframe,job_config=job_config_list)
 
 
