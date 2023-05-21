@@ -1,4 +1,4 @@
-create or replace table `pacc-raw-data.IPOS_CRM_5WINE.member_vouchers` (
+(
     membership_id string,
     loaded_date timestamp,
     voucher_code string,
