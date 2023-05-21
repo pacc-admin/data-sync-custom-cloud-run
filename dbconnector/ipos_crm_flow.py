@@ -120,6 +120,7 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
     )
 
     #recreate the sql file
+    print('recreate the sql file')
     file_path='.SQL_create_table/basevn/hrm/'+table+'.sql'
     fd = open(file_path, 'r')
     sqlFile = fd.read()
