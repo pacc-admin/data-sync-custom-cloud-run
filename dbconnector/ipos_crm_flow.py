@@ -6,7 +6,7 @@ import requests
 import pandas as pd
 import time
 
-def membership_data(brand,condition='top 100'):
+def membership_data(brand,condition=''):
     database_name='IPOSS'+brand
     query_string='select distinct '+condition+' membership_id from '+database_name+'.dbo.sale'
     membership_data=mssql_query_pd(query_string)
@@ -125,7 +125,7 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
     file_path='.SQL_create_table/ipos_crm/'+table+'.sql'
     fd = open(file_path, 'r')
     query_string ='create or replace table `pacc-raw-data.'+schema+'.'+table+'` '+fd.read()
-    print(query_string)
+    #print(query_string)
 
     #bq_query(query_string)
     fd.close()
