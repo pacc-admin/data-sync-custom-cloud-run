@@ -126,7 +126,7 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
     query_string ='create or replace table `pacc-raw-data.'+schema+'.'+table+'` '+fd.read()
     print(query_string)
 
-    bq_query(query_string)
+    #bq_query(query_string)
     fd.close()
 
     #insert data to BQ
