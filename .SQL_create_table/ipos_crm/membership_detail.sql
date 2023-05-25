@@ -1,4 +1,4 @@
-create or replace table pacc-raw-data.IPOS_CRM_BGN.membership_detail (
+(
     id string,
     phone_number int64,
     pos_parent string,
