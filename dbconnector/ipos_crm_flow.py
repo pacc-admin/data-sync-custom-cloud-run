@@ -6,9 +6,9 @@ import requests
 import pandas as pd
 import time
 
-def membership_data(brand,condition=''):
+def membership_data(brand,condition='top 100'):
     database_name='IPOSS'+brand
-    query_string='select '+condition+' distinct membership_id from '+database_name+'.dbo.sale'
+    query_string='select distinct '+condition+' membership_id from '+database_name+'.dbo.sale'
     membership_data=mssql_query_pd(query_string)
     print('Total members are '+str(len(membership_data.index)))
     return membership_data
