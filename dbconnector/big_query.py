@@ -122,3 +122,8 @@ def append_tables(schema_to_append,schema_appended,table_id):
     
     #BQ insert
     bq_query(query_string)
+
+
+#json convert
+#print(goal_detail)
+#json_data = "\n".join([json.dumps(d) for d in goal_detail])

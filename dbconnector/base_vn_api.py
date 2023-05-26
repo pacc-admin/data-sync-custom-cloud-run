@@ -78,3 +78,53 @@ def get_base_schedule_api(app,component1,c12_plit='/',page=0):
     raw_output = requests.post(url, headers=h, data=p).json()
     
     return raw_output
+
+
+###base goal
+def get_cycles(access_token):
+    print('get path')
+    url='https://goal.base.vn/extapi/v1/cycle/list'
+
+    raw_output=requests.post(url,data=access_token).json()['cycles']
+    return raw_output
+
+
+def get_goal_id(access_token):
+    print('get goal id')
+    cycles_paths=[]
+    cycles_response=get_cycles(access_token)
+    for d in cycles_response:
+        cycles_paths.append(d['path'])
+    print('cycles_paths is')
+    print(cycles_paths)
+
+    goal_ids=[]
+    for path in cycles_paths:
+        goal_id_cycles=[]
+        d={**access_token,**{'path':path}}
+        url='https://goal.base.vn/extapi/v1/cycle/get.full'
+        response=requests.post(url,data=d).json()
+        
+        for d in response['goals']:
+            goal_id_cycles.append(d['id'])
+        goal_ids=goal_ids+goal_id_cycles
+        
+    print(goal_ids)
+    return goal_ids
+
+def get_base_goal_api(app):
+    access_token=etract_variable_yml_dict(app)
+    goal_ids=get_goal_id(access_token)
+    goal_detail=[]
+    for goal_id in goal_ids:
+        print('goal detail extract')
+        print(goal_id)
+        d={**access_token,**{'id':goal_id}}
+        url='https://goal.base.vn/extapi/v1/goal/get'
+    
+        response=requests.post(url,data=d).json()
+        goal_detail_response=response['goal']
+        goal_detail.append(goal_detail_response)
+    
+    print('finish getting raw output')
+    return goal_detail

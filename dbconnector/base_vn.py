@@ -3,7 +3,7 @@ from pd_process import pd_last_update,pd_type_change
 from google.cloud import bigquery
 import pandas as pd
 import inflect
-from base_vn_api import base_vn_connect_hiring,base_vn_connect_hrm_payroll,get_base_schedule_api
+from base_vn_api import base_vn_connect_hiring,base_vn_connect_hrm_payroll,get_base_schedule_api,get_base_goal_api
 import os
 
 def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1='',c12_plit='/'):
@@ -12,7 +12,10 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1
 
     elif app=='schedule':
         raw_output=get_base_schedule_api(app,component1,c12_plit=c12_plit,page=page)
-            
+
+    elif app=='goal':
+        raw_output=get_base_goal_api(app)
+
     else:
         raw_output=base_vn_connect_hrm_payroll(component1,app,component2=component2,updated_from=updated_from,page=page)
     return raw_output
@@ -24,13 +27,17 @@ def pd_flatten(
     ):
     p = inflect.engine()
     #flatten dataset currently nested in array column
+    
     if url_component2=='list':
         cp=p.plural(column_to_flat)
     else:
         cp=url_component2
 
     dataset = pd.DataFrame(raw_output)
-    flatten = pd.json_normalize(dataset[cp])
+    try:
+        flatten = pd.json_normalize(dataset[cp])
+    except:
+        flatten = dataset
     return flatten
 
 def pd_process(
@@ -71,6 +78,39 @@ def total_page(raw_output,total_items='total_items',items_per_page='items_per_pa
        total_page=int(round(total_page,0))
     print("Total page:",total_page)
     return total_page
+
+def single_page_insert(app,
+                       schema,
+                       query_string_incre,
+                       stop_words=[],
+                       job_config= bigquery.LoadJobConfig()
+                    ):
+    
+    raw_output=base_vn_connect(app,component1='')
+    dataset=pd.DataFrame(raw_output)
+
+    data_to_insert= pd_process(
+                                dataset,
+                                query_string_incre,
+                                stop_words=stop_words
+                            )
+    #condition to exclude
+    try:
+        condition='id in '+"('"+"','".join(data_to_insert['id'].to_list())+"')"
+    except:
+        condition='true'
+    
+
+    #insert to BQ
+    result=bq_insert(
+                schema,
+                table_id=app,
+                dataframe=data_to_insert,
+                condition=condition,
+                job_config=job_config,
+                unique_key='id'
+            )
+    print(result)
 
 
 def while_loop_page_insert(app,
