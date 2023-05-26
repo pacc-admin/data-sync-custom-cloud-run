@@ -5,10 +5,13 @@ import ipos_crm_flow,big_query
 
 brand='BGN'
 schema='IPOS_CRM_'+brand
-table='member_vouchers'
+#schema='dbo'
+#table='member_vouchers'
+table='membership_detail'
 field_to_update='update_at'
 columns_to_convert=['birth_month',
-                    'age','point',
+                    'age',
+                    'point',
                     'payment_amount',
                     'point_amount',
                     'eat_times',
