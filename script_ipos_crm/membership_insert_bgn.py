@@ -7,5 +7,14 @@ brand='BGN'
 schema='IPOS_CRM_'+brand
 table='member_vouchers'
 field_to_update='update_at'
+columns_to_convert=['birth_month',
+                    'age','point',
+                    'payment_amount',
+                    'point_amount',
+                    'eat_times',
+                    'gender',
+                    'phone_number',
+                    'is_zalo_follow'
+                ]
 
 ipos_crm_flow.crm_insert(brand,table,field_to_update)

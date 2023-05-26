@@ -66,7 +66,7 @@ def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=
                 dataframe['loaded_date'] = pd.to_datetime('today')
 
                 #change type
-                dataframe=pd_type_change(dataframe,columns=columns_to_convert,type='include')
+                dataframe=pd_type_change(dataframe,columns=columns_to_convert)
 
             if o2=='':
                 dataframe=dataframe
