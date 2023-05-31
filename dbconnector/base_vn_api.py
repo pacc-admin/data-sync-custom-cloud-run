@@ -79,6 +79,12 @@ def get_base_schedule_api(app,component1,c12_plit='/',page=0):
     
     return raw_output
 
+###base account
+def get_base_account(app,component1):
+    access_token=etract_variable_yml_dict(app)
+    url='https://account.base.vn/extapi/v1/'+component1
+    raw_output=requests.post(url,data=access_token).json()[component1]
+    return raw_output
 
 ###base goal
 def get_cycles(access_token):

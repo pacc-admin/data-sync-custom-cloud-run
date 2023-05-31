@@ -3,7 +3,7 @@ from pd_process import pd_last_update,pd_type_change
 from google.cloud import bigquery
 import pandas as pd
 import inflect
-from base_vn_api import base_vn_connect_hiring,base_vn_connect_hrm_payroll,get_base_schedule_api,get_base_goal_api
+from base_vn_api import *
 import os
 
 def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1='',c12_plit='/'):
@@ -15,6 +15,9 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1
 
     elif app=='goal':
         raw_output=get_base_goal_api(app)
+
+    elif app=='account':
+        raw_output=get_base_account(app,component1)
 
     else:
         raw_output=base_vn_connect_hrm_payroll(component1,app,component2=component2,updated_from=updated_from,page=page)
@@ -81,12 +84,14 @@ def total_page(raw_output,total_items='total_items',items_per_page='items_per_pa
 
 def single_page_insert(app,
                        schema,
+                       table,
                        query_string_incre,
+                       component1='',
                        stop_words=[],
                        job_config= bigquery.LoadJobConfig()
                     ):
     
-    raw_output=base_vn_connect(app,component1='')
+    raw_output=base_vn_connect(app,component1=component1)
     dataset=pd.DataFrame(raw_output)
 
     data_to_insert= pd_process(
@@ -104,7 +109,7 @@ def single_page_insert(app,
     #insert to BQ
     result=bq_insert(
                 schema,
-                table_id=app,
+                table_id=table,
                 dataframe=data_to_insert,
                 condition=condition,
                 job_config=job_config,

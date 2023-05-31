@@ -4,29 +4,15 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
 
 import base_vn
 
-app='goal'
-schema='BASEVN_GOAL'
-table='goal'
-stop_words=[#'data',
-            'starred',
-            'liked',
-            'stats',
-            'computed_visibility',
-            'acl',
-            'start_time',
-            'end_time',
-            'target',
-            'asp_target',
-            'current_value',
-            'initial',
-            'weight',
-            'score'
-        ]
+app='account'
+component1='units'
+table='groups'
+schema='BASEVN_ACCOUNT'
+stop_words=['num_people','type','has_image','status','official']
 
 job_config_list = bigquery.LoadJobConfig(
         schema=[
             bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
-            #bigquery.SchemaField("end_time",bigquery.enums.SqlTypeNames.FLOAT)
         ]
 )
 
@@ -34,8 +20,9 @@ query_string_incre='select max(last_update) as last_update from `pacc-raw-data.'
 
 a=base_vn.single_page_insert(app,
                        schema,
-                       table,
-                       query_string_incre,
+                       table=table,
+                       query_string_incre=query_string_incre,
+                       component1=component1,
                        stop_words=stop_words,
                        job_config=job_config_list
                     )
