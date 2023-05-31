@@ -6,16 +6,26 @@ import base_vn
 
 app='goal'
 schema='BASEVN_GOAL'
-stop_words=['data',
+stop_words=[#'data',
             'starred',
             'liked',
             'stats',
             'computed_visibility',
-            'acl'
+            'acl',
+            'start_time',
+            'end_time',
+            'target',
+            'asp_target',
+            'current_value',
+            'initial',
+            'weight',
+            'score'
         ]
+
 job_config_list = bigquery.LoadJobConfig(
         schema=[
             bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
+            #bigquery.SchemaField("end_time",bigquery.enums.SqlTypeNames.FLOAT)
         ]
 )
 
