@@ -42,7 +42,7 @@ def crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_con
     #update only changes entries
     print('start update')
     dataframe=pd_last_update(dataframe,query_string_incre,field_to_update)
-    
+
     #change type
     #dataframe=pd_type_change(dataframe,columns=columns_to_convert)  
 
@@ -67,6 +67,7 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
 def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='voucher_code'):
     df = membership_data(brand)
     user_id_list=df['membership_id'].to_list()
+    #user_id_list=['84903003380','84907090991','84968757511','84982050271','84909151071','84973382047','84901632068','84907090991']
     #schema='IPOS_CRM_'+brand
     schema='dbo'
     print(schema)
@@ -75,19 +76,24 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
     
     raw_output=[]
     for user_id in user_id_list:
-        print('start with member_id:'+user_id)
+        print('get data for member_id:'+user_id)
         raw_output_member=crm_api(brand,user_id,table,page=0)
+
         if raw_output_member==0:
             print('no data')
         else:
-            raw_output.append(raw_output_member)
-    
+            if type(raw_output_member) is dict:
+                raw_output.append(raw_output_member)
+            else:
+                raw_output=raw_output+raw_output_member
+        
     dataframe=crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_convert)
     #try:
     #    dataframe=dataframe[dataframe[unique_id].notnull()]
     #except:
     #    dataframe=dataframe
-        
+    
+    print(dataframe)
     job_config_list = bigquery.LoadJobConfig(
             schema=[
                 bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
@@ -105,7 +111,7 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
     fd.close()
 
     #insert data to BQ
-    bq_insert(schema,table,dataframe,job_config=job_config_list)
+    #bq_insert(schema,table,dataframe,job_config=job_config_list)
 
 
 def crm_campaigns_insert(brand):
