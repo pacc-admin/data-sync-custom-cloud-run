@@ -31,7 +31,7 @@ def crm_api(brand,user_id,table,page=0):
     
     return r
     
-def crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_convert=[]):
+def crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_preserve=[]):
     #specify updating dimension
     query_string_incre='select max(unix_seconds(timestamp('+field_to_update+'))) as '+field_to_update+'''
                            from `pacc-raw-data.'''+schema+'''.'''+table+'`'
@@ -44,7 +44,7 @@ def crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_con
     dataframe=pd_last_update(dataframe,query_string_incre,field_to_update)
 
     #change type
-    #dataframe=pd_type_change(dataframe,columns=columns_to_convert)  
+    dataframe=pd_type_change(dataframe,columns=columns_to_preserve)  
 
     #adding column
     dataframe['membership_id']=user_id
@@ -64,7 +64,7 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
         pageno=pageno+1
         crm_transform(brand,user_id,table,field_to_update,o1,o2)
 
-def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='voucher_code'):
+def crm_insert(brand,table,field_to_update,columns_to_preserve=[],unique_id=''):
     df = membership_data(brand)
     user_id_list=df['membership_id'].to_list()
     #user_id_list=['84903003380','84907090991','84968757511','84982050271','84909151071','84973382047','84901632068','84907090991']
@@ -87,7 +87,7 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
             else:
                 raw_output=raw_output+raw_output_member
         
-    dataframe=crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_convert)
+    dataframe=crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_preserve)
     #try:
     #    dataframe=dataframe[dataframe[unique_id].notnull()]
     #except:
