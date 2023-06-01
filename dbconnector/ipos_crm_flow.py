@@ -24,61 +24,32 @@ def crm_api(brand,user_id,table,page=0):
 
     #call API
     try:
-        r = requests.get(url, params=p).json()
+        r = requests.get(url, params=p).json()['data']
     except:
+        print('error')
         r=0
     
     return r
     
-def crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=[],o1='',o2=''):
-    r=crm_api(brand,user_id,table)
-
+def crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_convert=[]):
     #specify updating dimension
-    user_filter='and membership_id='+"'"+user_id+"'"
     query_string_incre='select max(unix_seconds(timestamp('+field_to_update+'))) as '+field_to_update+'''
-                           from `pacc-raw-data.'''+schema+'''.'''+table+'` where membership_id='+"'"+user_id+"'"
+                           from `pacc-raw-data.'''+schema+'''.'''+table+'`'
+
+    #convert to df
+    dataframe=pd.DataFrame(raw_output)
+
+    #update only changes entries
+    print('start update')
+    dataframe=pd_last_update(dataframe,query_string_incre,field_to_update)
     
-    #convert to pandas dataframe
-    if r!=0:
-        try:
-            a=r['data']
-            if o1=='':
-                object_convert=a
-            else:
-                object_convert=a[o1]
+    #change type
+    #dataframe=pd_type_change(dataframe,columns=columns_to_convert)  
 
-            pandas_convert=pd.DataFrame.from_dict(object_convert)
-            if pandas_convert.empty:
-                dataframe=pd.DataFrame.from_dict([object_convert])
-            else:
-                dataframe=pandas_convert
+    #adding column
+    dataframe['membership_id']=user_id
+    dataframe['loaded_date'] = pd.to_datetime('today')
 
-            if dataframe.empty:
-                print('empty dataframe')
-            
-            else:
-                #update only changes entries
-                print('start update')
-                dataframe=pd_last_update(dataframe,query_string_incre,field_to_update)
-
-                #adding column
-                dataframe['membership_id']=user_id
-                dataframe['loaded_date'] = pd.to_datetime('today')
-
-                #change type
-                dataframe=pd_type_change(dataframe,columns=columns_to_convert)
-
-            if o2=='':
-                dataframe=dataframe
-            else:
-                dataframe=dataframe[dataframe[o2]>0]
-            
-        except:
-            dataframe=pd.DataFrame()
-
-    else:
-        dataframe=pd.DataFrame()
-    print(dataframe)    
     return dataframe
 
 def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
@@ -102,18 +73,21 @@ def crm_insert(brand,table,field_to_update,columns_to_convert=[],unique_id='vouc
     
     print('insert table '+table)
     
-    dataframe=pd.DataFrame()
+    raw_output=[]
     for user_id in user_id_list:
         print('start with member_id:'+user_id)
-        dataframe_user_id=crm_transform(brand,user_id,schema,table,field_to_update,columns_to_convert=columns_to_convert)
-        dataframe=pd.concat([dataframe,dataframe_user_id])
+        raw_output_member=crm_api(brand,user_id,table,page=0)
+        if raw_output_member==0:
+            print('no data')
+        else:
+            raw_output.append(raw_output_member)
     
-    try:
-        dataframe=dataframe[dataframe[unique_id].notnull()]
-    except:
-        dataframe=dataframe
+    dataframe=crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_convert)
+    #try:
+    #    dataframe=dataframe[dataframe[unique_id].notnull()]
+    #except:
+    #    dataframe=dataframe
         
-    print(dataframe)
     job_config_list = bigquery.LoadJobConfig(
             schema=[
                 bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
