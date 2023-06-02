@@ -111,7 +111,7 @@ def crm_insert(brand,table,field_to_update,columns_to_preserve=[],unique_id=''):
     fd.close()
 
     #insert data to BQ
-    #bq_insert(schema,table,dataframe,job_config=job_config_list)
+    bq_insert(schema,table,dataframe,job_config=job_config_list)
 
 
 def crm_campaigns_insert(brand):
