@@ -1,4 +1,4 @@
-create or replace table `pacc-raw-data.BOOKING_DATA.cs_booking` (
+create or replace table `pacc-raw-data.GOOGLE_SHEETS.cs_booking` (
     outlet_code string,
     created_by string,
     booking_date string,
@@ -7,6 +7,7 @@ create or replace table `pacc-raw-data.BOOKING_DATA.cs_booking` (
     customer_name string,
     phone string,
     pax1 string,
+    promo_code string,
     note string,
     customer_order string,
     deposit string,
