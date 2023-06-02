@@ -101,9 +101,8 @@ def get_goal_id(access_token):
     cycles_response=get_cycles(access_token)
     for d in cycles_response:
         cycles_paths.append(d['path'])
-    print('cycles_paths is')
-    print(cycles_paths)
-    cycles_paths=['q42023-515']
+    print('cycles_paths is '+str(cycles_paths))
+
     goal_ids=[]
     for path in cycles_paths:
         goal_id_cycles=[]
@@ -115,7 +114,7 @@ def get_goal_id(access_token):
             goal_id_cycles.append(d['id'])
         goal_ids=goal_ids+goal_id_cycles
         
-    print(goal_ids)
+    print('goal id list is '+str(goal_ids))
     return goal_ids
 
 def get_base_goal_api(app):
@@ -123,8 +122,7 @@ def get_base_goal_api(app):
     goal_ids=get_goal_id(access_token)
     goal_detail=[]
     for goal_id in goal_ids:
-        print('goal detail extract')
-        print(goal_id)
+        print('goal detail extract for goal id '+str(goal_id))
         d={**access_token,**{'id':goal_id}}
         url='https://goal.base.vn/extapi/v1/goal/get'
     
