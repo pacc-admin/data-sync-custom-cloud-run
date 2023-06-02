@@ -1,10 +1,11 @@
 from big_query import bq_insert_streaming,bq_query,bq_pandas,bq_insert,bq_delete
 from mssql import mssql_query_pd
 from pd_process import pd_last_update,pd_type_change
+from dict_function import incremental_dict
 from google.cloud import bigquery
 import requests
 import pandas as pd
-import time
+import datetime
 
 def membership_data(brand,condition=''):
     database_name='IPOSS'+brand
@@ -30,6 +31,30 @@ def crm_api(brand,user_id,table,page=0):
         r=0
     
     return r
+
+def crm_get_full_list(brand,table,page=0):
+    df = membership_data(brand)
+    user_id_list=df['membership_id'].to_list()
+    #user_id_list=['84903003380','84907090991','84968757511','84982050271','84909151071','84973382047','84901632068','84907090991']
+    
+    raw_output=[]
+    for user_id in user_id_list:
+        print('get data for member_id:'+user_id)
+        raw_output_member=crm_api(brand,user_id,table,page=0)
+
+        if raw_output_member==0:
+            print('no data')
+        else:
+            if type(raw_output_member) is dict:
+                raw_output.append(raw_output_member)
+            else:
+                raw_output=raw_output+raw_output_member   
+
+        for raw_output_dict in raw_output:
+            raw_output_dict['membership_id']=user_id
+            raw_output_dict['loaded_date']=datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f') + ' UTC'
+
+    return raw_output
     
 def crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_preserve=[]):
     #specify updating dimension
@@ -65,28 +90,11 @@ def crm_insert_with_page(brand,user_id,table,field_to_update,o1='',o2=''):
         crm_transform(brand,user_id,table,field_to_update,o1,o2)
 
 def crm_insert(brand,table,field_to_update,columns_to_preserve=[],unique_id=''):
-    df = membership_data(brand)
-    user_id_list=df['membership_id'].to_list()
-    #user_id_list=['84903003380','84907090991','84968757511','84982050271','84909151071','84973382047','84901632068','84907090991']
     #schema='IPOS_CRM_'+brand
-    schema='dbo'
-    print(schema)
-    
+    schema='dbo'    
     print('insert table '+table)
     
-    raw_output=[]
-    for user_id in user_id_list:
-        print('get data for member_id:'+user_id)
-        raw_output_member=crm_api(brand,user_id,table,page=0)
-
-        if raw_output_member==0:
-            print('no data')
-        else:
-            if type(raw_output_member) is dict:
-                raw_output.append(raw_output_member)
-            else:
-                raw_output=raw_output+raw_output_member
-        
+    source_output=dict_function.incremental_dict(raw_output,column_updated,schema,table)    
     dataframe=crm_transform(raw_output,user_id,schema,table,field_to_update,columns_to_preserve)
     #try:
     #    dataframe=dataframe[dataframe[unique_id].notnull()]
