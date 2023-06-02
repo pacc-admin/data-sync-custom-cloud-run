@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from google.oauth2 import service_account
 import os
+import io
 
 #Setting BQ credential in environment
 os.environ.setdefault("GCLOUD_PROJECT", 'pacc-raw-data')
@@ -123,7 +124,39 @@ def append_tables(schema_to_append,schema_appended,table_id):
     #BQ insert
     bq_query(query_string)
 
+def bq_insert_from_json(json_data,schema,table_id):
+    client=connect_to_bq()
+    table_id_full = 'pacc-raw-data.'+schema+'.'+table_id
+    job_config = bigquery.LoadJobConfig()
+    job_config.source_format = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
+    job_config.autodetect = True
+    job_config._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
 
+
+    json_file = io.StringIO(json_data)
+
+    #load
+    job = client.load_table_from_file(json_file, table_id_full, job_config=job_config)
+
+    job.result()
+    table=client.get_table(table_id_full)
+    print(str(
+            "{} rows and {} columns to {}".format(
+            table.num_rows, len(table.schema), table_id
+        )
+    ))
+
+def bq_last_update(query_string_incre,column_updated):
+    try:
+        bq_table_date=bq_pandas(query_string_incre)[column_updated].astype(float).to_list()[0]
+        if math.isnan(bq_table_date)==True:
+            last_updated_date=0
+        else:
+            last_updated_date=bq_table_date
+    except:
+        last_updated_date=0
+    
+    return last_updated_date
 #json convert
 #print(goal_detail)
 #json_data = "\n".join([json.dumps(d) for d in goal_detail])

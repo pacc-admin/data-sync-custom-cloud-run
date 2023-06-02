@@ -1,7 +1,7 @@
 import pandas as pd
 import time
 from datetime import datetime, timedelta
-from big_query import bq_pandas
+from big_query import *
 import math
 import numpy as np
 pd.options.mode.chained_assignment = None
@@ -38,14 +38,7 @@ def pd_nested_schema(df,column,mode='normalized',drop_columns=''):
 
 
 def pd_last_update(df,query_string_incre,column_updated='last_update'):
-    try:
-        bq_table_date=bq_pandas(query_string_incre)[column_updated].astype(float).to_list()[0]
-        if math.isnan(bq_table_date)==True:
-            last_updated_date=0
-        else:
-            last_updated_date=bq_table_date
-    except:
-        last_updated_date=0
+    last_updated_date=bq_last_update(query_string_incre,column_updated)
     
     print('last update date is '+str(last_updated_date))
 

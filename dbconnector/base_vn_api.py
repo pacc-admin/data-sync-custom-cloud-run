@@ -103,7 +103,7 @@ def get_goal_id(access_token):
         cycles_paths.append(d['path'])
     print('cycles_paths is')
     print(cycles_paths)
-
+    cycles_paths=['q42023-515']
     goal_ids=[]
     for path in cycles_paths:
         goal_id_cycles=[]
