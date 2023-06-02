@@ -8,16 +8,10 @@ brand='BGN'
 schema='dbo'
 #table='member_vouchers'
 table='membership_detail'
-field_to_update='update_at'
-columns_to_preserve=['gender',
-                    'address',
-                    'point',
-                    'payment_amount',
-                    'point_amount',
-                    'eat_times',
-                    'is_zalo_follow',
-                    'age',
-                    'phone_number'
-                ]
+column_updated='update_at'
 
-ipos_crm_flow.crm_insert(brand,table,field_to_update,columns_to_preserve)
+
+#execute
+raw_output=ipos_crm_flow.crm_get_full_list(brand,table)
+source_output=dict_function.incremental_dict(raw_output,column_updated,schema,table,column_type='datetime')
+big_query.bq_insert_from_json(source_output,schema,table_id=table)
