@@ -1,7 +1,7 @@
 import sys, os
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
-import ipos_crm_flow,big_query
+import ipos_crm_flow,big_query,dict_function
 
 brand='BGN'
 #schema='IPOS_CRM_'+brand

@@ -6,6 +6,7 @@ import numpy as np
 from google.oauth2 import service_account
 import os
 import io
+import json
 import math
 
 #Setting BQ credential in environment
