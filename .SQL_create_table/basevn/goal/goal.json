@@ -1,0 +1,568 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "user_id": {
+        "type": "string"
+      },
+      "creator_id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "content": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "state": {
+        "type": "string"
+      },
+      "locked": {
+        "type": "string"
+      },
+      "rating": {
+        "type": "string"
+      },
+      "metatype": {
+        "type": "string"
+      },
+      "privacy": {
+        "type": "string"
+      },
+      "start_time": {
+        "type": "string"
+      },
+      "end_time": {
+        "type": "string"
+      },
+      "owners": {
+        "type": "array",
+        "items": {}
+      },
+      "followers": {
+        "type": "array",
+        "items": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "watchers": {
+        "type": "array",
+        "items": {}
+      },
+      "cached_krs": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "user_id": {
+                "type": "string"
+              },
+              "creator_id": {
+                "type": "string"
+              },
+              "start_time": {
+                "type": "string"
+              },
+              "end_time": {
+                "type": "string"
+              },
+              "current_value": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "initial": {
+                "type": "string"
+              },
+              "metric_id": {
+                "type": "string"
+              },
+              "weight": {
+                "type": "string"
+              },
+              "workload": {
+                "type": "string"
+              },
+              "result": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "string"
+              },
+              "goal_id": {
+                "type": "string"
+              },
+              "team_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "user_id",
+              "creator_id",
+              "start_time",
+              "end_time",
+              "current_value",
+              "target",
+              "initial",
+              "metric_id",
+              "weight",
+              "workload",
+              "result",
+              "confidence",
+              "goal_id",
+              "team_id"
+            ]
+          }
+        ]
+      },
+      "cached_checkins": {
+        "type": "array",
+        "items": {}
+      },
+      "target": {
+        "type": "string"
+      },
+      "asp_target": {
+        "type": "string"
+      },
+      "current_value": {
+        "type": "string"
+      },
+      "daily_updates": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "ts": {
+                "type": "integer"
+              },
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "ts",
+              "value"
+            ]
+          }
+        ]
+      },
+      "initial": {
+        "type": "string"
+      },
+      "committed": {
+        "type": "string"
+      },
+      "weight": {
+        "type": "string"
+      },
+      "score": {
+        "type": "string"
+      },
+      "self_review": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "metatype": {
+            "type": "string"
+          },
+          "since": {
+            "type": "integer"
+          },
+          "confidence": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "string"
+          },
+          "quality": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "metatype",
+          "since",
+          "confidence",
+          "rating",
+          "quality"
+        ]
+      },
+      "manager_review": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "metatype": {
+            "type": "string"
+          },
+          "since": {
+            "type": "integer"
+          },
+          "confidence": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "quality": {
+            "type": "string"
+          },
+          "unset": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "metatype",
+          "since",
+          "confidence",
+          "rating",
+          "quality",
+          "unset"
+        ]
+      },
+      "target_id": {
+        "type": "string"
+      },
+      "metric_id": {
+        "type": "string"
+      },
+      "team_id": {
+        "type": "string"
+      },
+      "last_update": {
+        "type": "string"
+      },
+      "since": {
+        "type": "string"
+      },
+      "cycle_id": {
+        "type": "string"
+      },
+      "keywords": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "target_export": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "target": {
+                "type": "integer"
+              },
+              "current_value": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "name",
+              "target",
+              "current_value"
+            ]
+          },
+          "cached_target_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "target_export",
+          "cached_target_name"
+        ]
+      },
+      "starred": {
+        "type": "integer"
+      },
+      "liked": {
+        "type": "integer"
+      },
+      "reactions": {
+        "type": "array",
+        "items": {}
+      },
+      "confidence": {
+        "type": "string"
+      },
+      "grade": {
+        "type": "string"
+      },
+      "files": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "fid": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "size": {
+                "type": "integer"
+              },
+              "image": {
+                "type": "integer"
+              },
+              "username": {
+                "type": "string"
+              },
+              "since": {
+                "type": "integer"
+              },
+              "is_templated": {
+                "type": "integer"
+              },
+              "origin": {
+                "type": "integer"
+              },
+              "dimension": {
+                "type": "array",
+                "items": {}
+              },
+              "url": {
+                "type": "string"
+              },
+              "src": {
+                "type": "string"
+              },
+              "download": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "fid",
+              "type",
+              "name",
+              "size",
+              "image",
+              "username",
+              "since",
+              "is_templated",
+              "origin",
+              "dimension",
+              "url",
+              "src",
+              "download"
+            ]
+          }
+        ]
+      },
+      "stats": {
+        "type": "object",
+        "properties": {
+          "comments": {
+            "type": "integer"
+          },
+          "objectives": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "comments",
+          "objectives"
+        ]
+      },
+      "type": {
+        "type": "string"
+      },
+      "link": {
+        "type": "string"
+      },
+      "abs_link": {
+        "type": "string"
+      },
+      "computed_visibility": {
+        "type": "object",
+        "properties": {
+          "visible": {
+            "type": "integer"
+          },
+          "review_visible": {
+            "type": "integer"
+          },
+          "managed": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "visible",
+          "review_visible",
+          "managed"
+        ]
+      },
+      "visible": {
+        "type": "integer"
+      },
+      "hid": {
+        "type": "string"
+      },
+      "token": {
+        "type": "string"
+      },
+      "signed_token": {
+        "type": "string"
+      },
+      "viewed_token": {
+        "type": "string"
+      },
+      "target_export": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "target": {
+            "type": "integer"
+          },
+          "current_value": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "target",
+          "current_value"
+        ]
+      },
+      "target_name": {
+        "type": "string"
+      },
+      "acl": {
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "integer"
+          },
+          "edit": {
+            "type": "integer"
+          },
+          "remove": {
+            "type": "integer"
+          },
+          "edit_team": {
+            "type": "integer"
+          },
+          "create_result": {
+            "type": "integer"
+          },
+          "checkin": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "view",
+          "edit",
+          "remove",
+          "edit_team",
+          "create_result",
+          "checkin"
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "user_id",
+      "creator_id",
+      "name",
+      "content",
+      "status",
+      "state",
+      "locked",
+      "rating",
+      "metatype",
+      "privacy",
+      "start_time",
+      "end_time",
+      "owners",
+      "followers",
+      "watchers",
+      "cached_krs",
+      "cached_checkins",
+      "target",
+      "asp_target",
+      "current_value",
+      "daily_updates",
+      "initial",
+      "committed",
+      "weight",
+      "score",
+      "self_review",
+      "manager_review",
+      "target_id",
+      "metric_id",
+      "team_id",
+      "last_update",
+      "since",
+      "cycle_id",
+      "keywords",
+      "data",
+      "starred",
+      "liked",
+      "reactions",
+      "confidence",
+      "grade",
+      "files",
+      "stats",
+      "type",
+      "link",
+      "abs_link",
+      "computed_visibility",
+      "visible",
+      "hid",
+      "token",
+      "signed_token",
+      "viewed_token",
+      "target_export",
+      "target_name",
+      "acl"
+    ]
+  }
