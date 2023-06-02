@@ -2,40 +2,15 @@ import sys, os
 from google.cloud import bigquery
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
 
-import base_vn
+import base_vn_api,big_query,dict_function
+import json
 
 app='goal'
-schema='BASEVN_GOAL'
+schema='dbo'
 table='goal'
-stop_words=[#'data',
-            'starred',
-            'liked',
-            'stats',
-            'computed_visibility',
-            'acl',
-            'start_time',
-            'end_time',
-            'target',
-            'asp_target',
-            'current_value',
-            'initial',
-            'weight',
-            'score'
-        ]
+column_updated='last_update'
 
-job_config_list = bigquery.LoadJobConfig(
-        schema=[
-            bigquery.SchemaField("loaded_date",bigquery.enums.SqlTypeNames.TIMESTAMP)
-            #bigquery.SchemaField("end_time",bigquery.enums.SqlTypeNames.FLOAT)
-        ]
-)
-
-query_string_incre='select max(last_update) as last_update from `pacc-raw-data.'+schema+'.'+app+'`'
-
-a=base_vn.single_page_insert(app,
-                       schema,
-                       table,
-                       query_string_incre,
-                       stop_words=stop_words,
-                       job_config=job_config_list
-                    )
+#execute
+raw_output=base_vn_api.get_base_goal_api(app)
+source_output=dict_function.incremental_dict(raw_output,column_updated,schema,table)
+big_query.bq_insert_from_json(source_output,schema,table_id=table)
