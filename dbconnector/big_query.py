@@ -126,7 +126,7 @@ def append_tables(schema_to_append,schema_appended,table_id):
     #BQ insert
     bq_query(query_string)
 
-def bq_insert_from_json(source_output,schema,table_id):
+def bq_insert_from_json(source_output,schema,table_id,job_config=bigquery.LoadJobConfig()):
     client=connect_to_bq()
     table_id_full = 'pacc-raw-data.'+schema+'.'+table_id
     job_config = bigquery.LoadJobConfig()
@@ -150,6 +150,23 @@ def bq_insert_from_json(source_output,schema,table_id):
                 table.num_rows, len(table.schema), table_id
             )
         ))
+
+def incremental_bq_insert_from_json(source_output,schema,table_id,unique_key,job_config=bigquery.LoadJobConfig()):
+    #condition to exclude
+    try:
+        condition='cast('+unique_key+' as string) in '+ '(' + ','.join([f"'{source_output_dict[unique_key]}'" for source_output_dict in source_output]) + ')'
+    except:
+        print('error occurs')
+    
+    bq_delete(schema,table_id,condition=condition)
+    bq_insert_from_json(source_output,schema,table_id,job_config=job_config)
+
+def full_refresh_bq_insert_from_json(source_output,schema,table_id,job_config=bigquery.LoadJobConfig()):
+    #condition to exclude
+    condition='true'
+    
+    bq_delete(schema,table_id,condition=condition)
+    bq_insert_from_json(source_output,schema,table_id,job_config=job_config)
 
 def bq_last_update(query_string_incre,column_updated):
     try:
