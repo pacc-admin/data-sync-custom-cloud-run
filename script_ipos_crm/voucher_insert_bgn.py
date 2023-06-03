@@ -5,10 +5,7 @@ import ipos_crm_flow,big_query,dict_function
 
 brand='BGN'
 schema='IPOS_CRM_'+brand
-#table='member_vouchers'
-table='membership_detail'
-column_updated='update_at'
-
+table='member_vouchers'
 
 #execute
 raw_output=ipos_crm_flow.crm_get_full_list(brand,table)
