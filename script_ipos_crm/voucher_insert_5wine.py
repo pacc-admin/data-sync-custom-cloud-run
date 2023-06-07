@@ -9,6 +9,4 @@ table='member_vouchers'
 
 #execute
 source_output=ipos_crm_flow.crm_get_full_list(brand,table)
-print(source_output)
-#source_output=dict_function.incremental_dict(raw_output,column_updated,schema,table,column_type='datetime')
 big_query.full_refresh_bq_insert_from_json(source_output,schema,table_id=table)
