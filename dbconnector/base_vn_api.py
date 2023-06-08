@@ -87,48 +87,52 @@ def get_base_account(app,component1):
     return raw_output
 
 ###base goal
-def get_cycles(access_token):
+def get_cycles(app):
     print('get path')
+    access_token=etract_variable_yml_dict(app)
     url='https://goal.base.vn/extapi/v1/cycle/list'
 
     raw_output=requests.post(url,data=access_token).json()['cycles']
     return raw_output
 
 
-def get_goal_id(access_token):
-    print('get goal id')
+def get_metric_id(app,metric):
+    print('get '+metric+' id')
+    access_token=etract_variable_yml_dict(app)
     cycles_paths=[]
-    cycles_response=get_cycles(access_token)
+    cycles_response=get_cycles(app)
+
+    metric_id_cycles=[]
+    metric_object=metric+'s'
+
     for d in cycles_response:
         cycles_paths.append(d['path'])
     print('cycles_paths is '+str(cycles_paths))
 
-    goal_ids=[]
     for path in cycles_paths:
-        goal_id_cycles=[]
         d={**access_token,**{'path':path}}
         url='https://goal.base.vn/extapi/v1/cycle/get.full'
         response=requests.post(url,data=d).json()
-        
-        for d in response['goals']:
-            goal_id_cycles.append(d['id'])
-        goal_ids=goal_ids+goal_id_cycles
-        
-    print('goal id list is '+str(goal_ids))
-    return goal_ids
 
-def get_base_goal_api(app):
+        for metric_list in response[metric_object]:
+            metric_id_cycles.append(metric_list['id'])
+        
+    print(metric+' id list is '+str(metric_id_cycles))
+    return metric_id_cycles
+
+def get_base_goal_metric_api(app,metric):
     access_token=etract_variable_yml_dict(app)
-    goal_ids=get_goal_id(access_token)
-    goal_detail=[]
-    for goal_id in goal_ids:
-        print('goal detail extract for goal id '+str(goal_id))
-        d={**access_token,**{'id':goal_id}}
-        url='https://goal.base.vn/extapi/v1/goal/get'
+    metric_ids=get_metric_id(app,metric)
+    metric_detail=[]
+
+    for metric_id in metric_ids:
+        print(metric+' detail extract for '+metric+' id '+str(metric_id))
+        d={**access_token,**{'id':metric_id}}
+        url='https://goal.base.vn/extapi/v1/'+metric+'/get'
     
         response=requests.post(url,data=d).json()
-        goal_detail_response=response['goal']
-        goal_detail.append(goal_detail_response)
+        metric_detail_response=response[metric]
+        metric_detail.append(metric_detail_response)
     
     print('finish getting raw output')
-    return goal_detail
+    return metric_detail
