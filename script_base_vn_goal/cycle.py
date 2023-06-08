@@ -11,4 +11,9 @@ table='cycle'
 
 #execute
 source_output=base_vn_api.get_cycles(app)
+
+for source_output_dict in source_output:
+    for key in ['alert','webhooks']:
+        source_output_dict[key]=str(source_output_dict[key])
+
 big_query.full_refresh_bq_insert_from_json(source_output,schema,table_id=table)
