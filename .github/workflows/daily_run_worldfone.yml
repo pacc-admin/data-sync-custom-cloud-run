@@ -1,4 +1,4 @@
-name: daily_run_basevn
+name: daily_run_worldfone
 
 on:
    schedule:
