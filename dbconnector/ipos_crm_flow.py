@@ -41,6 +41,7 @@ def crm_get_full_list(brand,table,page=0):
     for user_id in user_id_list:
         print('get data for member_id:'+user_id)
         raw_output_member=crm_api(brand,user_id,table,page=0)
+        raw_output_member['membership_id']=user_id
 
         if raw_output_member==0:
             print('no data')
@@ -51,7 +52,6 @@ def crm_get_full_list(brand,table,page=0):
                 raw_output=raw_output+raw_output_member   
 
         for raw_output_dict in raw_output:
-            raw_output_dict['membership_id']=user_id
             raw_output_dict['loaded_date']=datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f') + ' UTC'
 
     return raw_output
