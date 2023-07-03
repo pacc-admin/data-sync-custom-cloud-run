@@ -20,32 +20,31 @@ def worldfone_pd(start_date,end_date):
     #getting total pages
     data_to_insert=pd.DataFrame()
     raw_output = get_worldfone_api(startdate=start_date,enddate=end_date)
-    total_pages=raw_output['max_page']+1
+    total_pages = raw_output['max_page']+1
     print('Total page is '+str(total_pages))
 
     #concat df to all pages data
     for page in range(1,total_pages):
         raw_output = get_worldfone_api(startdate=start_date,enddate=end_date,page=page)
-        df=pd.DataFrame(raw_output['data'])
-        data_to_insert=pd.concat([data_to_insert,df])
+        df = pd.DataFrame(raw_output['data'])
+        data_to_insert = pd.concat([data_to_insert,df])
         data_to_insert['loaded_date'] = pd.to_datetime('today')
     
     return data_to_insert
 
 def worldfone_bq(schema,table_id):
-    query_string="select max(unix_seconds(timestamp(calldate || ' UTC+7'))) as calldate FROM "+'`pacc-raw-data.'+schema+'.'+table_id+'`'
-    start_date=bq_pandas(query_string)['calldate'].astype(int).to_list()[0] + 1
+    query_string = "select max(unix_seconds(timestamp(calldate || ' UTC+7'))) as calldate FROM "+'`pacc-raw-data.'+schema+'.'+table_id+'`'
+    start_date = bq_pandas(query_string)['calldate'].astype(int).to_list()[0] + 1
     end_date = int(time.mktime(datetime.today().timetuple()))
 
-    if unix_month_no(end_date)==unix_month_no(start_date):
-        end_date=end_date
+    if unix_month_no(end_date) == unix_month_no(start_date):
+        end_date = end_date
     else:
-        end_date=last_unix_t_of_month(start_date)
+        end_date = last_unix_t_of_month(start_date)
 
-    data_to_insert=worldfone_pd(start_date,end_date=end_date)
+    data_to_insert = worldfone_pd(start_date,end_date=end_date)
 
     if data_to_insert.to_dict('records')==[]:
-        
         
         if last_date_of_month(start_date)==convert_unix_to_date(start_date) and end_date==last_unix_t_of_month(start_date):
                 
