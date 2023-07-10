@@ -37,6 +37,9 @@ def worldfone_bq(schema,table_id):
     start_date = bq_pandas(query_string)['calldate'].astype(int).to_list()[0] + 1
     end_date = int(time.mktime(datetime.today().timetuple()))
 
+    print('start date is'+str(start_date))
+    print('end date is'+str(end_date))
+
     if unix_month_no(end_date) == unix_month_no(start_date):
         end_date = end_date
     else:
@@ -59,7 +62,7 @@ def worldfone_bq(schema,table_id):
                 
                 else:
                     print('continue')
-                    #remove column with id matches the inserted rows from basevn
+                    #remove column with id matches the inserted rows from worldphone
                     unique_key=data_to_insert['uniqueid']+data_to_insert['direction']
                     row_to_exclude="('"+"','".join(unique_key.to_list())+"')"
                     condition='concat(uniqueid,direction) in'+row_to_exclude

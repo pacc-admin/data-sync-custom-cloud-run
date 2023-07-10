@@ -20,7 +20,7 @@ def unix_month_no(unix_dt):
 
 def last_unix_t_of_month(unix_dt):
     last_date=last_date_of_month(unix_dt)
-    last_date_dt=datetime.strptime(str(last_date)+' 04:59:59', "%Y-%m-%d %H:%M:%S")
+    last_date_dt=datetime.strptime(str(last_date)+' 23:59:59', "%Y-%m-%d %H:%M:%S")
     
     last_date_unix= int(time.mktime(last_date_dt.timetuple()))
     print('last timestamp of month is: '+str(last_date_unix))
