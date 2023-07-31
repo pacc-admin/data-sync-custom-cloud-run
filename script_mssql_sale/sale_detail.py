@@ -8,6 +8,7 @@ import mssql
 database = ['IPOSSBGN','IPOSS5WINE']
 schema='IPOS_SALE'
 date_schema='tran_date'
+date_to_delete= 30
 
 for database_name in database:
     table_name = 'sale_detail'
@@ -48,7 +49,7 @@ for database_name in database:
                 ]
     )
 
-    condition = "data_source ='"+database_name+"' and date_diff(current_date,date(tran_date),day) <="+date_to_delete
+    condition = "data_source ='"+database_name+"' and date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
 
     big_query.bq_delete(schema,table_name,condition=condition)
 
