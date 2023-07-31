@@ -1,4 +1,5 @@
 from google.cloud import bigquery
+import big_query
 import sys, os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
 import mssql
@@ -46,6 +47,10 @@ for database_name in database:
                    bigquery.SchemaField("tran_date",bigquery.enums.SqlTypeNames.DATETIME),
                 ]
     )
+
+    condition = "data_source ='"+database_name+"' and date_diff(current_date,date(tran_date),day) <="+date_to_delete
+
+    big_query.bq_delete(schema,table_name,condition=condition)
 
     mssql.incremental_load_sale(
                           query_string=query_string,

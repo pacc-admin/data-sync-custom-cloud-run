@@ -1,11 +1,13 @@
 from google.cloud import bigquery
+import big_query
 import sys, os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
 import mssql
 
 database = ['IPOSSBGN','IPOSS5WINE']
-schema='IPOS_SALE'
-date_schema='tran_date'
+schema= 'IPOS_SALE'
+date_schema= 'tran_date'
+date_to_delete= 30
 
 for database_name in database:
     table_name = 'sale'
@@ -28,6 +30,10 @@ for database_name in database:
                    bigquery.SchemaField("DATE_LAST",bigquery.enums.SqlTypeNames.TIMESTAMP),
                 ]
     )
+
+    condition = "data_source ='"+database_name+"' and date_diff(current_date,date(tran_date),day) <="+date_to_delete
+
+    big_query.bq_delete(schema,table_name,condition=condition)
 
     mssql.incremental_load_sale(
                           query_string=query_string,
