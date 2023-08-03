@@ -42,9 +42,10 @@ def crm_get_full_list(brand,table,page=0):
         print('get data for member_id:'+user_id)
         raw_output_member=crm_api(brand,user_id,table,page=0)
 
-        if raw_output_member==0:
+        if raw_output_member==0 or raw_output_member==[]:
             print('no data')
         else:
+            print(raw_output_member)
             raw_output_member['membership_id']=user_id
             if type(raw_output_member) is dict:
                 raw_output.append(raw_output_member)
