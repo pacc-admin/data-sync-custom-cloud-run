@@ -33,9 +33,9 @@ def crm_api(brand,user_id,table,page=0):
     return r
 
 def crm_get_full_list(brand,table,page=0):
-    df = membership_data(brand)
-    user_id_list=df['membership_id'].to_list()
-    #user_id_list=['84903003380','84907090991','84968757511','84982050271','84909151071','84973382047','84901632068','84907090991']
+    #df = membership_data(brand)
+    #user_id_list=df['membership_id'].to_list()
+    user_id_list=['84903003380','84907090991','84968757511','84982050271','84909151071','84973382047','84901632068','84907090991']
     
     raw_output=[]
     for user_id in user_id_list:
@@ -45,12 +45,21 @@ def crm_get_full_list(brand,table,page=0):
         if raw_output_member==0 or raw_output_member==[]:
             print('no data')
         else:
-            for row in raw_output_member:
-                row['membership_id']=user_id
+            try:
+                updated_data = raw_output_member.copy()
+                updated_data['membership_id']=user_id
+
+            except:
+                updated_data = []
+                for row in raw_output_member:
+                    updated_dictionary = row.copy()
+                    updated_dictionary['membership_id']=user_id
+                    updated_data.append(updated_dictionary)
+
             if type(raw_output_member) is dict:
-                raw_output.append(raw_output_member)
+                raw_output.append(updated_data)
             else:
-                raw_output=raw_output+raw_output_member   
+                raw_output=raw_output+updated_data   
 
         for raw_output_dict in raw_output:
             raw_output_dict['loaded_date']=datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f') + ' UTC'

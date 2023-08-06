@@ -10,4 +10,8 @@ column_updated='update_at'
 
 #execute
 source_output=ipos_crm_flow.crm_get_full_list(brand,table)
-big_query.full_refresh_bq_insert_from_json(source_output,schema,table_id=table)
+try:
+    big_query.full_refresh_bq_insert_from_json(source_output,schema,table_id=table)
+except:
+    query_string = 'create or replace table '+schema+'.'+table+' (loaded_date timestamp)'
+    big_query.bq_query(query_string)
