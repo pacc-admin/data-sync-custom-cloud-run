@@ -7,7 +7,7 @@ import big_query
 
 schema='GOOGLE_SHEETS'
 table_id='cs_booking'
-sheet_names=['FW','BGNK','BGQT','BGLQD','BGSH','BGLVS','BGBC']
+sheet_names=['FW','BGNK','BGQT','BGLQD','BGSH','BGLVS','BGBC','BGXT']
 column_to_clean='booking_date'
 
 with gg_sheet_import('Booking system') as s:
