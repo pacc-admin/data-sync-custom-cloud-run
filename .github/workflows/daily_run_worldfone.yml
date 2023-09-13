@@ -11,8 +11,8 @@ env:
   PYTHON_BIGQUERY_DATASET_DEV: github_action
 
 jobs:
-  daily_run:
-    name: daily_run
+  daily_run_worldfone:
+    name: daily_run_worldfone
     runs-on: ubuntu-latest
 
     steps:
