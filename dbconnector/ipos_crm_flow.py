@@ -33,9 +33,9 @@ def crm_api(brand,user_id,table,page=0):
     return r
 
 def crm_get_full_list(brand,table,page=0):
-    df = membership_data(brand)
-    user_id_list=df['membership_id'].to_list()
-    #user_id_list=['84903003380','84907090991','84968757511','84982050271','84909151071','84973382047','84901632068','84907090991']
+    #df = membership_data(brand)
+    #user_id_list=df['membership_id'].to_list()
+    user_id_list=['84903003380','84907090991','84968757511','84982050271','84909151071','84973382047','84901632068','84907090991']
     
     raw_output=[]
     for user_id in user_id_list:
