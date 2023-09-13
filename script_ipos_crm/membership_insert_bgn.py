@@ -52,7 +52,7 @@ source_output_sorted = [
         "created_by": d.get("created_by",""),
         "created_at": d.get("created_at",""),
         "membership_id_new": d.get("membership_id_new",""),
-        "tags": d.get("tags",""),
+        "tags": d.get("tags",[]),
         "membership_type_change_at": d.get("membership_type_change_at",""),
         "membership_id": d.get("membership_id",""),
         "loaded_date": d.get("loaded_date","")        
@@ -60,6 +60,16 @@ source_output_sorted = [
     }
     for d in source_output
 ]
+
+import json
+# Serializing json
+json_object = json.dumps(source_output, indent=4)
+ 
+# Writing to sample.json
+with open("sample1.json", "w") as outfile:
+    outfile.write(json_object)
+
+source_output_sorted
 
 try:
    big_query.full_refresh_bq_insert_from_json(source_output_sorted,schema,table_id=table)

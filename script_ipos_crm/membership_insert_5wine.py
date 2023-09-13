@@ -52,7 +52,7 @@ source_output_sorted = [
         "created_by": d.get("created_by",""),
         "created_at": d.get("created_at",""),
         "membership_id_new": d.get("membership_id_new",""),
-        "tags": d.get("tags",""),
+        "tags": d.get("tags",[]),
         "membership_type_change_at": d.get("membership_type_change_at",""),
         "membership_id": d.get("membership_id",""),
         "loaded_date": d.get("loaded_date","")        
