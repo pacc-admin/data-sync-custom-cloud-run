@@ -182,3 +182,49 @@ def while_loop_page_insert(app,
         print(result)
     
         
+def while_loop_page_return(app,
+                           column_name,
+                           query_string_incre,
+                           component2='list',
+                           para1='',
+                           value1='',
+                           c12_plit='/',
+                           stop_words=[],
+                           total_items='total_items',
+                           items_per_page='items_per_page'
+                        ):
+    #specify variable
+    pageno=-1
+    r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1,c12_plit=c12_plit)
+    if r['message'] !='':
+        print('URL error, stop')
+    else:
+        total_page_display=total_page(r,total_items,items_per_page)
+        
+        #regulate table name from components
+        if component2=='list':
+            table_id=column_name
+        else:
+            table_id=column_name+'_'+component2
+        
+        if total_page_display<=1:
+            dataset=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2=component2)
+    
+        else:
+            dataset=pd.DataFrame()
+    
+            print('start loop')
+            while pageno < total_page_display:
+                pageno=pageno+1
+                print(pageno)
+                r=base_vn_connect(app=app,component1=column_name,page=pageno,component2=component2,para1=para1,value1=value1,c12_plit=c12_plit)
+                dataset_raw=pd_flatten(raw_output=r,column_to_flat=column_name,url_component2='list')
+                dataset=pd.concat([dataset,dataset_raw])
+       
+        data_to_insert= pd_process(
+                                    dataset,
+                                    query_string_incre,
+                                    stop_words=stop_words
+                                )
+        
+        return data_to_insert

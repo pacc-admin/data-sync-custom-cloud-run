@@ -1,8 +1,8 @@
 import sys, os
 from google.cloud import bigquery
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../dbconnector")
-
-import base_vn
+import pandas as pd
+import base_vn,big_query
 
 
 #finding opening id
@@ -22,6 +22,8 @@ job_config_list = bigquery.LoadJobConfig(
         ]
 )
 
+df=pd.DataFrame()
+
 for pool_id in pool_ids:
     print(pool_id)
     query_string='''
@@ -29,13 +31,30 @@ for pool_id in pool_ids:
                     from `pacc-raw-data.'''+schema+'.'+variable+'`'+'''
                     where ns_id='''+"'"+pool_id+"'"
     
-    a=base_vn.while_loop_page_insert(app='hiring',
-                                     schema=schema,
+    
+    df_pool=base_vn.while_loop_page_return(app='hiring',
                                      column_name=variable,
-                                     job_config=job_config_list,
                                      query_string_incre=query_string,
                                      para1='pool_id',
                                      value1=pool_id,
                                      component2=component2,
                                      stop_words=stop_words
                                      )
+    df = pd.concat([df,df_pool])
+
+#condition to exclude
+try:
+    condition='id in '+"('"+"','".join(df['id'].to_list())+"')"
+except:
+    condition='true'
+
+#insert to BQ
+result=big_query.bq_insert(
+            schema,
+            table_id=variable,
+            dataframe=df,
+            condition=condition,
+            job_config=job_config_list,
+            unique_key='id'
+        )
+print(result)
