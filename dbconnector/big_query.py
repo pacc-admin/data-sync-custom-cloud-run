@@ -90,9 +90,14 @@ def bq_insert_streaming(rows_to_insert,table_id,object):
           print("data written")
           
 
-def bq_latest_date(date_schema,schema,table_id):
+def bq_latest_date(date_schema,schema,table_id,condition=''):
     #finding latest date from BQ table
-    df=bq_pandas(query_string='select max(cast('+date_schema+' as date)) as '+date_schema+' from `pacc-raw-data.'+schema+'.'+table_id+'`')
+    if condition=='':
+        condition_parse = 'true'
+    else:
+        condition_parse = condition
+    query_string='select max(cast('+date_schema+' as date)) as '+date_schema+' from `pacc-raw-data.'+schema+'.'+table_id+'`'+'where'+condition_parse
+    df=bq_pandas(query_string=query_string)
     print(df)
     if df[date_schema].astype(str).to_list()[0]=='NaT':
         recent_loaded_date='1970-01-01'

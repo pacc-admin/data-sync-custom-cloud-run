@@ -41,6 +41,7 @@ def incremental_load_sale(query_string,
                           mssql_database_name,
                           schema,
                           table_id,
+                          condition_loaded_date,
                           date_schema,
                           query_string2='',
                           table_filter_date='sale', 
@@ -49,7 +50,7 @@ def incremental_load_sale(query_string,
     #MSSQL
     print('step 1')
     today=date.today()
-    recent_loaded_date=bq_latest_date(date_schema,schema=schema,table_id=table_id)
+    recent_loaded_date=bq_latest_date(date_schema,schema=schema,table_id=table_id,condition=condition_loaded_date)
 
     print('step 2')
     #finding list of pr key in latest day
