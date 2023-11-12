@@ -96,8 +96,8 @@ def bq_latest_date(date_schema,schema,table_id,condition=''):
         condition_parse = 'true'
     else:
         condition_parse = condition
-    query_string='select max(cast('+date_schema+' as date)) as '+date_schema+' from `pacc-raw-data.'+schema+'.'+table_id+'`'+'where'+condition_parse
-    df=bq_pandas(query_string=query_string)
+    query_string_parse='select max(cast('+date_schema+' as date)) as '+date_schema+' from `pacc-raw-data.'+schema+'.'+table_id+'`'+'where'+condition_parse
+    df=bq_pandas(query_string=query_string_parse)
     print(df)
     if df[date_schema].astype(str).to_list()[0]=='NaT':
         recent_loaded_date='1970-01-01'
