@@ -10,8 +10,8 @@ date_schema= 'tran_date'
 date_to_delete= 30
 table_name = 'sale'
 
-condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
-big_query.bq_delete(schema,table_name,condition=condition)
+#condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
+#big_query.bq_delete(schema,table_name,condition=condition)
 
 for database_name in database:
     query_string = '''SELECT
@@ -33,7 +33,7 @@ for database_name in database:
                    bigquery.SchemaField("DATE_LAST",bigquery.enums.SqlTypeNames.TIMESTAMP),
                 ]
     )
-    
+
     mssql.incremental_load_sale(
                           query_string=query_string,
                           mssql_database_name=database_name,

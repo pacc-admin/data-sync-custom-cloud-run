@@ -11,8 +11,8 @@ date_schema='tran_date'
 date_to_delete= 30
 table_name = 'sale_detail'
 
-condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
-big_query.bq_delete(schema,table_name,condition=condition)
+#condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
+#big_query.bq_delete(schema,table_name,condition=condition)
 
 for database_name in database:
     query_string = '''
