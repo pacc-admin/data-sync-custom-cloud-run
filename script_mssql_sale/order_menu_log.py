@@ -31,6 +31,7 @@ for database_name in database:
                           mssql_database_name=database_name,
                           schema=schema,
                           table_id=table_name,
+                          condition_loaded_date="data_source = '"+database_name+"'",                           
                           date_schema=date_schema,
                           job_config=job_config_list
                         )
