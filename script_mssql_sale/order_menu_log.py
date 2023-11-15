@@ -10,7 +10,7 @@ date_schema='ORDER_DATE'
 table_name = 'order_menu_log'
 date_to_delete=30
 
-condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
+condition = "date_diff(current_date,date("+date_schema+"),day) <="+str(date_to_delete)
 big_query.bq_delete(schema,table_name,condition=condition)
 
 for database_name in database:
