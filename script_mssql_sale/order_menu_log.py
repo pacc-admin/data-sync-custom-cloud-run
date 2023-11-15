@@ -7,13 +7,13 @@ import mssql
 database = ['IPOSSBGN','IPOSS5WINE']
 schema='IPOS_SALE'
 date_schema='ORDER_DATE'
+table_name = 'order_menu_log'
 date_to_delete=30
 
 condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
 big_query.bq_delete(schema,table_name,condition=condition)
 
 for database_name in database:
-    table_name = 'order_menu_log'
     query_string = '''SELECT
                 HashBytes('MD5', '''+"'"+database_name+''''+cast(pr_key as varchar)) as UNIQUE_KEY,
                 *,
