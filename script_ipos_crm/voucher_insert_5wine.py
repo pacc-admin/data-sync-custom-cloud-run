@@ -8,6 +8,7 @@ schema='IPOS_CRM_'+brand
 table='member_vouchers'
 dm_pos_parent_order = [
     'id',
+    'description',
     'image',
     'ahamove_id',
     'name',
@@ -31,7 +32,12 @@ dm_pos_parent_order = [
     'Estimate_Complete_Order_Time',
     'Using_Cloud_Loyalty', 
     'Using_Ipos_Otp', 
-    'Booking_Type'
+    'Booking_Type',
+    'Msg_Up_Membership',
+    'App_Id',
+    'Ws_Sip_Server',
+    'Pass_Sip_Server',
+    'Manager_App_Id'
 ]
 
 list_pos_order = [
