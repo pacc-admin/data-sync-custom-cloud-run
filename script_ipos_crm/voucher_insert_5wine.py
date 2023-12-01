@@ -6,40 +6,6 @@ import ipos_crm_flow,big_query,dict_function
 brand='5WINE'
 schema='IPOS_CRM_'+brand
 table='member_vouchers'
-dm_pos_parent_order = [
-    'id',
-    'description',
-    'image',
-    'ahamove_id',
-    'name',
-    'is_gift_point',
-    'is_send_sms',
-    'pos_type',
-    'Brand_Name',
-    'Sms_Partner',
-    'Direct_List',
-    'Msg_Member_Bad_Rate',
-    'Logo_Image',
-    'Pos_Feature',
-    'Manager_Phone',
-    'Manager_Email_List',
-    'Hotline',
-    'Member_Parnter_Id',
-    'Limit_Eat_Count_Per_Day',
-    'Limit_Pay_Amount_Per_Day',
-    'Company_Id',
-    'Checkin_Time',
-    'Estimate_Complete_Order_Time',
-    'Using_Cloud_Loyalty', 
-    'Using_Ipos_Otp', 
-    'Booking_Type',
-    'Msg_Up_Membership',
-    'App_Id',
-    'Ws_Sip_Server',
-    'Pass_Sip_Server',
-    'Manager_App_Id'
-]
-
 list_pos_order = [
     'Id',
     'Phone_Number',
@@ -77,7 +43,40 @@ source_output_sorted = [
         "requied_member": d.get("requied_member",""),
         "is_ots": d.get("is_ots",""),
         "is_delivery": d.get("is_delivery",""),
-        "dm_pos_parent": [dict(sorted(d["dm_pos_parent"].items(), key=lambda x: dm_pos_parent_order.index(x[0])))],
+        "dm_pos_parent": {
+            "id": d.get("id",""),
+            "description": d.get("description",""),
+            "image": d.get("image",""),
+            "ahamove_id": d.get("ahamove_id",""),
+            "name": d.get("name",""),
+            "is_gift_point": d.get("is_gift_point",""),
+            "is_send_sms": d.get("is_send_sms",""),
+            "pos_type": d.get("pos_type",""),
+            "Brand_Name": d.get("Brand_Name",""),
+            "Sms_Partner": d.get("Sms_Partner",""),
+            "Direct_List": d.get("Direct_List",""),
+            "Msg_Member_Bad_Rate": d.get("Msg_Member_Bad_Rate",""),
+            "Logo_Image": d.get("Logo_Image",""),
+            "Pos_Feature": d.get("Pos_Feature",""),
+            "Manager_Phone": d.get("Manager_Phone",""),
+            "Manager_Email_List": d.get("Manager_Email_List",""),
+            "Hotline": d.get("Hotline",""),
+            "Member_Parnter_Id": d.get("Member_Parnter_Id",""),
+            "Limit_Eat_Count_Per_Day": d.get("Limit_Eat_Count_Per_Day",""),
+            "Limit_Pay_Amount_Per_Day": d.get("Limit_Pay_Amount_Per_Day",""),
+            "Company_Id": d.get("Company_Id",""),
+            "Checkin_Time": d.get("Checkin_Time",""),
+            "Estimate_Complete_Order_Time": d.get("Estimate_Complete_Order_Time",""),
+            "Using_Cloud_Loyalty": d.get("Using_Cloud_Loyalty",""), 
+            "Using_Ipos_Otp": d.get("Using_Ipos_Otp",""), 
+            "Booking_Type": d.get("Booking_Type",""),
+            "Msg_Up_Membership": d.get("Msg_Up_Membership",""),
+            "App_Id": d.get("App_Id",""),
+            "Ws_Sip_Server": d.get("Ws_Sip_Server",""),
+            "Pass_Sip_Server": d.get("Pass_Sip_Server",""),
+            "Manager_App_Id": d.get("Manager_App_Id" "")       
+        
+        },
         "used_bill_amount": d.get("used_bill_amount",""),
         "used_pos_id": d.get("used_pos_id",""),
         "affiliate_used_total_amount": d.get("affiliate_used_total_amount",""),
@@ -113,6 +112,7 @@ source_output_sorted = [
     for d in source_output
 ]
 
+print(source_output_sorted)
 try:
     big_query.full_refresh_bq_insert_from_json(source_output_sorted,schema,table_id=table)
 except:
