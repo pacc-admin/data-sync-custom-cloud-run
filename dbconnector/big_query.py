@@ -189,3 +189,29 @@ def bq_last_update(query_string_incre,column_updated):
 #json convert
 #print(goal_detail)
 #json_data = "\n".join([json.dumps(d) for d in goal_detail])
+
+def bq_insert_from_json2(source_output,schema,table_id,job_config):
+    client=connect_to_bq()
+    table_id_full = 'pacc-raw-data.'+schema+'.'+table_id
+ 
+    if source_output == []:
+        print('stop')
+    else:
+
+        #load
+        job = client.load_table_from_json(source_output, table_id_full, job_config=job_config)
+    
+        job.result()
+        table=client.get_table(table_id_full)
+        print(str(
+                "{} rows and {} columns to {}".format(
+                table.num_rows, len(table.schema), table_id
+            )
+        ))
+
+def full_refresh_bq_insert_from_json2(source_output,schema,table_id,job_config):
+    #condition to exclude
+    condition='true'
+    
+    bq_delete(schema,table_id,condition=condition)
+    bq_insert_from_json2(source_output,schema,table_id,job_config=job_config)
