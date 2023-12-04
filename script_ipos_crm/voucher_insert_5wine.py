@@ -12,14 +12,14 @@ table='member_vouchers'
 #data_types
 data_types =  {
   'affiliate_discount_extra': int,				
-  'voucher_campaign_id': int,				
+  'voucher_campaign_id': str,				
   'voucher_description': str,				
   'has_sale_manager': int,				
   'is_all_item': int,				
   'amount_order_over': int,				
-  'pos_id': int,				
+  'pos_id': str,				
   'date_hash': str,				
-  'affiliate_id': int,				
+  'affiliate_id': str,				
   'voucher_campaign_name': str,				
   'time_hour_day': int,				
   'dm_pos_parent':	{
@@ -63,7 +63,7 @@ data_types =  {
   'date_created': datetime.datetime,			
   'item_type_id_list': str,				
   'voucher_code': str,				
-  'status': int,				
+  'status': str,				
   'used_discount_amount': int,				
   'buyer_info': int,				
   'affiliate_discount_type': int,				
@@ -86,7 +86,7 @@ data_types =  {
   'is_ots': int,				
   'time_date_week': int,				
   'discount_max': int,				
-  'list_pos_id': int,				
+  'list_pos_id': str,				
   'discount_one_item': int,				
   'is_coupon': int,				
   'used_member_info': str,				
@@ -101,11 +101,11 @@ data_types =  {
   'same_price': int,				
   'used_bill_amount': int,				
   'used_date': str,				
-  'membership_id': int,				
+  'membership_id': str,				
   'date_end': datetime.datetime,			
   'discount_amount': int,				
   'used_sale_tran_id': str,				
-  'preferential_type': int,				
+  'preferential_type': str,				
   'limit_discount_item': int
 
 }
@@ -157,14 +157,14 @@ nested_schema_list_pos = [
 # Define the top-level schema with the nested field
 schema1 = [
     bigquery.SchemaField("affiliate_discount_extra","INTEGER"),				
-    bigquery.SchemaField("voucher_campaign_id","INTEGER"),				
+    bigquery.SchemaField("voucher_campaign_id","STRING"),				
     bigquery.SchemaField("voucher_description","STRING"),				
     bigquery.SchemaField("has_sale_manager","INTEGER"),				
     bigquery.SchemaField("is_all_item","INTEGER"),				
     bigquery.SchemaField("amount_order_over","INTEGER"),				
-    bigquery.SchemaField("pos_id","INTEGER"),				
+    bigquery.SchemaField("pos_id","STRING"),				
     bigquery.SchemaField("date_hash","STRING"),				
-    bigquery.SchemaField("affiliate_id","INTEGER"),				
+    bigquery.SchemaField("affiliate_id","STRING"),				
     bigquery.SchemaField("voucher_campaign_name","STRING"),				
     bigquery.SchemaField("time_hour_day","INTEGER"),	
     bigquery.SchemaField("dm_pos_parent", "RECORD", fields=nested_schema_dm_pos_parent),
@@ -176,20 +176,20 @@ schema1 = [
     bigquery.SchemaField("date_created", "DATETIME"),			
     bigquery.SchemaField("item_type_id_list", "STRING"),				
     bigquery.SchemaField("voucher_code", "STRING"),				
-    bigquery.SchemaField("status", "INTEGER"),				
+    bigquery.SchemaField("status", "STRING"),				
     bigquery.SchemaField("used_discount_amount", "INTEGER"),				
     bigquery.SchemaField("buyer_info", "INTEGER"),				
     bigquery.SchemaField("affiliate_discount_type", "INTEGER"),				
     bigquery.SchemaField("affiliate_discount_amount", "INTEGER"),				
     bigquery.SchemaField("affiliate_used_total_amount", "INTEGER"),				
-    bigquery.SchemaField("used_pos_id", "INTEGER"),    
+    bigquery.SchemaField("used_pos_id", "STRING"),    
     bigquery.SchemaField("list_pos", "RECORD", mode="REPEATED", fields=nested_schema_list_pos),    
     bigquery.SchemaField('requied_member', "INTEGER"),				
     bigquery.SchemaField('is_delivery', "INTEGER"),				
     bigquery.SchemaField('is_ots', "INTEGER"),				
     bigquery.SchemaField('time_date_week', "INTEGER"),				
     bigquery.SchemaField('discount_max', "INTEGER"),				
-    bigquery.SchemaField('list_pos_id', "INTEGER"),				
+    bigquery.SchemaField('list_pos_id', "STRING"),				
     bigquery.SchemaField('discount_one_item', "INTEGER"),				
     bigquery.SchemaField('is_coupon', "INTEGER"),				
     bigquery.SchemaField('used_member_info', "STRING"),				
@@ -203,11 +203,11 @@ schema1 = [
     bigquery.SchemaField('same_price', "INTEGER"),				
     bigquery.SchemaField('used_bill_amount', "INTEGER"),				
     bigquery.SchemaField('used_date', "DATETIME"),				
-    bigquery.SchemaField('membership_id', "INTEGER"),				
+    bigquery.SchemaField('membership_id', "STRING"),				
     bigquery.SchemaField('date_end', "DATETIME"),			
     bigquery.SchemaField('discount_amount', "INTEGER"),				
     bigquery.SchemaField('used_sale_tran_id', "STRING"),				
-    bigquery.SchemaField('preferential_type', "INTEGER"),				
+    bigquery.SchemaField('preferential_type', "STRING"),				
     bigquery.SchemaField('limit_discount_item', "INTEGER"),
     bigquery.SchemaField('loaded_date', "TIMESTAMP")
     
@@ -218,5 +218,6 @@ job_config = bigquery.LoadJobConfig(schema=schema1)
 #execute
 source_output=ipos_crm_flow.crm_get_full_list(brand,table)
 source_output_sorted = loader_format.cast_data_types(source_output,data_types)
+print(source_output_sorted)
 
 big_query.full_refresh_bq_insert_from_json2(source_output_sorted,schema,table_id=table,job_config=job_config)

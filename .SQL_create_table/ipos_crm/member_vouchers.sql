@@ -1,14 +1,14 @@
 create or replace table `pacc-raw-data.IPOS_CRM_BGN.member_vouchers` 
 (
     affiliate_discount_extra  INT64,
-    voucher_campaign_id  INT64,
+    voucher_campaign_id  STRING,
     voucher_description STRING,
     has_sale_manager  INT64,
     is_all_item  INT64,
     amount_order_over  INT64,
-    pos_id  INT64,
+    pos_id  STRING,
     date_hash STRING,
-    affiliate_id  INT64,
+    affiliate_id  STRING,
     voucher_campaign_name STRING,
     time_hour_day  INT64,
     dm_pos_parent STRUCT<
@@ -44,7 +44,7 @@ create or replace table `pacc-raw-data.IPOS_CRM_BGN.member_vouchers`
         `image` STRING,				
         `description`STRING	      
     >,	
-    discount_type  INT64,
+    discount_type  INT64, --
     item_id_list STRING,
     min_quantity_discount  INT64,
     date_start DATETIME,
@@ -52,13 +52,13 @@ create or replace table `pacc-raw-data.IPOS_CRM_BGN.member_vouchers`
     date_created DATETIME,
     item_type_id_list STRING,
     voucher_code STRING,
-    status  INT64,
+    status STRING, --
     used_discount_amount  INT64,
     buyer_info  INT64,
     affiliate_discount_type  INT64,
     affiliate_discount_amount  INT64,
     affiliate_used_total_amount  INT64,
-    used_pos_id  INT64,
+    used_pos_id  STRING,
     list_pos ARRAY<STRUCT<
       `Id` INT64,
       `Phone_Number` STRING,
@@ -73,7 +73,7 @@ create or replace table `pacc-raw-data.IPOS_CRM_BGN.member_vouchers`
     is_ots INT64,
     time_date_week INT64,
     discount_max INT64,
-    list_pos_id INT64,
+    list_pos_id STRING,
     discount_one_item INT64,
     is_coupon INT64,
     used_member_info STRING,
@@ -87,11 +87,11 @@ create or replace table `pacc-raw-data.IPOS_CRM_BGN.member_vouchers`
     same_price INT64,
     used_bill_amount INT64,
     used_date DATETIME,
-    membership_id INT64,
+    membership_id STRING,
     date_end DATETIME,
     discount_amount INT64,
     used_sale_tran_id STRING,
-    preferential_type INT64,
+    preferential_type STRING,
     limit_discount_item INT64,
     loaded_date TIMESTAMP,
 )
