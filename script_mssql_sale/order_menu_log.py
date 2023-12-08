@@ -8,6 +8,7 @@ database = ['IPOSSBGN','IPOSS5WINE']
 schema='IPOS_SALE'
 date_schema='ORDER_DATE'
 date_to_delete= 30
+mssql_table='order_menu_log'
 table_names = ['order_menu_log_bgn','order_menu_log_5wine']
 
 condition = "date_diff(current_date,date("+date_schema+"),day) <="+str(date_to_delete)
@@ -22,7 +23,7 @@ for database_name,table_name in zip(database,table_names):
                 '''+"'"+database_name+'''' as DATA_SOURCE
 
              
-            from '''+database_name+'''.dbo.'''+table_name+'''
+            from '''+database_name+'''.dbo.'''+mssql_table+'''
             '''
 
     job_config_list = bigquery.LoadJobConfig(
@@ -38,6 +39,7 @@ for database_name,table_name in zip(database,table_names):
                           schema=schema,
                           table_id=table_name,
                           date_schema=date_schema,
+                          table_filter_date=mssql_table,
                           job_config=job_config_list
                         )
     

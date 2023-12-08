@@ -56,12 +56,6 @@ def incremental_load_sale(query_string,
         query_string= "select cast(pr_key as int64) as pr_key from `pacc-raw-data."+schema+"."+table_id+"` where date("+date_schema+") = '"+str(today)+"'"
         )
     pr_key_latest="('"+"','".join(df2['pr_key'].astype(str).to_list())+"')"
-
-    #dynamic incre_condition by latest tran date
-    if query_string2=='':
-        table_filter_date=table_id
-    else:
-        table_filter_date=table_filter_date
     
     if str(today)==recent_loaded_date:
         incre_condition="cast("+table_filter_date+"."+date_schema+" as date) = '"+recent_loaded_date+"' and cast(cast(pr_key as int) as varchar) not in "+pr_key_latest 
