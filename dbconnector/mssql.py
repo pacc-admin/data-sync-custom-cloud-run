@@ -38,10 +38,8 @@ def full_refresh_sale(query_string,schema,table_id,condition='true'):
 
 
 def incremental_load_sale(query_string,
-                          mssql_database_name,
                           schema,
                           table_id,
-                          condition_loaded_date,
                           date_schema,
                           query_string2='',
                           table_filter_date='sale', 
@@ -50,12 +48,12 @@ def incremental_load_sale(query_string,
     #MSSQL
     print('step 1')
     today=date.today()
-    recent_loaded_date=bq_latest_date(date_schema,schema=schema,table_id=table_id,condition=condition_loaded_date)
+    recent_loaded_date=bq_latest_date(date_schema,schema=schema,table_id=table_id)
 
     print('step 2')
     #finding list of pr key in latest day
     df2=bq_pandas(
-        query_string= "select cast(pr_key as int64) as pr_key from `pacc-raw-data."+schema+"."+table_id+"` where data_source='"+mssql_database_name+"'and date("+date_schema+") = '"+str(today)+"'"
+        query_string= "select cast(pr_key as int64) as pr_key from `pacc-raw-data."+schema+"."+table_id+"` where date("+date_schema+") = '"+str(today)+"'"
         )
     pr_key_latest="('"+"','".join(df2['pr_key'].astype(str).to_list())+"')"
 

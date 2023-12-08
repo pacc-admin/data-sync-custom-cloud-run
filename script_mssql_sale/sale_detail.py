@@ -9,12 +9,14 @@ database = ['IPOSSBGN','IPOSS5WINE']
 schema='IPOS_SALE'
 date_schema='tran_date'
 date_to_delete= 30
-table_name = 'sale_detail'
+table_names = ['sale_detail_bgn','sale_detail_5wine']
 
 condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
-big_query.bq_delete(schema,table_name,condition=condition)
 
-for database_name in database:
+
+for database_name,table_name in zip(database,table_names):
+    print('Loaded from MSSQL:'+database_name+' to BQ:'+table_name)
+    big_query.bq_delete(schema,table_name,condition=condition)
     query_string = '''
                 with sale as (
                     select
@@ -54,7 +56,6 @@ for database_name in database:
 
     mssql.incremental_load_sale(
                           query_string=query_string,
-                          mssql_database_name=database_name,
                           schema=schema,
                           table_id=table_name,
                           condition_loaded_date="data_source = '"+database_name+"'",                          
