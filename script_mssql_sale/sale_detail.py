@@ -58,7 +58,6 @@ for database_name,table_name in zip(database,table_names):
                           query_string=query_string,
                           schema=schema,
                           table_id=table_name,
-                          condition_loaded_date="data_source = '"+database_name+"'",                          
                           date_schema=date_schema,
                           query_string2=query_string2,
                           job_config=job_config_list
