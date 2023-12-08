@@ -5,15 +5,17 @@ import mssql
 import big_query
 
 database = ['IPOSSBGN','IPOSS5WINE']
-schema= 'IPOS_SALE'
-date_schema= 'tran_date'
+schema='IPOS_SALE'
+date_schema='tran_date'
 date_to_delete= 30
-table_name = 'sale'
+table_names = ['sale_bgn','sale_5wine']
 
-condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
-big_query.bq_delete(schema,table_name,condition=condition)
+condition = "date_diff(current_date,date("+date_schema+"),day) <="+str(date_to_delete)
 
-for database_name in database:
+for database_name,table_name in zip(database,table_names):
+    print('---start---')
+    print('Loaded from MSSQL:'+database_name+' to BQ:'+table_name)
+    big_query.bq_delete(schema,table_name,condition=condition)
     query_string = '''SELECT
                 HashBytes('MD5', workstation.workstation_name+cast(sale.pr_key as varchar)) as unique_key,
                 sale.*,
@@ -43,3 +45,5 @@ for database_name in database:
                           date_schema=date_schema,
                           job_config=job_config_list
                         )
+    
+    print('---end---')

@@ -13,8 +13,8 @@ table_names = ['sale_detail_bgn','sale_detail_5wine']
 
 condition = "date_diff(current_date,date(tran_date),day) <="+str(date_to_delete)
 
-
 for database_name,table_name in zip(database,table_names):
+    print('---start---')
     print('Loaded from MSSQL:'+database_name+' to BQ:'+table_name)
     big_query.bq_delete(schema,table_name,condition=condition)
     query_string = '''
@@ -62,3 +62,5 @@ for database_name,table_name in zip(database,table_names):
                           query_string2=query_string2,
                           job_config=job_config_list
                         )
+    
+    print('---end---')
