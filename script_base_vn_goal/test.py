@@ -27,15 +27,15 @@ kpi={
     'content':''
 }
 
-query_string="SELECT * FROM `pacc-analytics.nam_pacc.metrics_reverse_to_base`"
-
-a = big_query.bq_pandas(query_string)
-a['value'] = a['value'].astype(int)
-b=a.to_dict('records')
-
-for b_dict in b:
-    print(b_dict)
-    d={**access_token,**b_dict}
-    
-    response=requests.post(url,data=d)
-    print(response)
+# query_string="SELECT * FROM `pacc-analytics.nam_pacc.metrics_reverse_to_base`"
+#
+#a = big_query.bq_pandas(query_string)
+#a['value'] = a['value'].astype(int)
+#b=a.to_dict('records')
+#
+#for b_dict in b:
+#    print(b_dict)
+#    d={**access_token,**b_dict}
+#    
+#    response=requests.post(url,data=d)
+#    print(response)
