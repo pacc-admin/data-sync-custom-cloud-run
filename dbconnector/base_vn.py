@@ -13,9 +13,6 @@ def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1
     elif app=='schedule':
         raw_output=get_base_schedule_api(app,component1,c12_plit=c12_plit,page=page)
 
-    elif app=='goal':
-        raw_output=get_base_goal_api(app)
-
     elif app=='account':
         raw_output=get_base_account(app,component1)
 
@@ -79,6 +76,7 @@ def total_page(raw_output,total_items='total_items',items_per_page='items_per_pa
        total_page=0
     else:
        total_page=int(round(total_page,0))
+    total_page = 1 
     print("Total page:",total_page)
     return total_page
 
@@ -134,6 +132,7 @@ def while_loop_page_insert(app,
     #specify variable
     pageno=-1
     r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1,c12_plit=c12_plit)
+    print(r)    
     if r['message'] !='':
         print('URL error, stop')
     else:
@@ -164,6 +163,14 @@ def while_loop_page_insert(app,
                                     query_string_incre,
                                     stop_words=stop_words
                                 )
+        
+        import json
+        json_object = json.dumps(r['timeoffs'], indent=4)
+         
+        # Writing to sample.json
+        with open("sample.json", "w") as outfile:
+            outfile.write(json_object)
+
         #condition to exclude
         try:
             condition='id in '+"('"+"','".join(data_to_insert['id'].to_list())+"')"

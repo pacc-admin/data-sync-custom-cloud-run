@@ -1,0 +1,612 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Generated schema for Root",
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "hid": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "cut_off": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "creator_id": {
+          "type": "string"
+        },
+        "creator_username": {
+          "type": "string"
+        },
+        "gavatar": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "confirm": {
+          "type": "string"
+        },
+        "metatype": {
+          "type": "string"
+        },
+        "locked": {
+          "type": "string"
+        },
+        "warning": {
+          "type": "string"
+        },
+        "followers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              },
+              "gavatar": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "username",
+              "gavatar"
+            ]
+          }
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              },
+              "gavatar": {
+                "type": "string"
+              },
+              "approved": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "username",
+              "gavatar",
+              "approved"
+            ]
+          }
+        },
+        "reviewers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "approvals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rejections": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "actions": {
+            "type": "string"
+          },                  
+        "overlaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "timesheet_shifts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "since": {
+          "type": "string"
+        },
+        "last_update": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "file": {},
+              "since": {
+                "type": "number"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "authorized_username": {
+                    "type": "string"
+                  }
+                },
+                "required": []
+              },
+              "username": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              },
+              "time": {
+                "type": "number"
+              },
+              "action": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "file",
+              "since",
+              "data",
+              "username",
+              "note",
+              "time",
+              "action"
+            ]
+          }
+        },
+        "form_origin": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "placeholder": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "value",
+              "type",
+              "placeholder"
+            ]
+          }
+        },
+        "form": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "placeholder": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "value",
+              "type",
+              "placeholder"
+            ]
+          }
+        },
+        "shifts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "datetime": {
+                "type": "number"
+              },
+              "shifts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "number"
+                    },
+                    "value": {
+                      "type": "string"
+                    },
+                    "standard_point": {
+                      "type": "string"
+                    },
+                    "hours_per_day": {
+                      "type": "string"
+                    },
+                    "points_per_day": {
+                      "type": "string"
+                    },
+                    "num_shifts": {
+                      "type": "string"
+                    },
+                    "timesheet_metatype": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "value",
+                    "hours_per_day",
+                    "points_per_day",
+                    "num_shifts",
+                    "timesheet_metatype"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "datetime",
+              "shifts"
+            ]
+          }
+        },
+        "display_shifts": {
+          "type": "array",
+          "items": {}
+        },
+        "checkin_logs": {
+          "type": "array",
+          "items": {}
+        },
+        "user": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "username"
+          ]
+        },
+        "workflow": {
+          "type": "string"
+        },
+        "group_id": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "priority_fund": {
+              "type": "string"
+            },
+            "timesheet_id": {
+              "type": "string"
+            },
+            "timesheet_type": {
+              "type": "string"
+            },
+            "num_shifts": {
+              "type": "string"
+            },
+            "hours_per_day": {
+              "type": "string"
+            },
+            "employee_id": {
+              "type": "string"
+            },
+            "load_shifts_method": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "approver_direct_manager": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "origin_approver_direct_manager": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "approver_fixed_approver_thaonguyen1": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "origin_approver_fixed_approver_thaonguyen1": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "posts": {
+              "type": "number"
+            },
+            "list_approved": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "time": {
+                    "type": "number"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "user_id",
+                  "username",
+                  "time",
+                  "message"
+                ]
+              }
+            },
+            "pto": {
+              "type": "number"
+            },
+            "paid_timeoff": {
+              "type": "string"
+            },
+            "approver_flexible_approver_phe_duyet": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "origin_approver_flexible_approver_phe_duyet": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "__actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "gid": {
+                    "type": "number"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string"
+                  },
+                  "since": {
+                    "type": "number"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "gid",
+                  "user_id",
+                  "username",
+                  "action",
+                  "since",
+                  "message"
+                ]
+              }
+            },
+            "files": {
+              "type": "number"
+            },
+            "final_approved": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "time": {
+                  "type": "number"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "user_id",
+                "username",
+                "time",
+                "message"
+              ]
+            }
+          },
+          "required": [
+            "timesheet_id",
+            "timesheet_type",
+            "num_shifts",
+            "hours_per_day",
+            "employee_id",
+            "load_shifts_method",
+            "approver_fixed_approver_thaonguyen1",
+            "origin_approver_fixed_approver_thaonguyen1"
+          ]
+        },
+        "state": {
+          "type": "string"
+        },
+        "paid_timeoff": {
+            "type": "string"
+          },
+        "load_shifts_method": {
+            "type": "string"
+        },
+        "deadline": {
+          "type": "string"
+        },
+        "deadline_confirm": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string"
+        },
+        "end_date": {
+          "type": "string"
+        },
+        "stats": {
+          "type": "object",
+          "properties": {
+            "likes": {
+              "type": "number"
+            },
+            "comments": {
+              "type": "number"
+            },
+            "posts": {
+              "type": "number"
+            },
+            "files": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "likes",
+            "comments",
+            "posts",
+            "files"
+          ]
+        },
+        "abs_link": {
+          "type": "string"
+        },
+        "acl": {
+          "type": "object",
+          "properties": {
+            "approve": {
+              "type": "number"
+            },
+            "confirm": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "approve",
+            "confirm"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "hid",
+        "name",
+        "content",
+        "cut_off",
+        "user_id",
+        "username",
+        "creator_id",
+        "creator_username",
+        "gavatar",
+        "status",
+        "confirm",
+        "metatype",
+        "locked",
+        "warning",
+        "followers",
+        "owners",
+        "reviewers",
+        "approvals",
+        "rejections",
+        "actions",
+        "overlaps",
+        "timesheet_shifts",
+        "since",
+        "last_update",
+        "token",
+        "results",
+        "form_origin",
+        "form",
+        "shifts",
+        "display_shifts",
+        "checkin_logs",
+        "user",
+        "workflow",
+        "group_id",
+        "data",
+        "state",
+        "paid_timeoff",
+        "load_shifts_method",
+        "deadline",
+        "deadline_confirm",
+        "start_date",
+        "end_date",
+        "stats",
+        "abs_link",
+        "acl"
+      ]
+    }
+  }
