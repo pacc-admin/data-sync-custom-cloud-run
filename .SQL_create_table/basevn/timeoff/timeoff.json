@@ -6,7 +6,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": "integer"
         },
         "type": {
           "type": "string"
@@ -24,13 +24,13 @@
           "type": "string"
         },
         "user_id": {
-          "type": "string"
+          "type": "integer"
         },
         "username": {
           "type": "string"
         },
         "creator_id": {
-          "type": "string"
+          "type": "integer"
         },
         "creator_username": {
           "type": "string"
@@ -48,10 +48,10 @@
           "type": "string"
         },
         "locked": {
-          "type": "string"
+          "type": "integer"
         },
         "warning": {
-          "type": "string"
+          "type": "integer"
         },
         "followers": {
           "type": "array",
@@ -83,7 +83,7 @@
                 "type": "string"
               },
               "approved": {
-                "type": "number"
+                "type": "integer"
               }
             },
             "required": [
@@ -127,10 +127,10 @@
           }
         },
         "since": {
-          "type": "string"
+          "type": "integer"
         },
         "last_update": {
-          "type": "string"
+          "type": "integer"
         },
         "token": {
           "type": "string"
@@ -146,7 +146,9 @@
               "name": {
                 "type": "string"
               },
-              "file": {},
+              "file": {
+                "type": "string"
+              },
               "since": {
                 "type": "number"
               },
@@ -155,7 +157,17 @@
                 "properties": {
                   "authorized_username": {
                     "type": "string"
+                  },
+                  "approved": {
+                    "type": "string"
+                  },
+                  "forwarder": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }  
                   }
+                                           
                 },
                 "required": []
               },
@@ -166,7 +178,7 @@
                 "type": "string"
               },
               "time": {
-                "type": "number"
+                "type": "integer"
               },
               "action": {
                 "type": "string"
@@ -184,7 +196,7 @@
               "action"
             ]
           }
-        },
+        }, 
         "form_origin": {
           "type": "array",
           "items": {
@@ -268,13 +280,13 @@
                       "type": "string"
                     },
                     "hours_per_day": {
-                      "type": "string"
+                      "type": "number"
                     },
                     "points_per_day": {
                       "type": "string"
                     },
                     "num_shifts": {
-                      "type": "string"
+                      "type": "integer"
                     },
                     "timesheet_metatype": {
                       "type": "string"
@@ -309,7 +321,7 @@
           "type": "object",
           "properties": {
             "id": {
-              "type": "string"
+              "type": "integer"
             },
             "username": {
               "type": "string"
@@ -324,7 +336,7 @@
           "type": "string"
         },
         "group_id": {
-          "type": "string"
+          "type": "integer"
         },
         "data": {
           "type": "object",
@@ -333,19 +345,19 @@
               "type": "string"
             },
             "timesheet_id": {
-              "type": "string"
+              "type": "integer"
             },
             "timesheet_type": {
               "type": "string"
             },
             "num_shifts": {
-              "type": "string"
+              "type": "integer"
             },
             "hours_per_day": {
-              "type": "string"
+              "type": "number"
             },
             "employee_id": {
-              "type": "string"
+              "type": "integer"
             },
             "load_shifts_method": {
               "type": "string"
@@ -392,7 +404,7 @@
                     "type": "string"
                   },
                   "time": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "message": {
                     "type": "string"
@@ -410,7 +422,7 @@
               "type": "number"
             },
             "paid_timeoff": {
-              "type": "string"
+              "type": "number"
             },
             "approver_flexible_approver_phe_duyet": {
               "type": "array",
@@ -430,7 +442,7 @@
                 "type": "object",
                 "properties": {
                   "gid": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "user_id": {
                     "type": "string"
@@ -442,7 +454,7 @@
                     "type": "string"
                   },
                   "since": {
-                    "type": "number"
+                    "type": "integer"
                   },
                   "message": {
                     "type": "string"
@@ -500,7 +512,7 @@
           "type": "string"
         },
         "paid_timeoff": {
-            "type": "string"
+            "type": "number"
           },
         "load_shifts_method": {
             "type": "string"
@@ -509,13 +521,13 @@
           "type": "string"
         },
         "deadline_confirm": {
-          "type": "string"
+          "type": "integer"
         },
         "start_date": {
-          "type": "string"
+          "type": "integer"
         },
         "end_date": {
-          "type": "string"
+          "type": "integer"
         },
         "stats": {
           "type": "object",
@@ -530,7 +542,7 @@
               "type": "number"
             },
             "files": {
-              "type": "number"
+              "type": "string"
             }
           },
           "required": [
@@ -547,10 +559,10 @@
           "type": "object",
           "properties": {
             "approve": {
-              "type": "number"
+              "type": "integer"
             },
             "confirm": {
-              "type": "number"
+              "type": "integer"
             }
           },
           "required": [
