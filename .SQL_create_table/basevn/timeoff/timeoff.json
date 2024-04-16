@@ -166,8 +166,7 @@
                     "items": {
                       "type": "string"
                     }  
-                  }
-                                           
+                  }                        
                 },
                 "required": []
               },
@@ -290,7 +289,16 @@
                     },
                     "timesheet_metatype": {
                       "type": "string"
-                    }
+                    },
+                    "leave_fund": {
+                      "type": "string"
+                    },
+                    "num_leave": {
+                      "type": "number"
+                    },
+                    "load_shifts_method": {
+                      "type": "string"
+                    }                                                             
                   },
                   "required": [
                     "key",
@@ -339,174 +347,7 @@
           "type": "integer"
         },
         "data": {
-          "type": "object",
-          "properties": {
-            "priority_fund": {
-              "type": "string"
-            },
-            "timesheet_id": {
-              "type": "integer"
-            },
-            "timesheet_type": {
-              "type": "string"
-            },
-            "num_shifts": {
-              "type": "integer"
-            },
-            "hours_per_day": {
-              "type": "number"
-            },
-            "employee_id": {
-              "type": "integer"
-            },
-            "load_shifts_method": {
-              "type": "string"
-            },
-            "content": {
-              "type": "string"
-            },
-            "approver_direct_manager": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "origin_approver_direct_manager": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "approver_fixed_approver_thaonguyen1": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "origin_approver_fixed_approver_thaonguyen1": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "posts": {
-              "type": "number"
-            },
-            "list_approved": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "user_id": {
-                    "type": "string"
-                  },
-                  "username": {
-                    "type": "string"
-                  },
-                  "time": {
-                    "type": "integer"
-                  },
-                  "message": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "user_id",
-                  "username",
-                  "time",
-                  "message"
-                ]
-              }
-            },
-            "pto": {
-              "type": "number"
-            },
-            "paid_timeoff": {
-              "type": "number"
-            },
-            "approver_flexible_approver_phe_duyet": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "origin_approver_flexible_approver_phe_duyet": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "__actions": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "gid": {
-                    "type": "integer"
-                  },
-                  "user_id": {
-                    "type": "string"
-                  },
-                  "username": {
-                    "type": "string"
-                  },
-                  "action": {
-                    "type": "string"
-                  },
-                  "since": {
-                    "type": "integer"
-                  },
-                  "message": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "gid",
-                  "user_id",
-                  "username",
-                  "action",
-                  "since",
-                  "message"
-                ]
-              }
-            },
-            "files": {
-              "type": "number"
-            },
-            "final_approved": {
-              "type": "object",
-              "properties": {
-                "user_id": {
-                  "type": "string"
-                },
-                "username": {
-                  "type": "string"
-                },
-                "time": {
-                  "type": "number"
-                },
-                "message": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "user_id",
-                "username",
-                "time",
-                "message"
-              ]
-            }
-          },
-          "required": [
-            "timesheet_id",
-            "timesheet_type",
-            "num_shifts",
-            "hours_per_day",
-            "employee_id",
-            "load_shifts_method",
-            "approver_fixed_approver_thaonguyen1",
-            "origin_approver_fixed_approver_thaonguyen1"
-          ]
+          "type": "string"
         },
         "state": {
           "type": "string"
