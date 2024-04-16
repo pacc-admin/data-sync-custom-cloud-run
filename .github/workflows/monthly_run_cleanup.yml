@@ -1,8 +1,10 @@
 name: monthly_run_cleanup
 
 on:
-   schedule:
-     - cron: "0 19 20 * *"
+   #schedule:
+   #  - cron: "0 19 20 * *"
+
+   workflow_dispatch:  
 
 env:
   # Environment variables for running Python on Google BigQuery
