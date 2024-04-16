@@ -136,3 +136,47 @@ def get_base_goal_metric_api(app,metric):
     
     print('finish getting raw output')
     return metric_detail
+
+
+
+def get_total_page(raw_output,total_items='total_items',items_per_page='items_per_page'):
+    try:
+        r=raw_output
+        total_items=int(r[total_items])
+        try:
+            items_per_page=int(r[items_per_page])
+        except:
+            items_per_page=50
+        total_page=total_items/items_per_page
+    except:
+        total_page=0 
+
+    if total_page < 1:
+       total_page=0
+    else:
+       total_page=int(round(total_page,0))
+    print("Total page:",total_page)
+    return total_page
+
+#base timeoff
+def get_base_timeoff():
+    access_token=etract_variable_yml_dict('timeoff')
+    h = {"Content-type": "application/x-www-form-urlencoded"}
+    page_dict={'page':0}
+    p={**access_token,**page_dict}
+    url = 'https://timeoff.base.vn/extapi/v1/timeoff/list'
+    raw_output = requests.post(url, headers=h, data=p).json()
+
+    #total_page = get_total_page(raw_output)
+    total_page = 30
+    final_output = []
+
+    for page in range(0,total_page + 1):
+        print(page)
+        page_dict={'page':page}
+        p={**access_token,**page_dict}
+        final_output_raw = requests.post(url, headers=h, data=p).json()
+        final_output_page = final_output_raw['timeoffs']    
+        final_output = final_output + final_output_page
+    
+    return final_output

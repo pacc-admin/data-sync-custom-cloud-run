@@ -7,7 +7,7 @@ def parse_json_schema(json_schema):
     schema_fields = []
     try:
         json_schema_parse = json_schema['items']['properties']
-    except ValueError:
+    except:
         json_schema_parse = json_schema
 
     for field_name, field_info in json_schema_parse.items():
@@ -45,7 +45,7 @@ def parse_json_schema(json_schema):
                 else:
                     bq_type = items_type
                     mode = 'REPEATED'
-            except ValueError:
+            except:
                 bq_type = 'STRING'
                 mode = 'REPEATED'
 
