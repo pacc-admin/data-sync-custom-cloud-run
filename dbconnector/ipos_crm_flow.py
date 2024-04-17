@@ -121,7 +121,7 @@ def crm_insert(brand,table,field_to_update,columns_to_preserve=[],unique_id=''):
 
     #recreate the sql file
     print('recreate the sql file')
-    file_path='.SQL_create_table/ipos_crm/'+table+'.sql'
+    file_path='metadata/ipos_crm/'+table+'.sql'
     fd = open(file_path, 'r')
     query_string ='create or replace table `pacc-raw-data.'+schema+'.'+table+'` '+fd.read()
     #print(query_string)
