@@ -11,7 +11,7 @@ client = bigquery.Client()
 # Define the dataset ID and table ID
 schema='BASEVN_TIMEOFF'
 table='timeoff'
-file_path = '/Users/namxuan97/Documents/vscode_space/pacc/pacc-data-sync-custom/metadata/basevn/timeoff/timeoff.json'
+file_path = 'metadata/basevn/timeoff/timeoff.json'
 
 # Define the job configuration
 job_config = bigquery.LoadJobConfig(
