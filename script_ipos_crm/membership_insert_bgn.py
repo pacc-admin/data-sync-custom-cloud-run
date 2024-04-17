@@ -28,7 +28,7 @@ source_output=ipos_crm_flow.crm_get_full_list(brand,table)
 print(source_output)
 source_output_sorted = [
     {
-        "id": d["id"],
+        "id": d.get("id",""),
         "phone_number": d.get("phone_number",""),
         "pos_parent": d.get("pos_parent",""),
         "name": d.get("name", ""),
