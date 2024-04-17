@@ -113,8 +113,6 @@ def single_page_insert(app,
                 job_config=job_config,
                 unique_key='id'
             )
-    print(result)
-
 
 def while_loop_page_insert(app,
                            schema,
@@ -132,7 +130,6 @@ def while_loop_page_insert(app,
     #specify variable
     pageno=-1
     r=base_vn_connect(app=app,component1=column_name,component2=component2,para1=para1,value1=value1,c12_plit=c12_plit)
-    print(r)    
     if r['message'] !='':
         print('URL error, stop')
     else:
@@ -179,7 +176,6 @@ def while_loop_page_insert(app,
                     job_config=job_config,
                     unique_key='id'
                 )
-        print(result)
     
         
 def while_loop_page_return(app,
