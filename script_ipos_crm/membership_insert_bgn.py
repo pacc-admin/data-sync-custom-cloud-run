@@ -25,7 +25,7 @@ order = [
 
 #execute
 source_output=ipos_crm_flow.crm_get_full_list(brand,table)
-
+print(source_output)
 source_output_sorted = [
     {
         "id": d["id"],
