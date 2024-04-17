@@ -163,13 +163,6 @@ def while_loop_page_insert(app,
                                     query_string_incre,
                                     stop_words=stop_words
                                 )
-        
-        import json
-        json_object = json.dumps(r['timeoffs'], indent=4)
-         
-        # Writing to sample.json
-        with open("sample.json", "w") as outfile:
-            outfile.write(json_object)
 
         #condition to exclude
         try:
