@@ -167,8 +167,8 @@ def get_base_timeoff():
     url = 'https://timeoff.base.vn/extapi/v1/timeoff/list'
     raw_output = requests.post(url, headers=h, data=p).json()
 
-    #total_page = get_total_page(raw_output)
-    total_page = 30
+    total_page = get_total_page(raw_output)
+    #total_page = 30
     final_output = []
 
     for page in range(0,total_page + 1):
