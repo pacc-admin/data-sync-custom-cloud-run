@@ -35,6 +35,7 @@ class gg_sheet_import():
         number_of_sheets=self.list_all_sheets()
 
         for i in range(0,number_of_sheets):
+            print(i)
             worksheet = sh.get_worksheet(i)
         
             list_of_lists = worksheet.get_all_values()

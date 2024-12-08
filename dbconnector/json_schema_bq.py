@@ -16,8 +16,17 @@ def parse_json_schema(json_schema):
         fields = []
 
         if field_type == 'string':
-            bq_type = 'STRING'
-            mode = 'NULLABLE'
+            try:
+                field_format = field_info['format']
+                if field_format == 'date-time':
+                    bq_type = 'TIMESTAMP'
+                    mode = 'NULLABLE'   
+                else:
+                    bq_type = 'STRING'
+                    mode = 'NULLABLE'                     
+            except:
+                bq_type = 'STRING'
+                mode = 'NULLABLE'
         elif field_type == 'integer':
             bq_type = 'INTEGER'
             mode = 'NULLABLE'
@@ -26,7 +35,7 @@ def parse_json_schema(json_schema):
             mode = 'NULLABLE'
         elif field_type == 'boolean':
             bq_type = 'BOOLEAN'
-            mode = 'NULLABLE'
+            mode = 'NULLABLE'       
         elif field_type == 'object':
             nested_schema = field_info.get('properties', {})
             nested_schema_fields = parse_json_schema(nested_schema)

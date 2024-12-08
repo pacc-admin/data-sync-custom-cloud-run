@@ -1,0 +1,201 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Generated schema for Root",    
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "phone_number": {
+          "type": "integer"
+        },
+        "pos_parent": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "birthday": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "email": {
+            "type": "string"
+        },                
+        "address": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "alias_name": {
+                    "type": "string"
+                },
+                "full_address": {
+                    "type": "string"
+                },
+                "extend_address": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "city_id": {
+                    "type": "integer"
+                },
+                "district_id": {
+                    "type": "integer"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+          }
+        },
+        "text_address": {
+            "type": "string"
+        },        
+        "membership_type_id": {
+          "type": "string"
+        },
+        "membership_type_name": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "integer"
+        },
+        "city_id": {
+          "type": "integer"
+        },
+        "city_name": {
+          "type": "string"
+        },
+        "user_groups": {
+            "type": "integer"
+        },
+        "facebook_messenger_id": {
+            "type": "string"
+        },
+        "facebook_join_at": {
+            "type": "string",
+            "format": "date-time"
+        },                        
+        "zalo_id": {
+          "type": "integer"
+        },
+        "is_zalo_follow": {
+            "type": "integer"
+          },        
+        "zalo_join_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "zalo_last_msg_id": {
+          "type": "string"
+        },
+        "zalo_last_msg_at": {
+          "type": "string"
+        },
+        "point": {
+          "type": "number"
+        },
+        "payment_amount": {
+          "type": "number"
+        },
+        "point_amount": {
+          "type": "number"
+        },
+        "eat_times": {
+          "type": "integer"
+        },
+        "first_eat_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_eat_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "update_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_pos": {
+          "type": "integer"
+        },
+        "last_pos_name": {
+          "type": "string"
+        },
+        "birth_month": {
+            "type": "integer"
+          },
+        "age": {
+          "type": "integer"
+        },                  
+        "created_by": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "membership_id_new": {
+          "type": "integer"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "membership_type_change_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "avg_bill_amount": {
+          "type": "number"
+        },     
+        "has_coupon_on_last_order": {
+          "type": "boolean"
+        },      
+        "total_guest_in_session": {
+          "type": "integer"
+        },             
+        "ignore_marketing_message": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "note": {
+            "type": "string"
+          },                
+        "membership_id": {
+          "type": "integer"
+        },
+        "loaded_date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }

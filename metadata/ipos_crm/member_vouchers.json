@@ -1,0 +1,387 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "generated schema for root",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "voucher_code": {
+        "type": "string"
+      },
+      "voucher_campaign_id": {
+        "type": "string"
+      },
+      "voucher_campaign_name": {
+        "type": "string"
+      },
+      "voucher_description": {
+        "type": "string"
+      },
+      "pos_parent": {
+        "type": "string"
+      },
+      "pos_id": {
+        "type": "string"
+      },
+      "date_created": {
+        "type": "string"
+      },
+      "date_start": {
+        "type": "string"
+      },
+      "date_end": {
+        "type": "string"
+      },
+      "date_hash": {
+        "type": "string"
+      },
+      "amount_order_over": {
+        "type": "number"
+      },
+      "discount_type": {
+        "type": "integer"
+      },
+      "discount_amount": {
+        "type": "number"
+      },
+      "discount_extra": {
+        "type": "number"
+      },
+      "is_all_item": {
+        "type": "number"
+      },
+      "item_type_id_list": {
+        "type": "string"
+      },
+      "status": {
+        "type": "integer"
+      },
+      "buyer_info": {
+        "type": "number"
+      },
+      "affiliate_id": {
+        "type": "string"
+      },
+      "affiliate_discount_type": {
+        "type": "integer"
+      },
+      "affiliate_discount_amount": {
+        "type": "number"
+      },
+      "affiliate_discount_extra": {
+        "type": "number"
+      },
+      "affiliate_used_total_amount": {
+        "type": "number"
+      },
+      "used_date": {
+        "type": "string",
+        "format": "date-time"
+      },      
+      "used_discount_amount": {
+        "type": "number"
+      },
+      "used_bill_amount": {
+        "type": "number"
+      },
+      "used_member_info": {
+        "type": "string"
+      },      
+      "used_pos_id": {
+        "type": "integer"
+      },
+      "used_sale_tran_id": {
+        "type": "string"
+      },      
+      "dm_pos_parent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "ahamove_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "is_gift_point": {
+            "type": "string"
+          },
+          "is_send_sms": {
+            "type": "string"
+          },
+          "pos_type": {
+            "type": "string"
+          },
+          "brand_name": {
+            "type": "string"
+          },
+          "sms_partner": {
+            "type": "string"
+          },
+          "direct_list": {
+            "type": "string"
+          },
+          "msg_up_membership": {
+            "type": "string"
+          },
+          "msg_member_bad_rate": {
+            "type": "string"
+          },
+          "logo_image": {
+            "type": "string"
+          },
+          "pos_feature": {
+            "type": "string"
+          },
+          "manager_phone": {
+            "type": "string"
+          },
+          "manager_email_list": {
+            "type": "string"
+          },
+          "app_id": {
+            "type": "string"
+          },
+          "hotline": {
+            "type": "string"
+          },
+          "member_parnter_id": {
+            "type": "string"
+          },
+          "ws_sip_server": {
+            "type": "string"
+          },
+          "pass_sip_server": {
+            "type": "string"
+          },
+          "limit_eat_count_per_day": {
+            "type": "string"
+          },
+          "limit_pay_amount_per_day": {
+            "type": "string"
+          },
+          "company_id": {
+            "type": "string"
+          },
+          "checkin_time": {
+            "type": "string"
+          },
+          "estimate_complete_order_time": {
+            "type": "string"
+          },
+          "using_cloud_loyalty": {
+            "type": "string"
+          },
+          "using_ipos_otp": {
+            "type": "string"
+          },
+          "manager_app_id": {
+            "type": "string"
+          },
+          "booking_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "description",
+          "image",
+          "ahamove_id",
+          "name",
+          "is_gift_point",
+          "is_send_sms",
+          "pos_type",
+          "brand_name",
+          "sms_partner",
+          "direct_list",
+          "msg_up_membership",
+          "msg_member_bad_rate",
+          "logo_image",
+          "pos_feature",
+          "manager_phone",
+          "manager_email_list",
+          "app_id",
+          "hotline",
+          "member_parnter_id",
+          "ws_sip_server",
+          "pass_sip_server",
+          "limit_eat_count_per_day",
+          "limit_pay_amount_per_day",
+          "company_id",
+          "checkin_time",
+          "estimate_complete_order_time",
+          "using_cloud_loyalty",
+          "using_ipos_otp",
+          "manager_app_id",
+          "booking_type"
+        ]
+      },
+      "list_pos": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "phone_number": {
+              "type": "string"
+            },
+            "pos_name": {
+              "type": "string"
+            },
+            "pos_parent": {
+              "type": "string"
+            },
+            "pos_address": {
+              "type": "string"
+            },
+            "image_path": {
+              "type": "string"
+            },
+            "image_path_thumb": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "phone_number",
+            "pos_name",
+            "pos_parent",
+            "pos_address"
+          ]
+        }
+      },
+      "is_delivery": {
+        "type": "integer"
+      },
+      "is_ots": {
+        "type": "integer"
+      },
+      "requied_member": {
+        "type": "integer"
+      },
+      "discount_max": {
+        "type": "number"
+      },
+      "list_pos_id": {
+        "type": "string"
+      },
+      "item_id_list": {
+        "type": "string"
+      },
+      "discount_one_item": {
+        "type": "number"
+      },
+      "is_coupon": {
+        "type": "number"
+      },
+      "only_coupon": {
+        "type": "number"
+      },
+      "apply_item_id": {
+        "type": "string"
+      },
+      "apply_item_type": {
+        "type": "string"
+      },
+      "number_item_buy": {
+        "type": "integer"
+      },
+      "number_item_free": {
+        "type": "integer"
+      },
+      "same_price": {
+        "type": "integer"
+      },
+      "time_hour_day": {
+        "type": "number"
+      },
+      "time_date_week": {
+        "type": "number"
+      },
+      "limit_discount_item": {
+        "type": "integer"
+      },
+      "min_quantity_discount": {
+        "type": "integer"
+      },
+      "preferential_type": {
+        "type": "integer"
+      },      
+      "has_sale_manager": {
+        "type": "integer"
+      },
+      "discount_per_item": {
+        "type": "integer"
+      },
+      "membership_id": {
+        "type": "string"
+      },
+      "loaded_date": {
+        "type": "string",
+        "format": "date-time"        
+      }
+    },
+    "required": [
+      "voucher_code",
+      "voucher_campaign_id",
+      "voucher_campaign_name",
+      "voucher_description",
+      "pos_parent",
+      "pos_id",
+      "date_created",
+      "date_start",
+      "date_end",
+      "date_hash",
+      "amount_order_over",
+      "discount_type",
+      "discount_amount",
+      "discount_extra",
+      "is_all_item",
+      "item_type_id_list",
+      "status",
+      "buyer_info",
+      "affiliate_id",
+      "affiliate_discount_type",
+      "affiliate_discount_amount",
+      "affiliate_discount_extra",
+      "affiliate_used_total_amount",
+      "used_discount_amount",
+      "used_bill_amount",
+      "used_pos_id",
+      "dm_pos_parent",
+      "list_pos",
+      "is_delivery",
+      "is_ots",
+      "requied_member",
+      "discount_max",
+      "list_pos_id",
+      "item_id_list",
+      "discount_one_item",
+      "is_coupon",
+      "only_coupon",
+      "apply_item_id",
+      "apply_item_type",
+      "number_item_buy",
+      "number_item_free",
+      "same_price",
+      "time_hour_day",
+      "time_date_week",
+      "limit_discount_item",
+      "min_quantity_discount",
+      "has_sale_manager",
+      "discount_per_item",
+      "membership_id",
+      "loaded_date"
+    ]
+  }
+}
