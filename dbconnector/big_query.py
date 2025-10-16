@@ -50,61 +50,11 @@ def bq_insert(schema,table_id,dataframe,condition='',unique_key='',job_config=bi
         else:
             dataframe=dataframe.drop_duplicates(subset=unique_key)
             print('Dedup completed')
-
-        # normalize dataframe to avoid pyarrow conversion errors on mixed/object columns
-        def normalize_df_for_bq(df_in: pd.DataFrame, numeric_threshold: float = 0.9) -> pd.DataFrame:
-            df = df_in.copy()
-            for col in list(df.columns):
-                s = df[col]
-                if s.dtype == 'object':
-                    # detect nested structures
-                    try:
-                        has_nested = s.map(lambda v: isinstance(v, (dict, list))).any()
-                    except Exception:
-                        has_nested = False
-
-                    if has_nested:
-                        df[col] = s.map(lambda v: json.dumps(v) if isinstance(v, (dict, list)) else v)
-                        df[col] = df[col].where(pd.notna(df[col]), pd.NA).astype('string')
-                        continue
-
-                    # try numeric coercion
-                    num = pd.to_numeric(s, errors='coerce')
-                    nonnull_orig = s.notna().sum()
-                    nonnull_num = num.notna().sum()
-                    if nonnull_orig > 0 and (nonnull_num / nonnull_orig) >= numeric_threshold:
-                        df[col] = num.astype('Float64')
-                    else:
-                        df[col] = s.where(pd.notna(s), pd.NA).astype('string')
-            return df
-
-        dataframe_to_load = normalize_df_for_bq(dataframe)
-
-        # attempt load via pandas->pyarrow
-        try:
-            job = client.load_table_from_dataframe(
-                dataframe_to_load, table_id_full, job_config=job_config
-            )
-        except Exception as e:
-            # fallback: if pyarrow conversion fails, try loading as NDJSON
-            err_msg = str(e)
-            print('load_table_from_dataframe failed:', err_msg)
-            print('Falling back to newline-delimited JSON load (slower but tolerant).')
-
-            try:
-                job_config_json = bigquery.LoadJobConfig()
-                job_config_json.source_format = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
-                job_config_json.autodetect = True
-                job_config_json._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
-
-                records = dataframe.where(pd.notna(dataframe), None).to_dict(orient='records')
-                json_data = "\n".join([json.dumps(r, default=str) for r in records])
-                json_file = io.StringIO(json_data)
-
-                job = client.load_table_from_file(json_file, table_id_full, job_config=job_config_json)
-            except Exception as e2:
-                print('Fallback NDJSON load also failed:', str(e2))
-                raise
+        
+        #load
+        job = client.load_table_from_dataframe(
+            dataframe, table_id_full, job_config=job_config
+        )
 
         #remove column with id matches the inserted rows
         bq_delete(schema,table_id,condition=condition)
