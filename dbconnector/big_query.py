@@ -51,10 +51,87 @@ def bq_insert(schema,table_id,dataframe,condition='',unique_key='',job_config=bi
             dataframe=dataframe.drop_duplicates(subset=unique_key)
             print('Dedup completed')
         
-        #load
-        job = client.load_table_from_dataframe(
-            dataframe, table_id_full, job_config=job_config
-        )
+        # Try to coerce DataFrame columns to existing BigQuery table schema (if table exists)
+        try:
+            table = client.get_table(table_id_full)
+            schema_map = {f.name: {'type': f.field_type.upper(), 'mode': f.mode} for f in table.schema}
+            print('Existing table schema detected, coercing columns to match types and modes...')
+            for col, meta in schema_map.items():
+                if col not in dataframe.columns:
+                    continue
+                ftype = meta['type']
+                fmode = (meta.get('mode') or '').upper()
+                s = dataframe[col]
+                try:
+                    # Handle REPEATED (arrays) mode: ensure values are lists
+                    if fmode == 'REPEATED':
+                        def ensure_list(v):
+                            if v is None or (isinstance(v, float) and pd.isna(v)):
+                                return None
+                            if isinstance(v, list):
+                                return v
+                            if isinstance(v, str):
+                                # try parse JSON array
+                                try:
+                                    parsed = json.loads(v)
+                                    if isinstance(parsed, list):
+                                        return parsed
+                                except Exception:
+                                    pass
+                                # fallback: split by comma if looks like CSV
+                                if ',' in v:
+                                    return [item.strip() for item in v.split(',') if item.strip()!='']
+                                return [v]
+                            # other scalars -> wrap
+                            return [v]
+
+                        dataframe[col] = s.map(ensure_list)
+                        continue
+
+                    # For non-repeated fields, coerce according to declared type
+                    if ftype in ('STRING', 'BYTES'):
+                        dataframe[col] = s.where(pd.notna(s), pd.NA).astype('string')
+                    elif ftype in ('INTEGER', 'INT64'):
+                        dataframe[col] = pd.to_numeric(s, errors='coerce').astype('Int64')
+                    elif ftype in ('FLOAT', 'FLOAT64', 'NUMERIC', 'DECIMAL'):
+                        dataframe[col] = pd.to_numeric(s, errors='coerce').astype('Float64')
+                    elif ftype in ('BOOLEAN',):
+                        dataframe[col] = s.map(lambda v: True if str(v).lower() in ('true','1','t','y') else (False if str(v).lower() in ('false','0','f','n') else pd.NA)).astype('boolean')
+                    elif ftype in ('TIMESTAMP','DATETIME','DATE'):
+                        dataframe[col] = pd.to_datetime(s, errors='coerce')
+                    elif ftype == 'JSON':
+                        dataframe[col] = s.map(lambda v: json.dumps(v) if isinstance(v, (dict, list)) else v)
+                except Exception as e:
+                    print(f'Warning: coercion of column {col} to {ftype} (mode={fmode}) failed: {e}; leaving as-is')
+        except Exception as e:
+            # table may not exist or permission denied; continue with conservative normalization
+            print('Could not fetch table schema (table may not exist) - will apply conservative normalization:', e)
+
+        # attempt load via pandas->pyarrow
+        try:
+            job = client.load_table_from_dataframe(
+                dataframe, table_id_full, job_config=job_config
+            )
+        except Exception as e:
+            # fallback: if pyarrow conversion fails, try loading as NDJSON
+            err_msg = str(e)
+            print('load_table_from_dataframe failed:', err_msg)
+            print('Falling back to newline-delimited JSON load (slower but tolerant).')
+
+            try:
+                job_config_json = bigquery.LoadJobConfig()
+                job_config_json.source_format = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
+                job_config_json.autodetect = True
+                job_config_json._properties['load']['schemaUpdateOptions'] = ['ALLOW_FIELD_ADDITION']
+
+                records = dataframe.where(pd.notna(dataframe), None).to_dict(orient='records')
+                json_data = "\n".join([json.dumps(r, default=str) for r in records])
+                json_file = io.StringIO(json_data)
+
+                job = client.load_table_from_file(json_file, table_id_full, job_config=job_config_json)
+            except Exception as e2:
+                print('Fallback NDJSON load also failed:', str(e2))
+                raise
 
         #remove column with id matches the inserted rows
         bq_delete(schema,table_id,condition=condition)
