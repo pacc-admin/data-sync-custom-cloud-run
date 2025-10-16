@@ -9,3 +9,4 @@ tqdm
 gspread
 unidecode
 google-cloud-bigquery
+PyYAML
