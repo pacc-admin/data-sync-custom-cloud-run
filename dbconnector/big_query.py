@@ -54,13 +54,41 @@ def bq_insert(schema,table_id,dataframe,condition='',unique_key='',job_config=bi
         # Try to coerce DataFrame columns to existing BigQuery table schema (if table exists)
         try:
             table = client.get_table(table_id_full)
-            schema_map = {f.name: f.field_type.upper() for f in table.schema}
-            print('Existing table schema detected, coercing columns to match types...')
-            for col, ftype in schema_map.items():
+            schema_map = {f.name: {'type': f.field_type.upper(), 'mode': f.mode} for f in table.schema}
+            print('Existing table schema detected, coercing columns to match types and modes...')
+            for col, meta in schema_map.items():
                 if col not in dataframe.columns:
                     continue
+                ftype = meta['type']
+                fmode = (meta.get('mode') or '').upper()
                 s = dataframe[col]
                 try:
+                    # Handle REPEATED (arrays) mode: ensure values are lists
+                    if fmode == 'REPEATED':
+                        def ensure_list(v):
+                            if v is None or (isinstance(v, float) and pd.isna(v)):
+                                return None
+                            if isinstance(v, list):
+                                return v
+                            if isinstance(v, str):
+                                # try parse JSON array
+                                try:
+                                    parsed = json.loads(v)
+                                    if isinstance(parsed, list):
+                                        return parsed
+                                except Exception:
+                                    pass
+                                # fallback: split by comma if looks like CSV
+                                if ',' in v:
+                                    return [item.strip() for item in v.split(',') if item.strip()!='']
+                                return [v]
+                            # other scalars -> wrap
+                            return [v]
+
+                        dataframe[col] = s.map(ensure_list)
+                        continue
+
+                    # For non-repeated fields, coerce according to declared type
                     if ftype in ('STRING', 'BYTES'):
                         dataframe[col] = s.where(pd.notna(s), pd.NA).astype('string')
                     elif ftype in ('INTEGER', 'INT64'):
@@ -74,7 +102,7 @@ def bq_insert(schema,table_id,dataframe,condition='',unique_key='',job_config=bi
                     elif ftype == 'JSON':
                         dataframe[col] = s.map(lambda v: json.dumps(v) if isinstance(v, (dict, list)) else v)
                 except Exception as e:
-                    print(f'Warning: coercion of column {col} to {ftype} failed: {e}; leaving as-is')
+                    print(f'Warning: coercion of column {col} to {ftype} (mode={fmode}) failed: {e}; leaving as-is')
         except Exception as e:
             # table may not exist or permission denied; continue with conservative normalization
             print('Could not fetch table schema (table may not exist) - will apply conservative normalization:', e)
