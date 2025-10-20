@@ -173,7 +173,8 @@ def bq_insert(schema,table_id,dataframe,condition='',unique_key='',job_config=bi
                 json_data = "\n".join([json.dumps(r, default=str) for r in records])
                 json_file = io.StringIO(json_data)
 
-                job = client.load_table_from_file(json_file, table_id_full, job_config=job_config_json)
+                # use BytesIO with explicit UTF-8 encoding to ensure correct byte length for resumable uploads
+                json_file = io.BytesIO(json_data.encode('utf-8'))
             except Exception as e2:
                 print('Fallback NDJSON load also failed:', str(e2))
                 raise
@@ -268,7 +269,8 @@ def bq_insert_from_json(source_output,schema,table_id,job_config=bigquery.LoadJo
         # sanitize and convert to ndjson
         records = _sanitize_records(source_output)
         json_data = "\n".join([json.dumps(d, ensure_ascii=False) for d in records])
-        json_file = io.StringIO(json_data)
+        # use BytesIO with explicit UTF-8 encoding to ensure correct byte length for resumable uploads
+        json_file = io.BytesIO(json_data.encode('utf-8'))
 
         # allow a few bad records for diagnosis
         try:
