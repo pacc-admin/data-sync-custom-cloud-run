@@ -9,6 +9,51 @@ import io
 import json
 import math
 
+# helper: sanitize Python values for JSON/BigQuery
+def _sanitize_value(v):
+    import numpy as _np
+    import pandas as _pd
+    from datetime import datetime, date
+    # None
+    if v is None:
+        return None
+    # numpy types
+    if isinstance(v, (_np.integer,)):
+        return int(v)
+    if isinstance(v, (_np.floating,)):
+        if _np.isnan(v):
+            return None
+        return float(v)
+    # pandas NA / NaT
+    if isinstance(v, _pd._libs.missing.NAType) if hasattr(_pd, '_libs') else False:
+        return None
+    try:
+        if _pd.isna(v):
+            return None
+    except Exception:
+        pass
+    # datetimes
+    if isinstance(v, (datetime, date)):
+        return v.isoformat()
+    # lists/dicts: sanitize recursively
+    if isinstance(v, list):
+        return [_sanitize_value(x) for x in v]
+    if isinstance(v, dict):
+        return {k: _sanitize_value(val) for k, val in v.items()}
+    # bytes
+    if isinstance(v, (bytes, bytearray)):
+        try:
+            return v.decode('utf-8')
+        except Exception:
+            return str(v)
+    # fallback for objects: stringify
+    if not isinstance(v, (str, bool, int, float)):
+        return str(v)
+    return v
+
+def _sanitize_records(records):
+    return [{k: _sanitize_value(v) for k, v in rec.items()} for rec in records]
+
 #Setting BQ credential in environment
 os.environ.setdefault("GCLOUD_PROJECT", 'pacc-raw-data')
 service_account_file_path=os.environ.get("PACC_SA_RAW")
@@ -220,13 +265,40 @@ def bq_insert_from_json(source_output,schema,table_id,job_config=bigquery.LoadJo
     if source_output == []:
         print('stop')
     else:
-        json_data = "\n".join([json.dumps(d) for d in source_output])
+        # sanitize and convert to ndjson
+        records = _sanitize_records(source_output)
+        json_data = "\n".join([json.dumps(d, ensure_ascii=False) for d in records])
         json_file = io.StringIO(json_data)
-    
+
+        # allow a few bad records for diagnosis
+        try:
+            job_config.max_bad_records = 5
+        except Exception:
+            pass
+        try:
+            job_config.ignore_unknown_values = True
+        except Exception:
+            pass
+
         #load
         job = client.load_table_from_file(json_file, table_id_full, job_config=job_config)
-    
-        job.result()
+        try:
+            job.result()
+        except Exception:
+            print('Load failed; job.errors:')
+            try:
+                print(job.errors)
+            except Exception:
+                pass
+            # write the NDJSON to a tmp file for inspection
+            try:
+                with open('tmp_bq_failed_rows.json', 'w', encoding='utf-8') as f:
+                    f.write(json_data)
+                print('Wrote tmp_bq_failed_rows.json for inspection')
+            except Exception:
+                pass
+            raise
+
         table=client.get_table(table_id_full)
         print(str(
                 "{} rows and {} columns to {}".format(
@@ -274,11 +346,38 @@ def bq_insert_from_json2(source_output,schema,table_id,job_config):
     if source_output == []:
         print('stop')
     else:
+        # sanitize source_output in place
+        try:
+            source_output_sanitized = _sanitize_records(source_output)
+        except Exception:
+            source_output_sanitized = source_output
+
+        # set small tolerance for bad rows during diagnosis
+        try:
+            job_config.max_bad_records = 5
+            job_config.ignore_unknown_values = True
+        except Exception:
+            pass
 
         #load
-        job = client.load_table_from_json(source_output, table_id_full, job_config=job_config)
-    
-        job.result()
+        job = client.load_table_from_json(source_output_sanitized, table_id_full, job_config=job_config)
+        try:
+            job.result()
+        except Exception:
+            print('Load failed; job.errors:')
+            try:
+                print(job.errors)
+            except Exception:
+                pass
+            # attempt to write failing rows to a temp file for inspection
+            try:
+                with open('tmp_bq_failed_rows.json', 'w', encoding='utf-8') as f:
+                    f.write("\n".join([json.dumps(r, ensure_ascii=False) for r in source_output_sanitized]))
+                print('Wrote tmp_bq_failed_rows.json for inspection')
+            except Exception:
+                pass
+            raise
+
         table=client.get_table(table_id_full)
         print(str(
                 "{} rows and {} columns to {}".format(
