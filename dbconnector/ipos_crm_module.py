@@ -42,13 +42,34 @@ class ipos_crm_el:
           'user_id':user_id,
           'page':page
         }
-    
         try:
-            r = requests.get(url, params=params).json().get('data', [])
-        except  requests.RequestException as e:
-            print(f'Error: {e}')
-            r = [] 
-        return r
+            resp = requests.get(url, params=params, timeout=30)
+        except requests.RequestException as e:
+            print(f'Network error when calling CRM for user_id={user_id}: {e}')
+            return []
+
+        # check HTTP status
+        if not resp.ok:
+            # log status and short response for debugging
+            txt = resp.text[:1000].strip()
+            print(f'CRM API returned status {resp.status_code} for user_id={user_id}; response (truncated): {txt}')
+            return []
+
+        # try parse JSON safely
+        try:
+            data_json = resp.json()
+        except ValueError as e:
+            # JSON decode error
+            txt = resp.text[:2000].strip()
+            print(f'Invalid JSON from CRM for user_id={user_id}: {e}; response (truncated): {txt}')
+            return []
+
+        # extract 'data' key
+        try:
+            return data_json.get('data', [])
+        except Exception:
+            print(f'Unexpected JSON structure from CRM for user_id={user_id}: {data_json}')
+            return []
 
     def crm_get_full_list(self):
         """Get data from CRM API for all member"""
