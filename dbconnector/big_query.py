@@ -393,3 +393,5 @@ def full_refresh_bq_insert_from_json2(source_output,schema,table_id,job_config):
     
     bq_delete(schema,table_id,condition=condition)
     bq_insert_from_json2(source_output,schema,table_id,job_config=job_config)
+
+
