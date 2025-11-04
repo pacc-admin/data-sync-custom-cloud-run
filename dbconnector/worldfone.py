@@ -22,12 +22,28 @@ def worldfone_pd(start_date,end_date):
     raw_output = get_worldfone_api(startdate=start_date,enddate=end_date)
     print("=== DEBUG raw_output ===")
     print(raw_output)
-    total_pages = raw_output['max_page']+1
+    
+    # Handle API error responses
+    if isinstance(raw_output, dict):
+        if 'code' in raw_output and raw_output.get('code') == 0:
+            print(f"API Error: {raw_output.get('messages', {}).get('text', 'Unknown error')}")
+            return data_to_insert
+        if raw_output.get('total', 0) == 0 and raw_output.get('data', []) == []:
+            print("No data available for this period")
+            return data_to_insert
+        total_pages = raw_output.get('max_page', 0) + 1
+    else:
+        print(f"Unexpected API response: {raw_output}")
+        return data_to_insert
+        
     print('Total page is '+str(total_pages))
 
     #concat df to all pages data
     for page in range(1,total_pages):
         raw_output = get_worldfone_api(startdate=start_date,enddate=end_date,page=page)
+        if 'data' not in raw_output:
+            print(f"No data in response for page {page}")
+            continue
         df = pd.DataFrame(raw_output['data'])
         data_to_insert = pd.concat([data_to_insert,df])
         data_to_insert['loaded_date'] = pd.to_datetime('today')
@@ -102,16 +118,34 @@ def worldfone_bq(schema,table_id):
     return result
 
 def worldfone_bq_historical(schema,table_id):
-    today_unix = int(time.mktime(datetime.today().timetuple()))
-    start_date=1614531599
-    end_date=1614531600
-    order=0
+    # Get last processed date from BigQuery
+    query_string = "select max(unix_seconds(timestamp(calldate || ' UTC+7'))) as calldate FROM "+'`pacc-raw-data.'+schema+'.'+table_id+'`'
+    start_date = bq_pandas(query_string)['calldate'].astype(int).to_list()[0] + 1
+    
+    # Convert current time to UTC+7 for consistency
+    utc_offset = 7 * 3600  # 7 hours in seconds
+    today_unix = int(time.time()) + utc_offset
+    
+    order = 0
     while start_date <= today_unix:
-        order=order+1
-        print(order)
-        start_date=end_date+1
-        print('first timestamp of month is: '+str(start_date))
-        end_date=last_unix_t_of_month(start_date)
+        order = order + 1
+        print(f"\nProcessing batch {order}")
+        
+        # Convert timestamps to datetime for better month handling
+        start_dt = datetime.fromtimestamp(start_date)
+        
+        # Calculate end of current month in UTC+7
+        if start_dt.month == 12:
+            next_month = start_dt.replace(year=start_dt.year + 1, month=1)
+        else:
+            next_month = start_dt.replace(month=start_dt.month + 1)
+        end_date = int(next_month.timestamp()) - 1
+        
+        # Don't process future data
+        end_date = min(end_date, today_unix)
+        
+        print(f"Start date: {datetime.fromtimestamp(start_date).strftime('%Y-%m-%d %H:%M:%S')} UTC+7")
+        print(f"End date: {datetime.fromtimestamp(end_date).strftime('%Y-%m-%d %H:%M:%S')} UTC+7")
         
         # Get data for this month
         data_to_insert = worldfone_pd(start_date, end_date)
@@ -129,7 +163,15 @@ def worldfone_bq_historical(schema,table_id):
                 dataframe=data_to_insert,
                 condition=condition
             )
+            print(f"Successfully inserted data for period")
         else:
             print('No data for this period')
         
+        # Move to start of next month
+        start_date = end_date + 1
+        
+        # Stop if we've reached today
+        if end_date >= today_unix:
+            break
+            
         print(' ')
