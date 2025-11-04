@@ -20,6 +20,8 @@ def worldfone_pd(start_date,end_date):
     #getting total pages
     data_to_insert=pd.DataFrame()
     raw_output = get_worldfone_api(startdate=start_date,enddate=end_date)
+    print("=== DEBUG raw_output ===")
+    print(raw_output)
     total_pages = raw_output['max_page']+1
     print('Total page is '+str(total_pages))
 
