@@ -111,5 +111,23 @@ def worldfone_bq_historical(schema,table_id):
         print('first timestamp of month is: '+str(start_date))
         end_date=last_unix_t_of_month(start_date)
         
-        worldfone_bq(start_date=start_date,end_date=end_date,schema=schema,table_id=table_id)
+        # Get data for this month
+        data_to_insert = worldfone_pd(start_date, end_date)
+        
+        if data_to_insert.to_dict('records'):
+            print('continue')
+            # Remove existing records that match the new data
+            unique_key = data_to_insert['uniqueid'] + data_to_insert['direction']
+            row_to_exclude = "('" + "','".join(unique_key.to_list()) + "')"
+            condition = 'concat(uniqueid,direction) in' + row_to_exclude
+            
+            bq_insert(
+                schema,
+                table_id,
+                dataframe=data_to_insert,
+                condition=condition
+            )
+        else:
+            print('No data for this period')
+        
         print(' ')
