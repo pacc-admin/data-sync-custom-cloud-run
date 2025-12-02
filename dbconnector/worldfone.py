@@ -175,3 +175,95 @@ def worldfone_bq_historical(schema,table_id):
             break
             
         print(' ')
+
+
+
+
+import calendar  # Thêm thư viện này ở đầu file nếu chưa có
+
+def worldfone_bq_historical_v2(schema, table_id):
+    # 1. Lấy thời gian dữ liệu cuối cùng trong BQ
+    query_string = "select max(unix_seconds(timestamp(calldate || ' UTC+7'))) as calldate FROM "+'`pacc-raw-data.'+schema+'.'+table_id+'`'
+    
+    try:
+        bq_result = bq_pandas(query_string)['calldate'].astype(float).to_list()[0]
+        # Nếu DB có dữ liệu, bắt đầu từ giây tiếp theo
+        # Nếu DB trả về NaN (chưa có dữ liệu), bạn cần set một ngày mặc định (ví dụ: epoch 0 hoặc một ngày cụ thể)
+        if pd.isna(bq_result):
+            # Ví dụ: Mặc định lấy từ đầu năm 2024 nếu bảng rỗng (tuỳ bạn chỉnh)
+            start_date = int(datetime(2024, 1, 1).timestamp())
+        else:
+            start_date = int(bq_result) + 1
+    except Exception as e:
+        print(f"Error getting max date: {e}")
+        return
+
+    # 2. Xác định thời điểm hiện tại (Today)
+    # Lưu ý: Unix timestamp là độc lập múi giờ, nhưng việc tính toán 'hôm nay' cần nhất quán.
+    # Code cũ của bạn cộng thêm offset, ta giữ nguyên logic đó để khớp với hệ thống của bạn.
+    utc_offset = 7 * 3600 
+    today_unix = int(time.time()) + utc_offset
+
+    order = 0
+    
+    # 3. Vòng lặp xử lý từng khoảng thời gian
+    while start_date <= today_unix:
+        order += 1
+        print(f"\n=== Processing batch {order} ===")
+        
+        # Convert start_date sang datetime để tính toán lịch
+        start_dt = datetime.fromtimestamp(start_date)
+        
+        # --- LOGIC QUAN TRỌNG NHẤT ---
+        # Tính toán ngày cuối cùng của tháng hiện tại (End of Month)
+        # calendar.monthrange(year, month) trả về (thứ đầu tuần, số ngày trong tháng)
+        days_in_month = calendar.monthrange(start_dt.year, start_dt.month)[1]
+        
+        # Tạo thời điểm giây cuối cùng của tháng hiện tại
+        # Ví dụ: start là 15/11, thì end_of_month là 30/11 23:59:59
+        end_of_month_dt = start_dt.replace(day=days_in_month, hour=23, minute=59, second=59)
+        end_of_month_ts = int(end_of_month_dt.timestamp())
+        
+        # End date thực tế của batch này sẽ là Min(Cuối tháng, Hiện tại)
+        # Điều này đảm bảo:
+        # 1. Không bao giờ vượt quá tháng hiện tại (tránh lỗi 108)
+        # 2. Không bao giờ lấy dữ liệu tương lai (vượt quá today)
+        end_date = min(end_of_month_ts, today_unix)
+        
+        # In ra log để kiểm tra
+        print(f"Range: {datetime.fromtimestamp(start_date).strftime('%Y-%m-%d %H:%M:%S')} -> {datetime.fromtimestamp(end_date).strftime('%Y-%m-%d %H:%M:%S')}")
+        
+        # Gọi hàm lấy dữ liệu
+        data_to_insert = worldfone_pd(start_date, end_date)
+        
+        # Insert vào BigQuery
+        if not data_to_insert.empty:
+            print(f"Found {len(data_to_insert)} records. Inserting...")
+            
+            # Logic cũ: Xóa duplicate trước khi insert
+            unique_key = data_to_insert['uniqueid'] + data_to_insert['direction']
+            # Lưu ý: Xử lý chuỗi rỗng hoặc NaN nếu cần thiết trong unique_key
+            
+            row_to_exclude = "('" + "','".join(unique_key.astype(str).to_list()) + "')"
+            condition = 'concat(uniqueid,direction) in' + row_to_exclude
+            
+            bq_insert(
+                schema,
+                table_id,
+                dataframe=data_to_insert,
+                condition=condition
+            )
+            print("Done insert.")
+        else:
+            print('No data for this period.')
+        
+        # --- CHUYỂN SANG BATCH TIẾP THEO ---
+        # Batch sau sẽ bắt đầu ngay sau batch này 1 giây
+        start_date = end_date + 1
+        
+        # Nếu start_date mới đã vượt quá thời điểm hiện tại thì dừng
+        if start_date > today_unix:
+            print("All caught up!")
+            break
+            
+        print('--------------------------------')

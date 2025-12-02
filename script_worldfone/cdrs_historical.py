@@ -5,4 +5,4 @@ import worldfone
 schema = 'WORLDFONE'
 table_id = 'cdrs'
 
-worldfone.worldfone_bq_historical(schema, table_id)
+worldfone.worldfone_bq_historical_v2(schema, table_id)
