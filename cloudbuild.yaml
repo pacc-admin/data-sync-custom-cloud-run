@@ -1,0 +1,45 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/data-sync-custom:latest'
+      - '.'
+
+  # Step 2: Push image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud run deploy data-sync-custom \
+          --image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA \
+          --platform=managed \
+          --region=asia-southeast1 \
+          --no-allow-unauthenticated \
+          --memory=2Gi \
+          --cpu=2 \
+          --timeout=3600 \
+          --max-instances=10 \
+          --service-account=data-sync-custom@$PROJECT_ID.iam.gserviceaccount.com \
+          --set-env-vars="GCP_PROJECT_ID=$PROJECT_ID" \
+          --vpc-connector=data-sync-custom-connector
+
+images:
+  - 'gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
+  - 'gcr.io/$PROJECT_ID/data-sync-custom:latest'
+
+options:
+  machineType: 'N1_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 3600s
