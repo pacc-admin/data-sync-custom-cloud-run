@@ -5,7 +5,6 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system dependencies
-# Thêm gnupg2 và ca-certificates để xử lý key
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg2 \
@@ -15,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     odbcinst \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Microsoft ODBC Driver for SQL Server (Updated for Debian 12 & non-deprecated key method)
+# Install Microsoft ODBC Driver for SQL Server
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg && \
     curl https://packages.microsoft.com/config/debian/12/prod.list | tee /etc/apt/sources.list.d/mssql-release.list && \
     apt-get update && \
@@ -33,8 +32,8 @@ COPY . .
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8080
+# Không cần PORT nữa vì không phải Web Service
 
-# Run the application
-# Lưu ý: Đảm bảo bạn đã có file main.py chạy app Flask/FastAPI
-CMD exec gunicorn --bind :${PORT} --workers 1 --timeout 3600 main:app
+# Run the application using Python directly
+# ENTRYPOINT cho phép nhận thêm tham số từ command line
+ENTRYPOINT ["python", "main.py"]

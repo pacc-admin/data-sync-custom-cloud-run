@@ -1,6 +1,5 @@
 steps:
   # Bước 1: Build Docker Image
-  # Sử dụng biến $PROJECT_ID và $SHORT_SHA (Cloud Build tự điền khi nhận code từ GitHub)
   - name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'build'
@@ -10,41 +9,86 @@ steps:
       - 'gcr.io/$PROJECT_ID/data-sync-custom:latest'
       - '.'
 
-  # Bước 2: Push Image lên Container Registry
+  # Bước 2: Push Image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
 
-  # Bước 3: Deploy lên Cloud Run
-  # Đổi sang image cloud-sdk chuẩn để dùng lệnh gcloud
+  # --- BẮT ĐẦU DEPLOY CÁC JOBS ---
+
+  # Job 1: Sync MSSQL
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
       - 'run'
+      - 'jobs'
       - 'deploy'
-      - 'data-sync-custom'  # Tên Service
+      - 'job-sync-mssql'
       - '--image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
       - '--region=asia-southeast1'
-      - '--platform=managed'
-      - '--no-allow-unauthenticated' # Không cho phép public truy cập (chỉ scheduler gọi)
-      - '--memory=2Gi'
-      - '--cpu=2'
-      - '--timeout=3600'
-      - '--max-instances=10'
-      # Service Account để chạy code
       - '--service-account=462397466952-compute@developer.gserviceaccount.com'
-      # VPC Connector để nối vào DB nội bộ/SQL
       - '--vpc-connector=data-sync-conn'
-      # Set biến môi trường (nếu cần thiết)
       - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--args=--handler=mssql,--type=all' # Tham số chạy mssql
+      - '--max-retries=0'
+      - '--task-timeout=3600s'
 
-# Lưu lại image trong danh sách build artifact
+  # Job 2: Sync iPOS
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'jobs'
+      - 'deploy'
+      - 'job-sync-ipos'
+      - '--image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
+      - '--region=asia-southeast1'
+      - '--service-account=462397466952-compute@developer.gserviceaccount.com'
+      - '--vpc-connector=data-sync-conn'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--args=--handler=ipos,--type=all' # Tham số chạy ipos
+      - '--max-retries=0'
+      - '--task-timeout=3600s'
+
+  # Job 3: Sync Base.vn
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'jobs'
+      - 'deploy'
+      - 'job-sync-base-vn'
+      - '--image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
+      - '--region=asia-southeast1'
+      - '--service-account=462397466952-compute@developer.gserviceaccount.com'
+      - '--vpc-connector=data-sync-conn'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--args=--handler=base_vn,--type=all' # Tham số chạy base_vn
+      - '--max-retries=0'
+      - '--task-timeout=3600s'
+      
+  # Job 4: Sync WorldFone
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'jobs'
+      - 'deploy'
+      - 'job-sync-worldfone'
+      - '--image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
+      - '--region=asia-southeast1'
+      - '--service-account=462397466952-compute@developer.gserviceaccount.com'
+      - '--vpc-connector=data-sync-conn'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--args=--handler=worldfone' # Tham số chạy worldfone
+      - '--max-retries=0'
+      - '--task-timeout=3600s'
+
 images:
   - 'gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
   - 'gcr.io/$PROJECT_ID/data-sync-custom:latest'
 
-# Cấu hình máy build (Máy mạnh build nhanh nhưng tốn tiền hơn chút)
 options:
   machineType: 'E2_HIGHCPU_8'
   logging: CLOUD_LOGGING_ONLY
