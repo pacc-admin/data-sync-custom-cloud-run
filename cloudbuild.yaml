@@ -35,7 +35,7 @@ steps:
       # Service Account để chạy code
       - '--service-account=462397466952-compute@developer.gserviceaccount.com'
       # VPC Connector để nối vào DB nội bộ/SQL
-      - '--vpc-connector=data-sync-custom-connector'
+      - '--vpc-connector=data-sync-conn'
       # Set biến môi trường (nếu cần thiết)
       - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
 
