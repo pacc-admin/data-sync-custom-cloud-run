@@ -33,7 +33,7 @@ steps:
       - '--timeout=3600'
       - '--max-instances=10'
       # Service Account để chạy code
-      - '--service-account=data-sync-custom@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--service-account=462397466952-compute@developer.gserviceaccount.com'
       # VPC Connector để nối vào DB nội bộ/SQL
       - '--vpc-connector=data-sync-custom-connector'
       # Set biến môi trường (nếu cần thiết)
