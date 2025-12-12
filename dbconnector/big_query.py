@@ -56,11 +56,25 @@ def _sanitize_records(records):
 
 #Setting BQ credential in environment
 os.environ.setdefault("GCLOUD_PROJECT", 'pacc-raw-data')
-service_account_file_path=os.environ.get("PACC_SA_RAW")
+service_account_file_path = os.environ.get("PACC_SA_RAW") or os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+
 
 def connect_to_bq():
-    client = bigquery.Client.from_service_account_json(service_account_file_path)
-    return client
+    """Create a BigQuery client.
+
+    If a service account JSON path is set in env `PACC_SA_RAW` or
+    `GOOGLE_APPLICATION_CREDENTIALS`, use it; otherwise use default
+    application credentials.
+    """
+    try:
+        if service_account_file_path:
+            client = bigquery.Client.from_service_account_json(service_account_file_path)
+        else:
+            client = bigquery.Client()
+        return client
+    except Exception as e:
+        # surface a clear error for missing credentials
+        raise RuntimeError(f"Could not create BigQuery client: {e}") from e
 
 def bq_delete(schema,table_id,condition=''):
     client=connect_to_bq()
@@ -191,9 +205,24 @@ def bq_insert(schema,table_id,dataframe,condition='',unique_key='',job_config=bi
     
     
 def bq_pandas(query_string):
-    credentials = service_account.Credentials.from_service_account_file(service_account_file_path)
-    querry_bq=pandas_gbq.read_gbq(query_string, project_id="pacc-raw-data", credentials=credentials)
-    return querry_bq
+    """Run a BigQuery SQL and return a pandas DataFrame.
+
+    This function prefers an explicit service account file path if provided
+    (via `PACC_SA_RAW` or `GOOGLE_APPLICATION_CREDENTIALS`). If not provided,
+    it will use the default BigQuery client which relies on Application Default
+    Credentials (ADC).
+    """
+    # If a JSON service account path is supplied, use pandas_gbq with explicit creds
+    if service_account_file_path:
+        credentials = service_account.Credentials.from_service_account_file(service_account_file_path)
+        querry_bq = pandas_gbq.read_gbq(query_string, project_id="pacc-raw-data", credentials=credentials)
+        return querry_bq
+
+    # Fallback: use BigQuery client and to_dataframe (works with ADC)
+    client = bigquery.Client()
+    query_job = client.query(query_string)
+    df = query_job.result().to_dataframe()
+    return df
 
 #BQ insert
 def bq_insert_streaming(rows_to_insert,table_id,object):

@@ -1,5 +1,6 @@
 steps:
-  # Step 1: Build the Docker image
+  # Bước 1: Build Docker Image
+  # Sử dụng biến $PROJECT_ID và $SHORT_SHA (Cloud Build tự điền khi nhận code từ GitHub)
   - name: 'gcr.io/cloud-builders/docker'
     args: 
       - 'build'
@@ -9,35 +10,41 @@ steps:
       - 'gcr.io/$PROJECT_ID/data-sync-custom:latest'
       - '.'
 
-  # Step 2: Push image to Container Registry
+  # Bước 2: Push Image lên Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
 
-  # Step 3: Deploy to Cloud Run
-  - name: 'gcr.io/cloud-builders/gke-deploy'
-    entrypoint: 'bash'
+  # Bước 3: Deploy lên Cloud Run
+  # Đổi sang image cloud-sdk chuẩn để dùng lệnh gcloud
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
     args:
-      - '-c'
-      - |
-        gcloud run deploy data-sync-custom \
-          --image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA \
-          --platform=managed \
-          --region=asia-southeast1 \
-          --no-allow-unauthenticated \
-          --memory=2Gi \
-          --cpu=2 \
-          --timeout=3600 \
-          --max-instances=10 \
-          --service-account=data-sync-custom@$PROJECT_ID.iam.gserviceaccount.com \
-          --set-env-vars="GCP_PROJECT_ID=$PROJECT_ID" \
-          --vpc-connector=data-sync-custom-connector
+      - 'run'
+      - 'deploy'
+      - 'data-sync-custom'  # Tên Service
+      - '--image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
+      - '--region=asia-southeast1'
+      - '--platform=managed'
+      - '--no-allow-unauthenticated' # Không cho phép public truy cập (chỉ scheduler gọi)
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--timeout=3600'
+      - '--max-instances=10'
+      # Service Account để chạy code
+      - '--service-account=data-sync-custom@$PROJECT_ID.iam.gserviceaccount.com'
+      # VPC Connector để nối vào DB nội bộ/SQL
+      - '--vpc-connector=data-sync-custom-connector'
+      # Set biến môi trường (nếu cần thiết)
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
 
+# Lưu lại image trong danh sách build artifact
 images:
   - 'gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
   - 'gcr.io/$PROJECT_ID/data-sync-custom:latest'
 
+# Cấu hình máy build (Máy mạnh build nhanh nhưng tốn tiền hơn chút)
 options:
   machineType: 'N1_HIGHCPU_8'
   logging: CLOUD_LOGGING_ONLY

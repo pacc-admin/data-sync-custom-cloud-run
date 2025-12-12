@@ -18,7 +18,11 @@ class gg_sheet_import():
         print('exit method called')
 
     def gg_sheet_connect(self):
-        service_account_file_path=os.environ.get("PACC_SA_RAW")
+        # Prefer explicit PACC_SA_RAW, fall back to GOOGLE_APPLICATION_CREDENTIALS
+        service_account_file_path = os.environ.get("PACC_SA_RAW") or os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+        if not service_account_file_path:
+            raise RuntimeError("No service account path set: please set PACC_SA_RAW or GOOGLE_APPLICATION_CREDENTIALS environment variable")
+
         gc = gspread.service_account(filename=service_account_file_path)
         sh = gc.open(self.file_name)
         return sh

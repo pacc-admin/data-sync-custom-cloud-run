@@ -32,3 +32,5 @@ google-auth-oauthlib==1.2.0
 
 # Development
 python-dotenv==1.0.0
+gspread
+oauth2client
