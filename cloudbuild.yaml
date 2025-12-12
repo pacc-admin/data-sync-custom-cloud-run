@@ -46,7 +46,7 @@ images:
 
 # Cấu hình máy build (Máy mạnh build nhanh nhưng tốn tiền hơn chút)
 options:
-  machineType: 'N1_HIGHCPU_8'
+  machineType: 'E2_HIGHCPU_8'
   logging: CLOUD_LOGGING_ONLY
 
 timeout: 3600s
