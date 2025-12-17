@@ -97,7 +97,7 @@ steps:
       - '--region=asia-southeast1'
       - '--service-account=462397466952-compute@developer.gserviceaccount.com'
       - '--vpc-connector=data-sync-conn'
-      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID,GOOGLE_APPLICATION_CREDENTIALS=/app/sa.json'
       - '--args=--handler=google_sheet,--type=all' # Tham số chạy google_sheet
       - '--max-retries=0'
       - '--task-timeout=3600s'

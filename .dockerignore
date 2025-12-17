@@ -61,15 +61,27 @@ README.md
 *.xlsx
 *.xls
 
-# Credentials (should not be in Docker)
-credentials/*.yml
-sa.json
+# But KEEP JSON schema files used at runtime
+!metadata/ipos_crm/*.json
+!metadata/basevn/timeoff/timeoff.json
+
+# Credentials
+# Hiện tại BaseVN & Worldfone dùng các file YAML này để gọi API,
+# nên cần copy vào image. Nếu sau này chuyển sang Secret Manager/Env var,
+# có thể bật ignore lại.
+# credentials/*.yml
 
 # Notebooks
 *.ipynb
 
 # Metadata
-metadata/
+# Ignore most metadata, but keep ipos_crm and basevn timeoff schema for runtime
+metadata/*
+!metadata/ipos_crm
+!metadata/ipos_crm/*
+!metadata/basevn
+!metadata/basevn/timeoff
+!metadata/basevn/timeoff/timeoff.json
 
 # Bash scripts (no longer needed)
 bash_scheduling/
