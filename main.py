@@ -14,6 +14,7 @@ from handlers.base_vn_handler import BaseVNHandler
 from handlers.mssql_handler import MSSQLHandler
 from handlers.ipos_handler import iPOSHandler
 from handlers.worldfone_handler import WorldFoneHandler
+from handlers.google_sheet_handler import GoogleSheetHandler
 
 # Setup Logger
 # Lưu ý: Cloud Run Jobs sẽ hứng log từ stdout/stderr
@@ -23,7 +24,7 @@ logger = logging.getLogger("JobRunner")
 def main():
     # 1. Cấu hình nhận tham số từ dòng lệnh
     parser = argparse.ArgumentParser(description='Cloud Run Job Entrypoint')
-    parser.add_argument('--handler', required=True, help='Tên handler: mssql, ipos, base_vn, worldfone')
+    parser.add_argument('--handler', required=True, help='Tên handler: mssql, ipos, base_vn, worldfone, google_sheet')
     parser.add_argument('--type', default='all', help='Loại sync (vd: all, sale, crm...)')
     
     args = parser.parse_args()
@@ -55,6 +56,10 @@ def main():
             handler = WorldFoneHandler(logger, config)
             # Worldfone handler trong code cũ của bạn không nhận tham số sync_type
             result = handler.handle_sync()
+
+        elif args.handler == 'google_sheet':
+            handler = GoogleSheetHandler(logger, config)
+            result = handler.handle_sync(sync_type=args.type)
             
         else:
             logger.error(f"Unknown handler specified: {args.handler}")
