@@ -85,6 +85,23 @@ steps:
       - '--max-retries=0'
       - '--task-timeout=3600s'
 
+  # Job 5: Sync Google Sheet
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'jobs'
+      - 'deploy'
+      - 'job-sync-google-sheet'
+      - '--image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
+      - '--region=asia-southeast1'
+      - '--service-account=462397466952-compute@developer.gserviceaccount.com'
+      - '--vpc-connector=data-sync-conn'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--args=--handler=google_sheet,--type=all' # Tham số chạy google_sheet
+      - '--max-retries=0'
+      - '--task-timeout=3600s'
+
 images:
   - 'gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
   - 'gcr.io/$PROJECT_ID/data-sync-custom:latest'
