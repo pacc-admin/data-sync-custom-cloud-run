@@ -13,8 +13,7 @@ class WorldFoneHandler(BaseSyncHandler):
     
     # Script files for WorldFone
     SYNC_SCRIPTS = [
-        "script_worldfone/cdrs_historical.py",
-        "script_worldfone/cdrs.py",
+        "script_worldfone/cdrs_historical.py"
     ]
     
     def __init__(self, logger: Logger, config: Any):
@@ -31,7 +30,7 @@ class WorldFoneHandler(BaseSyncHandler):
                 try:
                     result = self._run_script(script_path)
                     results[script_path] = result
-                    self.logger.info(f"Script completed", extra={
+                    self.logger.info("Script completed", extra={
                         "script": script_path,
                         "status": "success"
                     })
@@ -81,6 +80,11 @@ class WorldFoneHandler(BaseSyncHandler):
             module = importlib.util.module_from_spec(spec)
             sys.modules[full_path.stem] = module
             spec.loader.exec_module(module)
+
+            # Nếu script có hàm main(), gọi để đảm bảo logic chính được chạy
+            if hasattr(module, "main") and callable(getattr(module, "main")):
+                self.logger.debug("Calling script main()", extra={"script": script_path})
+                module.main()
             
             return {
                 "status": "success",

@@ -93,6 +93,16 @@ class iPOSHandler(BaseSyncHandler):
             module = importlib.util.module_from_spec(spec)
             sys.modules[full_path.stem] = module
             spec.loader.exec_module(module)
+
+            # Một số script iPOS dùng hàm `__main__`, một số có thể dùng `main`
+            # Khi import thì block `if __name__ == '__main__':` không chạy,
+            # nên ta chủ động gọi hàm chính nếu có.
+            if hasattr(module, "main") and callable(getattr(module, "main")):
+                self.logger.debug("Calling script main()", extra={"script": script_path})
+                module.main()
+            elif hasattr(module, "__main__") and callable(getattr(module, "__main__")):
+                self.logger.debug("Calling script __main__()", extra={"script": script_path})
+                module.__main__()
             
             return {
                 "status": "success",
