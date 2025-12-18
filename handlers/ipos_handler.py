@@ -47,6 +47,22 @@ class iPOSHandler(BaseSyncHandler):
                     error_msg = f"✗ Script failed: {script_path} - {str(e)}"
                     self.logger.error(error_msg, extra={"script": script_path, "action": "script_error"})
                     results[script_path] = {"status": "failed", "error": str(e)}
+
+            # Log tổng kết iPOS sau khi chạy xong tất cả script
+            success_scripts = [s for s, r in results.items() if r.get("status") == "success"]
+            failed_scripts = [s for s, r in results.items() if r.get("status") != "success"]
+            self.logger.info(
+                "iPOS summary | success: %s | failed: %s",
+                success_scripts or "[]",
+                failed_scripts or "[]",
+                extra={
+                    "handler": "iPOSHandler",
+                    "sync_type": sync_type,
+                    "scripts_success": success_scripts,
+                    "scripts_failed": failed_scripts,
+                    "scripts_total": len(results),
+                },
+            )
             
             self.log_sync_end(sync_type, "completed")
             return {
