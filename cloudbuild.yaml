@@ -44,7 +44,7 @@ steps:
       - 'job-sync-ipos'
       - '--image=gcr.io/$PROJECT_ID/data-sync-custom:$SHORT_SHA'
       - '--region=asia-southeast1'
-      - '--service-account=462397466952-compute@developer.gserviceaccount.com'
+      - '--service-account=airbyte-connect@pacc-raw-data.iam.gserviceaccount.com'
       - '--vpc-connector=data-sync-conn'
       - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
       - '--args=--handler=ipos,--type=all' # Tham số chạy ipos
