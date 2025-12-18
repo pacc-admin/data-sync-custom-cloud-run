@@ -5,6 +5,7 @@ import pandas as pd
 import inflect
 from base_vn_api import *
 import os
+from datetime import datetime, timezone
 
 def base_vn_connect(app,component1,component2='list',updated_from=0,page=0,para1='',value1='',c12_plit='/'):
     if app=='hiring':
@@ -55,8 +56,11 @@ def pd_process(
     #remove specified word from a list of column, for later data type change
     pd_type_change(df=final_dataset,columns=stop_words)
 
-    #add loaded date field
-    final_dataset['loaded_date'] = pd.to_datetime('today')
+    # add loaded date field with microsecond precision in UTC to avoid TIMESTAMP_NANOS issues
+    # BigQuery TIMESTAMP expects seconds + microseconds; pandas default nanosecond
+    # precision can cause errors like "Invalid timestamp nanoseconds value ... TIMESTAMP_NANOS"
+    loaded_ts = pd.Timestamp.utcnow().floor("us")  # Timestamp with microsecond precision (no tz)
+    final_dataset["loaded_date"] = loaded_ts
     return final_dataset
                        
 

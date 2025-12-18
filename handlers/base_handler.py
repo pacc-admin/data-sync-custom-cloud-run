@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 from logging import Logger
@@ -37,18 +38,45 @@ class BaseSyncHandler(ABC):
     
     def log_sync_start(self, sync_type: str):
         """Log sync start."""
-        self.logger.info(f"Starting sync", extra={
+        self.logger.info(f"=== Starting sync ===", extra={
             "sync_type": sync_type,
             "handler": self.__class__.__name__
         })
     
     def log_sync_end(self, sync_type: str, status: str = "success"):
         """Log sync end."""
-        self.logger.info(f"Sync completed", extra={
+        self.logger.info(f"=== Sync completed ===", extra={
             "sync_type": sync_type,
             "status": status,
             "handler": self.__class__.__name__
         })
+    
+    def log_script_start(self, script_path: str):
+        """Log script execution start."""
+        self.logger.info(f"▶ Starting script: {script_path}", extra={
+            "script": script_path,
+            "action": "script_start"
+        })
+    
+    def log_script_end(self, script_path: str, duration_seconds: float = None, rows_loaded: int = None):
+        """Log script execution end."""
+        extra = {
+            "script": script_path,
+            "action": "script_end",
+            "status": "success"
+        }
+        if duration_seconds is not None:
+            extra["duration_seconds"] = round(duration_seconds, 2)
+        if rows_loaded is not None:
+            extra["rows_loaded"] = rows_loaded
+        
+        msg = f"✓ Script completed: {script_path}"
+        if rows_loaded is not None:
+            msg += f" | Rows loaded: {rows_loaded:,}"
+        if duration_seconds is not None:
+            msg += f" | Duration: {duration_seconds:.2f}s"
+        
+        self.logger.info(msg, extra=extra)
     
     def log_error(self, sync_type: str, error: Exception):
         """Log sync error."""

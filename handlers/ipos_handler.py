@@ -5,6 +5,7 @@ from logging import Logger
 from handlers.base_handler import BaseSyncHandler
 import importlib.util
 import sys
+import time
 from pathlib import Path
 
 
@@ -41,13 +42,10 @@ class iPOSHandler(BaseSyncHandler):
                 try:
                     result = self._run_script(script_path)
                     results[script_path] = result
-                    self.logger.info(f"Script completed", extra={
-                        "script": script_path,
-                        "status": "success"
-                    })
+                    # log_script_end được gọi trong _run_script
                 except Exception as e:
-                    error_msg = f"Script failed: {script_path} - {str(e)}"
-                    self.logger.error(error_msg, extra={"script": script_path})
+                    error_msg = f"✗ Script failed: {script_path} - {str(e)}"
+                    self.logger.error(error_msg, extra={"script": script_path, "action": "script_error"})
                     results[script_path] = {"status": "failed", "error": str(e)}
             
             self.log_sync_end(sync_type, "completed")
@@ -82,7 +80,9 @@ class iPOSHandler(BaseSyncHandler):
         if not full_path.exists():
             raise FileNotFoundError(f"Script not found: {script_path}")
         
-        self.logger.debug(f"Running script", extra={"script": script_path})
+        # Log script start
+        self.log_script_start(script_path)
+        start_time = time.time()
         
         try:
             # Load and execute the module
@@ -104,14 +104,24 @@ class iPOSHandler(BaseSyncHandler):
                 self.logger.debug("Calling script __main__()", extra={"script": script_path})
                 module.__main__()
             
+            # Calculate duration
+            duration = time.time() - start_time
+            
+            # Log script end with timing
+            self.log_script_end(script_path, duration_seconds=duration)
+            
             return {
                 "status": "success",
-                "script": script_path
+                "script": script_path,
+                "duration_seconds": round(duration, 2)
             }
         
         except Exception as e:
-            self.logger.error(f"Script execution error", extra={
+            duration = time.time() - start_time
+            self.logger.error(f"✗ Script execution error: {script_path} | Duration: {duration:.2f}s", extra={
                 "script": script_path,
-                "error": str(e)
+                "error": str(e),
+                "duration_seconds": round(duration, 2),
+                "action": "script_error"
             })
             raise
