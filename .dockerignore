@@ -62,6 +62,7 @@ README.md
 *.xls
 
 # But KEEP JSON schema files used at runtime
+# Note: sa.json không cần trong image nữa vì dùng Secret Manager
 !metadata/ipos_crm/*.json
 !metadata/basevn/timeoff/timeoff.json
 
