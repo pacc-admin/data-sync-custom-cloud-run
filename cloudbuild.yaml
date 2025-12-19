@@ -49,7 +49,7 @@ steps:
       - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
       - '--args=--handler=ipos,--type=all' # Tham số chạy ipos
       - '--max-retries=0'
-      - '--task-timeout=14400s'
+      - '--task-timeout=18000s'
 
   # Job 3: Sync Base.vn
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
