@@ -7,6 +7,7 @@ import datetime
 import json_schema_bq
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 class ipos_crm_el:
 
     def __init__(
@@ -132,24 +133,12 @@ class ipos_crm_el:
         failed = 0
         start_time = time.time()
         
-        for idx, user_id in enumerate(user_ids, 1):
-            # Log progress mỗi 100 members hoặc ở 10% intervals
-            if idx % 100 == 0 or idx % max(1, total_members // 10) == 0:
-                elapsed = time.time() - start_time
-                rate = idx / elapsed if elapsed > 0 else 0
-                remaining = (total_members - idx) / rate if rate > 0 else 0
-                print(f'Progress: {idx}/{total_members} ({idx*100//total_members}%) | '
-                      f'Processed: {processed} | Failed: {failed} | '
-                      f'Rate: {rate:.1f} members/s | ETA: {remaining:.0f}s')
-            
+        def process_user(user_id):
+            """Process a single user_id and return updated data"""
             raw_output_member = self.crm_api(user_id)
-    
             if not raw_output_member:
-                failed += 1
-                continue
+                return None, 1  # failed count
             
-            processed += 1
-
             updated_data = []
             if isinstance(raw_output_member, dict):  # If it's a dictionary, convert it to a list
                 raw_output_member = [raw_output_member]
@@ -161,8 +150,35 @@ class ipos_crm_el:
                 updated_dict['membership_id'] = user_id
                 updated_dict['loaded_date'] = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f UTC')
                 updated_data.append(updated_dict)   
-                                         
-            raw_output.extend(updated_data)
+            return updated_data, 0  # success, failed=0
+        
+        # Chạy song song với ThreadPoolExecutor
+        max_workers = min(20, total_members)  # Giới hạn workers để tránh quá tải API
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_user = {executor.submit(process_user, user_id): user_id for user_id in user_ids}
+            
+            for idx, future in enumerate(as_completed(future_to_user), 1):
+                user_id = future_to_user[future]
+                try:
+                    updated_data, fail_count = future.result()
+                    if updated_data is not None:
+                        raw_output.extend(updated_data)
+                        processed += 1
+                    else:
+                        failed += fail_count
+                    
+                    # Log progress mỗi 100 members hoặc ở 10% intervals
+                    if idx % 100 == 0 or idx % max(1, total_members // 10) == 0:
+                        elapsed = time.time() - start_time
+                        rate = idx / elapsed if elapsed > 0 else 0
+                        remaining = (total_members - idx) / rate if rate > 0 else 0
+                        print(f'Progress: {idx}/{total_members} ({idx*100//total_members}%) | '
+                              f'Processed: {processed} | Failed: {failed} | '
+                              f'Rate: {rate:.1f} members/s | ETA: {remaining:.0f}s')
+                
+                except Exception as e:
+                    print(f'Error processing user_id {user_id}: {e}')
+                    failed += 1
 
         elapsed = time.time() - start_time
         print(f'Completed: {processed}/{total_members} members processed successfully, '

@@ -47,6 +47,8 @@ steps:
       - '--service-account=airbyte-connect@pacc-raw-data.iam.gserviceaccount.com'
       - '--vpc-connector=data-sync-conn'
       - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--cpu=2'        # Giữ 1 CPU là đủ nếu code chạy tuần tự
+      - '--memory=4Gi'   # Tăng RAM lên 2GB
       - '--args=--handler=ipos,--type=all' # Tham số chạy ipos
       - '--max-retries=0'
       - '--task-timeout=18000s'
