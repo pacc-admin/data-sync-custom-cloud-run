@@ -1,7 +1,7 @@
 import gspread
 import re
 import pandas as pd
-import pd_process
+from . import pd_process
 import os
 import unidecode
 

@@ -1,6 +1,6 @@
-from big_query import bq_insert_streaming,bq_query,bq_pandas,bq_insert,bq_delete
+from .big_query import bq_insert_streaming, bq_query, bq_pandas, bq_insert, bq_delete
 from mssql import mssql_query_pd
-from pd_process import pd_last_update,pd_type_change
+from .pd_process import pd_last_update, pd_type_change
 from dict_function import incremental_dict
 from google.cloud import bigquery
 import requests

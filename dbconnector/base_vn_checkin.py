@@ -3,8 +3,8 @@ import requests
 import time
 import pandas as pd
 from google.cloud import bigquery
-import big_query,pd_process
-from base_vn_api import get_base_checkin_api
+from . import big_query, pd_process
+from .base_vn_api import get_base_checkin_api
 
 class base_vn_checkin_flow:
     def __init__(self):

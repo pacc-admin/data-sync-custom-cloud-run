@@ -1,7 +1,7 @@
 import pandas as pd
 import time
 from datetime import datetime, timedelta
-from big_query import *
+from .big_query import *
 import math
 import numpy as np
 pd.options.mode.chained_assignment = None

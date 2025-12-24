@@ -1,4 +1,4 @@
-from big_query import bq_insert,bq_delete,bq_pandas,bq_latest_date
+from .big_query import bq_insert, bq_delete, bq_pandas, bq_latest_date
 from google.cloud import bigquery
 import pyodbc
 import pandas as pd

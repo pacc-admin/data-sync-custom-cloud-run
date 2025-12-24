@@ -2,7 +2,7 @@ import requests
 import time
 import pandas as pd
 from datetime import datetime
-from big_query import bq_insert,bq_delete,bq_pandas
+from .big_query import bq_insert, bq_delete, bq_pandas
 from yml_extract import etract_variable_yml_string
 from time_function import last_unix_t_of_month,convert_unix_to_date,unix_month_no,last_date_of_month
 

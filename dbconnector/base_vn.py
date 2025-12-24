@@ -1,9 +1,9 @@
-from big_query import bq_insert,bq_delete
-from pd_process import pd_last_update,pd_type_change
+from .big_query import bq_insert, bq_delete
+from .pd_process import pd_last_update, pd_type_change
 from google.cloud import bigquery
 import pandas as pd
 import inflect
-from base_vn_api import *
+from .base_vn_api import *
 import os
 from datetime import datetime, timezone
 

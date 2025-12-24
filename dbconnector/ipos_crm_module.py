@@ -1,5 +1,5 @@
 from google.cloud import bigquery
-from big_query import bq_pandas, bq_query, full_refresh_bq_insert_from_json2
+from .big_query import bq_pandas, bq_query, full_refresh_bq_insert_from_json2
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
