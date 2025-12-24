@@ -8,7 +8,7 @@ import pandas as pd
 import requests
 import json
 
-from dbconnector.big_query import bq_insert, bq_latest_date, bq_query, connect_to_bq
+from big_query import bq_insert, bq_latest_date, bq_query, connect_to_bq
 
 # ENV
 PROJECT_ID = 'pacc-raw-data'
@@ -35,11 +35,22 @@ def get_dates():
     default_start = datetime(2025, 11, 1).date()
     start_arg = get_arg(1)
     end_arg = get_arg(2)
+    
+    # Check if arguments are valid date strings, skip if they look like command flags
+    def is_valid_date(arg):
+        if not arg or arg.startswith('--'):
+            return False
+        try:
+            datetime.strptime(arg, '%Y-%m-%d')
+            return True
+        except ValueError:
+            return False
+    
     start_date = (
-        datetime.strptime(start_arg, '%Y-%m-%d').date() if start_arg else default_start
+        datetime.strptime(start_arg, '%Y-%m-%d').date() if is_valid_date(start_arg) else default_start
     )
     end_date = (
-        datetime.strptime(end_arg, '%Y-%m-%d').date() if end_arg else today
+        datetime.strptime(end_arg, '%Y-%m-%d').date() if is_valid_date(end_arg) else today
     )
     return start_date, end_date
 
