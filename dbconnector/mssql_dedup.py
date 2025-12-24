@@ -1,6 +1,6 @@
 import pandas as pd
 import pyodbc
-from .big_query import bq_insert, bq_delete
+from big_query import bq_insert, bq_delete
 
 class mssql_bq_dedup:
     def __init__(self,

@@ -1,4 +1,4 @@
-from .big_query import bq_last_update
+from big_query import bq_last_update
 import datetime
 
 def incremental_dict(raw_output,column_updated,schema,table,column_type='timestamp'):
