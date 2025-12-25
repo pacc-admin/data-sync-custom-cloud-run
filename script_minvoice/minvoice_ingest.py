@@ -7,6 +7,7 @@ import pytz
 import pandas as pd
 import requests
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from big_query import bq_insert, bq_latest_date, bq_delete, connect_to_bq
 
@@ -32,7 +33,7 @@ def get_arg(idx, default=None):
 
 def get_dates():
     today = datetime.now(TIMEZONE).date()
-    default_start = datetime(2025, 11, 1).date()
+    default_start = datetime(2024, 9, 5).date()
     start_arg = get_arg(1)
     end_arg = get_arg(2)
     
@@ -71,10 +72,11 @@ def create_table_if_needed():
     client = connect_to_bq()
     table_id_full = f'{PROJECT_ID}.{DATASET}.{TABLE}'
     # Gọi API 1 ngày để lấy schema mẫu
+    khieu_sample = f"1C{2024 % 100:02d}MPA"
     payload = {
-        "tuNgay": "2025-11-01",
-        "denngay": "2025-11-01",
-        "khieu": "1C25MPA",
+        "tuNgay": "2024-09-05",
+        "denngay": "2024-09-05",
+        "khieu": khieu_sample,
         "start": 0,
         "count": 1,
         "coChiTiet": True
@@ -107,7 +109,7 @@ def create_table_if_needed():
 
 
     schema_sql = ",\n".join(fields)
-    part_sql = f"\nPARTITION BY DATE(`{partition_field}`)\n" if partition_field else ""
+    part_sql = f"\nPARTITION BY DATE_TRUNC(DATE(`{partition_field}`), MONTH)\n" if partition_field else ""
     create_sql = f"CREATE TABLE `{table_id_full}` (\n{schema_sql}\n){part_sql}"
     try:
         client.query(create_sql).result()
@@ -115,57 +117,69 @@ def create_table_if_needed():
     except Exception as e:
         print(f"Table create failed (possibly exists): {e}")
 
-def ingest_api_range(start_date, end_date, batch_size=300):
-    cur_date = start_date
-    total_ingested = 0
+def process_date(cur_date, batch_size=300):
+    all_df = []
+    offset = 0
     now_timestamp = datetime.now(TIMEZONE)
-    while cur_date <= end_date:
-        all_df = []
-        offset = 0
-        while True:
-            payload = {
-                "tuNgay": cur_date.strftime('%Y-%m-%d'),
-                "denngay": cur_date.strftime('%Y-%m-%d'),
-                "khieu": "1C25MPA",
-                "start": offset,
-                "count": batch_size,
-                "coChiTiet": True
-            }
-            try:
-                response = requests.post(API_URL, json=payload, headers=HEADERS, timeout=30)
-                result = response.json()
-                if response.status_code == 200 and result.get("ok"):
-                    list_data = result.get("data", [])
-                    if list_data:
-                        df = pd.DataFrame(list_data)
-                        if not df.empty:
-                            df['loaded_at'] = now_timestamp
-                            print(f"Fetched {len(df)} records for {cur_date}, offset {offset}")
-                            bq_insert(DATASET, TABLE, df)
-                            all_df.append(df)
-                            offset += batch_size
-                            # If less than batch_size, no more pages
-                            if len(df) < batch_size:
-                                break
-                        else:
-                            print(f"Empty dataframe for {cur_date}, offset {offset}")
+    khieu = f"1C{cur_date.year % 100:02d}MPA"
+    while True:
+        payload = {
+            "tuNgay": cur_date.strftime('%Y-%m-%d'),
+            "denngay": cur_date.strftime('%Y-%m-%d'),
+            "khieu": khieu,
+            "start": offset,
+            "count": batch_size,
+            "coChiTiet": True
+        }
+        try:
+            response = requests.post(API_URL, json=payload, headers=HEADERS, timeout=30)
+            result = response.json()
+            if response.status_code == 200 and result.get("ok"):
+                list_data = result.get("data", [])
+                if list_data:
+                    df = pd.DataFrame(list_data)
+                    if not df.empty:
+                        df['loaded_at'] = now_timestamp
+                        print(f"Fetched {len(df)} records for {cur_date}, offset {offset}")
+                        bq_insert(DATASET, TABLE, df)
+                        all_df.append(df)
+                        offset += batch_size
+                        # If less than batch_size, no more pages
+                        if len(df) < batch_size:
                             break
                     else:
-                        print(f"No data for {cur_date}, offset {offset}")
+                        print(f"Empty dataframe for {cur_date}, offset {offset}")
                         break
                 else:
-                    print(f"API Error {cur_date} offset {offset}: {result.get('message')}")
+                    print(f"No data for {cur_date}, offset {offset}")
                     break
-            except Exception as e:
-                print(f"Exception {cur_date} offset {offset}: {e}")
+            else:
+                print(f"API Error {cur_date} offset {offset}: {result.get('message')}")
                 break
-        num_rows = sum(len(x) for x in all_df)
-        total_ingested += num_rows
-        if num_rows == 0:
-            print(f"No data ingested for {cur_date}")
-        else:
-            print(f"Total ingested for {cur_date}: {num_rows} rows")
+        except Exception as e:
+            print(f"Exception {cur_date} offset {offset}: {e}")
+            break
+    num_rows = sum(len(x) for x in all_df)
+    return num_rows
+
+def ingest_api_range(start_date, end_date, batch_size=300, max_workers=10):
+    date_list = []
+    cur_date = start_date
+    while cur_date <= end_date:
+        date_list.append(cur_date)
         cur_date += timedelta(days=1)
+    
+    total_ingested = 0
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(process_date, date, batch_size): date for date in date_list}
+        for future in as_completed(futures):
+            num_rows = future.result()
+            total_ingested += num_rows
+            date = futures[future]
+            if num_rows == 0:
+                print(f"No data ingested for {date}")
+            else:
+                print(f"Total ingested for {date}: {num_rows} rows")
     print(f"Grand total rows ingested: {total_ingested}")
 
 def main():
@@ -190,7 +204,7 @@ def main():
             last_date = datetime.strptime(last, '%Y-%m-%d').date()
             next_date = last_date + timedelta(days=1)
         else:
-            next_date = datetime(2025, 11, 1).date()
+            next_date = datetime(2024, 9, 5).date()
         # Nếu đã cập nhật đến >= hôm qua thì không cần ingest nữa
         if next_date > yesterday:
             print(f"Data is up to date. BQ đến {last}, hôm qua là {yesterday}. Không cần ingest!")
@@ -199,7 +213,7 @@ def main():
     else:
         # Không có bảng (vừa tạo) => full ingest đến hôm qua
         yesterday = datetime.now(TIMEZONE).date() - timedelta(days=1)
-        ingest_api_range(datetime(2025, 11, 1).date(), yesterday)
+        ingest_api_range(datetime(2024, 9, 5).date(), yesterday)
 
 if __name__ == "__main__":
     main()
