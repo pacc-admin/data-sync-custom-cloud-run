@@ -109,7 +109,7 @@ def create_table_if_needed():
 
 
     schema_sql = ",\n".join(fields)
-    part_sql = f"\nPARTITION BY DATE_TRUNC(DATE(`{partition_field}`), MONTH)\n" if partition_field else ""
+    part_sql = f"\nPARTITION BY DATE(`{partition_field}`)\n" if partition_field else ""
     create_sql = f"CREATE TABLE `{table_id_full}` (\n{schema_sql}\n){part_sql}"
     try:
         client.query(create_sql).result()
