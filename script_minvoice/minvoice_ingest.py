@@ -8,7 +8,7 @@ import pandas as pd
 import requests
 import json
 
-from big_query import bq_insert, bq_latest_date, bq_query, connect_to_bq
+from big_query import bq_insert, bq_latest_date, bq_delete, connect_to_bq
 
 # ENV
 PROJECT_ID = 'pacc-raw-data'
@@ -102,6 +102,10 @@ def create_table_if_needed():
             fields.append(f"  `{col}` TIMESTAMP")
         else:
             fields.append(f"  `{col}` STRING")
+    
+    fields.append(f"  `loaded_at` TIMESTAMP") 
+
+
     schema_sql = ",\n".join(fields)
     part_sql = f"\nPARTITION BY DATE(`{partition_field}`)\n" if partition_field else ""
     create_sql = f"CREATE TABLE `{table_id_full}` (\n{schema_sql}\n){part_sql}"
@@ -114,6 +118,7 @@ def create_table_if_needed():
 def ingest_api_range(start_date, end_date, batch_size=300):
     cur_date = start_date
     total_ingested = 0
+    now_timestamp = datetime.now(TIMEZONE)
     while cur_date <= end_date:
         all_df = []
         offset = 0
@@ -134,6 +139,7 @@ def ingest_api_range(start_date, end_date, batch_size=300):
                     if list_data:
                         df = pd.DataFrame(list_data)
                         if not df.empty:
+                            df['loaded_at'] = now_timestamp
                             print(f"Fetched {len(df)} records for {cur_date}, offset {offset}")
                             bq_insert(DATASET, TABLE, df)
                             all_df.append(df)
@@ -166,12 +172,19 @@ def main():
     start_date, end_date = get_dates()
     print(f"Ingest from {start_date} to {end_date}")
     yesterday = datetime.now(TIMEZONE).date() - timedelta(days=1)
+    today = datetime.now(TIMEZONE).date()
 
     if not table_exists():
         print(f"Table chưa tồn tại, tạo mới...")
         create_table_if_needed()
 
     if table_exists():
+
+        five_days_ago = today - timedelta(days=5)
+        condition = f"DATE(inv_invoiceIssuedDate) >= '{five_days_ago}' AND DATE(inv_invoiceIssuedDate) <= '{yesterday}'"
+        bq_delete(DATASET, TABLE, condition)
+        print(f"Deleted data from {five_days_ago} to {yesterday}")
+
         last = bq_latest_date('inv_invoiceIssuedDate', DATASET, TABLE)
         if last and last != '1970-01-01':
             last_date = datetime.strptime(last, '%Y-%m-%d').date()
