@@ -13,7 +13,7 @@ from big_query import bq_insert, bq_latest_date, bq_delete, connect_to_bq
 
 # ENV
 PROJECT_ID = 'pacc-raw-data'
-DATASET = 'INVOICE_DATASET'
+DATASET = 'INVOICE_DATASET_NEW'
 TABLE = 'minvoice_invoices'
 TIMEZONE = pytz.timezone('Asia/Ho_Chi_Minh')
 API_URL = "https://0314142245.minvoice.app/api/InvoiceApi78/GetInvoices"
