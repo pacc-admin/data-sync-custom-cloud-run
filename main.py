@@ -71,6 +71,10 @@ def main():
             sys.exit(1) # Thoát với lỗi
 
         # 3. Kết thúc
+        if result and result.get("status") == "failed":
+            logger.error(f"Job Failed. Result: {result}")
+            sys.exit(1)  # Thoát với lỗi
+        
         logger.info(f"Job Finished Successfully. Result: {result}")
         sys.exit(0) # Thoát thành công
 

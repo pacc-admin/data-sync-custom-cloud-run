@@ -60,6 +60,17 @@ class MSSQLHandler(BaseSyncHandler):
                     self.logger.error(error_msg, extra={"script": script_path})
                     results[script_path] = {"status": "failed", "error": str(e)}
             
+            # Nếu có script nào failed, trả về failed
+            failed_scripts = [s for s, r in results.items() if r.get("status") != "success"]
+            if failed_scripts:
+                self.log_sync_end(sync_type, "failed")
+                return {
+                    "status": "failed",
+                    "sync_type": sync_type,
+                    "scripts_run": len(results),
+                    "results": results
+                }
+            
             self.log_sync_end(sync_type, "completed")
             return {
                 "status": "success",

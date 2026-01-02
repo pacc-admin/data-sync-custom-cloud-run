@@ -154,11 +154,13 @@ def process_date(cur_date, batch_size=300):
                     print(f"No data for {cur_date}, offset {offset}")
                     break
             else:
-                print(f"API Error {cur_date} offset {offset}: {result.get('message')}")
-                break
+                error_msg = f"API Error {cur_date} offset {offset}: {result.get('message')}"
+                print(error_msg)
+                raise Exception(error_msg)
         except Exception as e:
-            print(f"Exception {cur_date} offset {offset}: {e}")
-            break
+            error_msg = f"Exception {cur_date} offset {offset}: {e}"
+            print(error_msg)
+            raise Exception(error_msg)
     num_rows = sum(len(x) for x in all_df)
     return num_rows
 

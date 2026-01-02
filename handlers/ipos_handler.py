@@ -64,6 +64,16 @@ class iPOSHandler(BaseSyncHandler):
                 },
             )
             
+            # Nếu có script nào failed, trả về failed
+            if failed_scripts:
+                self.log_sync_end(sync_type, "failed")
+                return {
+                    "status": "failed",
+                    "sync_type": sync_type,
+                    "scripts_run": len(results),
+                    "results": results
+                }
+            
             self.log_sync_end(sync_type, "completed")
             return {
                 "status": "success",

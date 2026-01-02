@@ -37,6 +37,16 @@ class WorldFoneHandler(BaseSyncHandler):
                     self.logger.error(error_msg, extra={"script": script_path, "action": "script_error"})
                     results[script_path] = {"status": "failed", "error": str(e)}
             
+            # Nếu có script nào failed, trả về failed
+            failed_scripts = [s for s, r in results.items() if r.get("status") != "success"]
+            if failed_scripts:
+                self.log_sync_end("worldfone", "failed")
+                return {
+                    "status": "failed",
+                    "scripts_run": len(results),
+                    "results": results
+                }
+            
             self.log_sync_end("worldfone", "completed")
             return {
                 "status": "success",
